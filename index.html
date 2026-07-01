@@ -14,101 +14,137 @@ body{background:#fff;color:#1d1d1f;font-family:'Inter',sans-serif;-webkit-font-s
 
 /* NAV */
 nav{
-  position:fixed;top:0;left:0;right:0;z-index:500;
-  height:52px;display:flex;align-items:center;justify-content:space-between;
-  padding:0 5vw;
-  background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(20px);
-  border-bottom:1px solid rgba(0,0,0,.08);
+position:fixed;top:0;left:0;right:0;z-index:500;
+height:52px;display:flex;align-items:center;justify-content:space-between;
+padding:0 5vw;
+background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(20px);
+border-bottom:1px solid rgba(0,0,0,.08);
 }
 .logo{font-size:.95rem;font-weight:600;color:#1d1d1f;text-decoration:none;letter-spacing:-.01em}
 .nav-links{display:flex;gap:2rem;list-style:none}
 .nav-links a{font-size:.82rem;color:rgba(29,29,31,.55);text-decoration:none;transition:color .2s}
 .nav-links a:hover{color:#1d1d1f}
 .nav-cta{
-  background:#1d1d1f;color:#fff;
-  padding:.5rem 1.2rem;border-radius:980px;
-  font-size:.82rem;font-weight:500;text-decoration:none;transition:opacity .2s;
+background:#1d1d1f;color:#fff;
+padding:.5rem 1.2rem;border-radius:980px;
+font-size:.82rem;font-weight:500;text-decoration:none;transition:opacity .2s;
 }
 .nav-cta:hover{opacity:.78}
 
 /* HERO */
 .hero{
-  position:relative;height:100vh;min-height:600px;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  text-align:center;padding:52px 5vw 0;overflow:hidden;
+position:relative;height:100vh;min-height:600px;
+display:flex;flex-direction:column;
+align-items:center;justify-content:center;
+text-align:center;padding:52px 5vw 0;overflow:hidden;
 }
 .hero-img{position:absolute;inset:0;background:url('images/hero.jpg') center/cover no-repeat;z-index:0}
 .hero-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.55) 60%,rgba(0,0,0,.75) 100%);
-  z-index:1;
+position:absolute;inset:0;
+background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.55) 60%,rgba(0,0,0,.75) 100%);
+z-index:1;
 }
 .hero-content{position:relative;z-index:2}
 .hero-kicker{
-  font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(255,255,255,.6);margin-bottom:1.25rem;display:block;
+font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+color:rgba(255,255,255,.6);margin-bottom:1.25rem;display:block;
 }
 .hero h1{
-  font-size:clamp(3rem,8vw,7rem);font-weight:700;
-  letter-spacing:-.05em;line-height:.98;
-  color:#fff;max-width:860px;margin-bottom:1.5rem;
+font-size:clamp(3rem,8vw,7rem);font-weight:700;
+letter-spacing:-.05em;line-height:.98;
+color:#fff;max-width:860px;margin-bottom:1.5rem;
 }
 .hero h1 em{font-style:italic;font-weight:200;color:rgba(255,255,255,.65);display:block;font-size:.85em}
 .hero-sub{
-  font-size:clamp(1rem,1.8vw,1.2rem);font-weight:300;
-  color:rgba(255,255,255,.7);max-width:480px;
-  margin:0 auto 2.5rem;line-height:1.6;
+font-size:clamp(1rem,1.8vw,1.2rem);font-weight:300;
+color:rgba(255,255,255,.7);max-width:480px;
+margin:0 auto 2.5rem;line-height:1.6;
 }
 .hero-btns{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
 .btn-white{
-  background:#fff;color:#1d1d1f;border:none;
-  padding:.78rem 1.8rem;border-radius:980px;
-  font-size:.9rem;font-weight:500;cursor:pointer;
-  text-decoration:none;transition:opacity .2s;
+background:#fff;color:#1d1d1f;border:none;
+padding:.78rem 1.8rem;border-radius:980px;
+font-size:.9rem;font-weight:500;cursor:pointer;
+text-decoration:none;transition:opacity .2s;
 }
 .btn-white:hover{opacity:.85}
 .btn-outline-white{
-  background:transparent;color:#fff;
-  border:1px solid rgba(255,255,255,.4);
-  padding:.78rem 1.8rem;border-radius:980px;
-  font-size:.9rem;font-weight:400;cursor:pointer;
-  text-decoration:none;transition:all .2s;
+background:transparent;color:#fff;
+border:1px solid rgba(255,255,255,.4);
+padding:.78rem 1.8rem;border-radius:980px;
+font-size:.9rem;font-weight:400;cursor:pointer;
+text-decoration:none;transition:all .2s;
 }
 .btn-outline-white:hover{border-color:rgba(255,255,255,.8)}
 
-/* COUNTDOWN */
+/* COUNTDOWN - DÜZELTİLDİ */
 .countdown-bar{
-  background:#1d1d1f;
-  padding:.9rem 5vw;
-  display:flex;align-items:center;justify-content:center;gap:1.5rem;
-  flex-wrap:wrap;
+background:#1d1d1f;
+padding:1rem 5vw;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:1.2rem;
+flex-wrap:wrap;
+text-align:center;
 }
-.cd-label{font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.cd-units{display:flex;gap:1rem;align-items:center}
-.cd-unit{text-align:center}
+.cd-label{
+font-size:.78rem;
+font-weight:500;
+letter-spacing:.08em;
+text-transform:uppercase;
+color:rgba(255,255,255,.65);
+white-space:nowrap;
+}
+.cd-units{
+display:flex;
+align-items:center;
+gap:0.8rem;
+flex-wrap:wrap;
+justify-content:center;
+}
+.cd-unit{
+text-align:center;
+min-width:65px;
+}
 .cd-num{
-  font-size:1.5rem;font-weight:700;color:#fff;
-  letter-spacing:-.03em;display:block;line-height:1;font-variant-numeric:tabular-nums;
+font-size:1.65rem;
+font-weight:700;
+color:#fff;
+letter-spacing:-.03em;
+display:block;
+line-height:1;
+font-variant-numeric:tabular-nums;
 }
-.cd-sub{font-size:.6rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-top:.2rem;display:block}
-.cd-sep{font-size:1.2rem;color:rgba(255,255,255,.2);margin-bottom:.8rem}
+.cd-sub{
+font-size:.62rem;
+color:rgba(255,255,255,.45);
+text-transform:uppercase;
+letter-spacing:.06em;
+margin-top:4px;
+display:block;
+}
+.cd-sep{
+font-size:1.4rem;
+color:rgba(255,255,255,.25);
+margin:0 4px;
+}
 
 /* SCAN */
 .scan-section{display:grid;grid-template-columns:1fr 1fr;min-height:580px}
 .scan-img{background:url('images/scan.jpg') center/cover no-repeat}
 .scan-text{
-  background:#f5f5f7;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:80px 6vw;
+background:#f5f5f7;
+display:flex;flex-direction:column;justify-content:center;
+padding:80px 6vw;
 }
 .eyebrow{
-  font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(29,29,31,.4);display:block;margin-bottom:1rem;
+font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+color:rgba(29,29,31,.4);display:block;margin-bottom:1rem;
 }
 .scan-text h2{
-  font-size:clamp(2rem,3.5vw,3rem);font-weight:600;
-  letter-spacing:-.03em;line-height:1.08;color:#1d1d1f;margin-bottom:1.25rem;
+font-size:clamp(2rem,3.5vw,3rem);font-weight:600;
+letter-spacing:-.03em;line-height:1.08;color:#1d1d1f;margin-bottom:1.25rem;
 }
 .scan-text p{font-size:1rem;font-weight:300;color:rgba(29,29,31,.6);line-height:1.75;max-width:420px}
 
@@ -116,17 +152,17 @@ nav{
 .how-section{background:#fff;padding:100px 5vw}
 .how-header{text-align:center;margin-bottom:4rem}
 .how-header h2{
-  font-size:clamp(2rem,4vw,3.5rem);font-weight:600;
-  letter-spacing:-.04em;color:#1d1d1f;margin-bottom:.75rem;
+font-size:clamp(2rem,4vw,3.5rem);font-weight:600;
+letter-spacing:-.04em;color:#1d1d1f;margin-bottom:.75rem;
 }
 .how-header p{font-size:1.05rem;font-weight:300;color:rgba(29,29,31,.5);max-width:480px;margin:0 auto}
 .how-img{width:100%;max-width:1000px;margin:0 auto 4rem;border-radius:20px;overflow:hidden;display:block}
 .how-img img{width:100%;height:420px;object-fit:cover;display:block}
 .how-steps{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:1px;background:rgba(0,0,0,.06);
-  border:1px solid rgba(0,0,0,.06);border-radius:18px;overflow:hidden;
-  max-width:1000px;margin:0 auto;
+display:grid;grid-template-columns:repeat(3,1fr);
+gap:1px;background:rgba(0,0,0,.06);
+border:1px solid rgba(0,0,0,.06);border-radius:18px;overflow:hidden;
+max-width:1000px;margin:0 auto;
 }
 .how-step{background:#fff;padding:2.5rem 2rem}
 .step-num{font-size:.7rem;font-weight:500;letter-spacing:.08em;color:rgba(29,29,31,.3);display:block;margin-bottom:1.5rem}
@@ -135,24 +171,24 @@ nav{
 
 /* PHONE */
 .phone-section{
-  background:#f5f5f7;
-  display:grid;grid-template-columns:1fr 1fr;
-  min-height:680px;align-items:center;
+background:#f5f5f7;
+display:grid;grid-template-columns:1fr 1fr;
+min-height:680px;align-items:center;
 }
 .phone-img{display:flex;align-items:center;justify-content:center;padding:60px 4vw}
 .phone-img img{
-  max-width:420px;width:100%;
-  filter:drop-shadow(0 40px 80px rgba(0,0,0,.18));
+max-width:420px;width:100%;
+filter:drop-shadow(0 40px 80px rgba(0,0,0,.18));
 }
 .phone-text{padding:80px 6vw 80px 4vw}
 .phone-text h2{
-  font-size:clamp(2rem,3.5vw,3rem);font-weight:600;
-  letter-spacing:-.03em;line-height:1.08;color:#1d1d1f;margin-bottom:1.5rem;
+font-size:clamp(2rem,3.5vw,3rem);font-weight:600;
+letter-spacing:-.03em;line-height:1.08;color:#1d1d1f;margin-bottom:1.5rem;
 }
 .feat-item{display:flex;gap:.9rem;margin-bottom:1.5rem;align-items:flex-start}
 .fi-icon{
-  width:30px;height:30px;flex-shrink:0;border-radius:7px;
-  background:rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;margin-top:.1rem;
+width:30px;height:30px;flex-shrink:0;border-radius:7px;
+background:rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;margin-top:.1rem;
 }
 .fi-h{font-size:.875rem;font-weight:500;color:#1d1d1f;margin-bottom:.2rem}
 .fi-p{font-size:.8rem;color:rgba(29,29,31,.45);line-height:1.6}
@@ -161,29 +197,29 @@ nav{
 .mission-section{background:#1d1d1f;padding:120px 5vw;text-align:center}
 .mission-inner{max-width:680px;margin:0 auto}
 .mission-kicker{
-  font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(245,245,247,.3);display:block;margin-bottom:2rem;
+font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+color:rgba(245,245,247,.3);display:block;margin-bottom:2rem;
 }
 .mission-q{
-  font-size:clamp(1.8rem,4vw,3rem);font-weight:300;
-  letter-spacing:-.025em;line-height:1.3;
-  color:rgba(245,245,247,.85);margin-bottom:3rem;font-style:italic;
+font-size:clamp(1.8rem,4vw,3rem);font-weight:300;
+letter-spacing:-.025em;line-height:1.3;
+color:rgba(245,245,247,.85);margin-bottom:3rem;font-style:italic;
 }
 .mission-q strong{font-weight:700;font-style:normal;color:#f5f5f7}
 .btn-light{
-  background:#f5f5f7;color:#1d1d1f;border:none;
-  padding:.82rem 2rem;border-radius:980px;
-  font-size:.95rem;font-weight:500;cursor:pointer;
-  text-decoration:none;transition:opacity .2s;
+background:#f5f5f7;color:#1d1d1f;border:none;
+padding:.82rem 2rem;border-radius:980px;
+font-size:.95rem;font-weight:500;cursor:pointer;
+text-decoration:none;transition:opacity .2s;
 }
 .btn-light:hover{opacity:.85}
 
 /* FOOTER */
 footer{background:#f5f5f7;border-top:1px solid rgba(0,0,0,.08);padding:2rem 5vw}
 .footer-inner{
-  max-width:1100px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:1rem;
+max-width:1100px;margin:0 auto;
+display:flex;align-items:center;justify-content:space-between;
+flex-wrap:wrap;gap:1rem;
 }
 .footer-logo{font-size:.85rem;font-weight:600;color:rgba(29,29,31,.5)}
 .footer-links{display:flex;gap:1.5rem;list-style:none;flex-wrap:wrap}
@@ -195,14 +231,14 @@ footer{background:#f5f5f7;border-top:1px solid rgba(0,0,0,.08);padding:2rem 5vw}
 .waitlist-page{display:none;min-height:100vh;background:#f5f5f7;padding:100px 5vw 80px}
 .wl-inner{max-width:560px;margin:0 auto}
 .wl-back{
-  display:inline-flex;align-items:center;gap:.4rem;
-  font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none;
-  margin-bottom:3rem;transition:color .2s;
+display:inline-flex;align-items:center;gap:.4rem;
+font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none;
+margin-bottom:3rem;transition:color .2s;
 }
 .wl-back:hover{color:#1d1d1f}
 .wl-inner h1{
-  font-size:clamp(2rem,4vw,3rem);font-weight:600;
-  letter-spacing:-.035em;color:#1d1d1f;margin-bottom:.75rem;
+font-size:clamp(2rem,4vw,3rem);font-weight:600;
+letter-spacing:-.035em;color:#1d1d1f;margin-bottom:.75rem;
 }
 .wl-sub{font-size:1rem;font-weight:300;color:rgba(29,29,31,.5);margin-bottom:3rem;line-height:1.6}
 .form-group{margin-bottom:1.25rem}
@@ -210,33 +246,33 @@ footer{background:#f5f5f7;border-top:1px solid rgba(0,0,0,.08);padding:2rem 5vw}
 label{display:block;font-size:.78rem;font-weight:500;color:rgba(29,29,31,.55);margin-bottom:.4rem;letter-spacing:.02em}
 label .req{color:#ff453a;margin-left:.2rem}
 input,select{
-  width:100%;background:#fff;
-  border:1px solid rgba(0,0,0,.12);
-  border-radius:10px;padding:.82rem 1rem;
-  color:#1d1d1f;font-size:.9rem;font-family:'Inter',sans-serif;
-  outline:none;transition:border-color .2s;
-  -webkit-appearance:none;appearance:none;
+width:100%;background:#fff;
+border:1px solid rgba(0,0,0,.12);
+border-radius:10px;padding:.82rem 1rem;
+color:#1d1d1f;font-size:.9rem;font-family:'Inter',sans-serif;
+outline:none;transition:border-color .2s;
+-webkit-appearance:none;appearance:none;
 }
 input::placeholder{color:rgba(29,29,31,.28)}
 input:focus,select:focus{border-color:#1d1d1f}
 select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231d1d1f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231d1d1f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;
 }
 .btn-submit{
-  width:100%;background:#1d1d1f;color:#fff;border:none;
-  padding:.9rem;border-radius:10px;
-  font-size:.95rem;font-weight:500;cursor:pointer;
-  transition:opacity .2s;margin-top:.5rem;font-family:'Inter',sans-serif;
+width:100%;background:#1d1d1f;color:#fff;border:none;
+padding:.9rem;border-radius:10px;
+font-size:.95rem;font-weight:500;cursor:pointer;
+transition:opacity .2s;margin-top:.5rem;font-family:'Inter',sans-serif;
 }
 .btn-submit:hover{opacity:.78}
 .wl-note{font-size:.75rem;color:rgba(29,29,31,.3);text-align:center;margin-top:1rem}
 .success-msg{display:none;text-align:center;padding:3rem 0}
 .success-msg .check{
-  width:56px;height:56px;border-radius:50%;
-  background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.2);
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 1.5rem;font-size:1.4rem;
+width:56px;height:56px;border-radius:50%;
+background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.2);
+display:flex;align-items:center;justify-content:center;
+margin:0 auto 1.5rem;font-size:1.4rem;
 }
 .success-msg h2{font-size:1.5rem;font-weight:600;color:#1d1d1f;margin-bottom:.6rem}
 .success-msg p{font-size:.9rem;color:rgba(29,29,31,.5)}
@@ -245,34 +281,34 @@ select{
 .about-page{display:none;min-height:100vh;background:#fff;padding:100px 5vw 80px}
 .about-inner{max-width:760px;margin:0 auto}
 .about-hero{
-  background:#1d1d1f;border-radius:20px;padding:60px 5vw;
-  margin-bottom:4rem;text-align:center;
+background:#1d1d1f;border-radius:20px;padding:60px 5vw;
+margin-bottom:4rem;text-align:center;
 }
 .about-hero h1{
-  font-size:clamp(2rem,5vw,4rem);font-weight:700;
-  letter-spacing:-.04em;color:#fff;margin-bottom:1rem;line-height:1.05;
+font-size:clamp(2rem,5vw,4rem);font-weight:700;
+letter-spacing:-.04em;color:#fff;margin-bottom:1rem;line-height:1.05;
 }
 .about-hero p{font-size:1.1rem;font-weight:300;color:rgba(245,245,247,.6);line-height:1.7;max-width:520px;margin:0 auto}
 .about-section{margin-bottom:3.5rem}
 .about-section h2{
-  font-size:1.4rem;font-weight:600;color:#1d1d1f;
-  letter-spacing:-.02em;margin-bottom:1rem;
+font-size:1.4rem;font-weight:600;color:#1d1d1f;
+letter-spacing:-.02em;margin-bottom:1rem;
 }
 .about-section p{font-size:.95rem;color:rgba(29,29,31,.6);line-height:1.8;margin-bottom:.75rem}
 .about-values{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.5rem}
 .about-val{
-  background:#f5f5f7;border-radius:12px;padding:1.5rem;
+background:#f5f5f7;border-radius:12px;padding:1.5rem;
 }
 .about-val h3{font-size:.9rem;font-weight:600;color:#1d1d1f;margin-bottom:.4rem}
 .about-val p{font-size:.82rem;color:rgba(29,29,31,.5);line-height:1.6}
 .tech-stack{
-  display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;
+display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;
 }
 .tech-tag{
-  font-size:.75rem;font-weight:500;
-  background:#f5f5f7;color:rgba(29,29,31,.6);
-  border:1px solid rgba(0,0,0,.08);
-  padding:.3rem .75rem;border-radius:980px;
+font-size:.75rem;font-weight:500;
+background:#f5f5f7;color:rgba(29,29,31,.6);
+border:1px solid rgba(0,0,0,.08);
+padding:.3rem .75rem;border-radius:980px;
 }
 
 /* PRIVACY PAGE */
@@ -288,14 +324,14 @@ select{
 
 /* RESPONSIVE */
 @media(max-width:860px){
-  .scan-section,.phone-section{grid-template-columns:1fr}
-  .scan-img{height:300px}
-  .how-steps{grid-template-columns:1fr}
-  .nav-links{display:none}
-  .form-row{grid-template-columns:1fr}
-  .about-values{grid-template-columns:1fr}
-  .cd-units{gap:.6rem}
-  .cd-num{font-size:1.2rem}
+.scan-section,.phone-section{grid-template-columns:1fr}
+.scan-img{height:300px}
+.how-steps{grid-template-columns:1fr}
+.nav-links{display:none}
+.form-row{grid-template-columns:1fr}
+.about-values{grid-template-columns:1fr}
+.cd-units{gap:.6rem}
+.cd-num{font-size:1.35rem}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -304,362 +340,307 @@ select{
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo" onclick="showMain(event)">SolarPeakAI</a>
-  <ul class="nav-links">
-    <li><a href="#nasil">Nasıl Çalışır</a></li>
-    <li><a href="#uygulama">Uygulama</a></li>
-    <li><a href="#misyon">Misyon</a></li>
-    <li><a href="#" onclick="showAbout(event)">Hakkımızda</a></li>
-    <li><a href="#iletisim">İletişim</a></li>
-  </ul>
-  <a href="#" onclick="showWaitlist(event)" class="nav-cta">Erken Erişim</a>
+<a href="#" class="logo" onclick="showMain(event)">SolarPeakAI</a>
+<ul class="nav-links">
+<li><a href="#nasil">Nasıl Çalışır</a></li>
+<li><a href="#uygulama">Uygulama</a></li>
+<li><a href="#misyon">Misyon</a></li>
+<li><a href="#" onclick="showAbout(event)">Hakkımızda</a></li>
+<li><a href="#iletisim">İletişim</a></li>
+</ul>
+<a href="#" onclick="showWaitlist(event)" class="nav-cta">Erken Erişim</a>
 </nav>
 
-<!-- ═══ ANA SAYFA ═══ -->
+<!-- ANA SAYFA -->
 <div id="main-page">
-
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-img"></div>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <span class="hero-kicker">Yapay Zeka Destekli Panel Denetimi</span>
-    <h1>
-      Güneş paneliniz
-      <em>ne kadar verimli?</em>
-    </h1>
-    <p class="hero-sub">Drone ve yapay zeka ile panel başına hasar tespiti. Kaybettiğiniz geliri geri kazanın.</p>
-    <div class="hero-btns">
-      <a href="#" onclick="showWaitlist(event)" class="btn-white">Erken Erişime Katıl</a>
-      <a href="#nasil" class="btn-outline-white">Nasıl Çalışır →</a>
-    </div>
-  </div>
+<div class="hero-img"></div>
+<div class="hero-overlay"></div>
+<div class="hero-content">
+<span class="hero-kicker">Yapay Zeka Destekli Panel Denetimi</span>
+<h1>Güneş paneliniz <em>ne kadar verimli?</em></h1>
+<p class="hero-sub">Drone ve yapay zeka ile panel başına hasar tespiti. Kaybettiğiniz geliri geri kazanın.</p>
+<div class="hero-btns">
+<a href="#" onclick="showWaitlist(event)" class="btn-white">Erken Erişime Katıl</a>
+<a href="#nasil" class="btn-outline-white">Nasıl Çalışır →</a>
+</div>
+</div>
 </section>
 
 <!-- COUNTDOWN -->
 <div class="countdown-bar">
-  <span class="cd-label">Platform lansmanına</span>
-  <div class="cd-units">
-    <div class="cd-unit"><span class="cd-num" id="cd-days">00</span><span class="cd-sub">Gün</span></div>
-    <span class="cd-sep">:</span>
-    <div class="cd-unit"><span class="cd-num" id="cd-hours">00</span><span class="cd-sub">Saat</span></div>
-    <span class="cd-sep">:</span>
-    <div class="cd-unit"><span class="cd-num" id="cd-mins">00</span><span class="cd-sub">Dakika</span></div>
-    <span class="cd-sep">:</span>
-    <div class="cd-unit"><span class="cd-num" id="cd-secs">00</span><span class="cd-sub">Saniye</span></div>
-  </div>
-  <span class="cd-label">kaldı</span>
+<span class="cd-label">Platform lansmanına</span>
+<div class="cd-units">
+<div class="cd-unit"><span class="cd-num" id="cd-days">00</span><span class="cd-sub">Gün</span></div>
+<span class="cd-sep">:</span>
+<div class="cd-unit"><span class="cd-num" id="cd-hours">00</span><span class="cd-sub">Saat</span></div>
+<span class="cd-sep">:</span>
+<div class="cd-unit"><span class="cd-num" id="cd-mins">00</span><span class="cd-sub">Dakika</span></div>
+<span class="cd-sep">:</span>
+<div class="cd-unit"><span class="cd-num" id="cd-secs">00</span><span class="cd-sub">Saniye</span></div>
+</div>
+<span class="cd-label">kaldı</span>
 </div>
 
 <!-- SCAN -->
 <div class="scan-section" id="tarama">
-  <div class="scan-img"></div>
-  <div class="scan-text reveal">
-    <span class="eyebrow">Akıllı Denetim</span>
-    <h2>Her paneli görür.<br>Hiçbirini kaçırmaz.</h2>
-    <p>Güneş panellerinizdeki toz, çatlak ve kuş pisliği faturanızı sessizce düşürür. Yapay zeka destekli sistemimiz drone görüntülerini analiz ederek her hasarı panel düzeyinde tespit eder ve size raporlar.</p>
-  </div>
+<div class="scan-img"></div>
+<div class="scan-text reveal">
+<span class="eyebrow">Akıllı Denetim</span>
+<h2>Her paneli görür.<br>Hiçbirini kaçırmaz.</h2>
+<p>Güneş panellerinizdeki toz, çatlak ve kuş pisliği faturanızı sessizce düşürür. Yapay zeka destekli sistemimiz drone görüntülerini analiz ederek her hasarı panel düzeyinde tespit eder ve size raporlar.</p>
+</div>
 </div>
 
 <!-- HOW IT WORKS -->
 <section class="how-section" id="nasil">
-  <div class="how-header reveal">
-    <span class="eyebrow">Süreç</span>
-    <h2>Üç adımda tam denetim.</h2>
-    <p>Basit, hızlı ve kesin. Aynı gün rapor.</p>
-  </div>
-  <div class="how-img reveal">
-    <img src="images/how.jpg" alt="Drone, yapay zeka analizi ve mobil rapor süreci"/>
-  </div>
-  <div class="how-steps reveal">
-    <div class="how-step">
-      <span class="step-num">01</span>
-      <h3>Drone Taraması</h3>
-      <p>Profesyonel pilotumuz arsanıza gelir. GPS güdümlü rota ile tüm panelleriniz sistematik biçimde taranır.</p>
-    </div>
-    <div class="how-step">
-      <span class="step-num">02</span>
-      <h3>Yapay Zeka Analizi</h3>
-      <p>İki katmanlı YOLO modelimiz önce paneli bulur, ardından kir, çatlak ve kuş pisliğini milimetre hassasiyetiyle sınıflandırır.</p>
-    </div>
-    <div class="how-step">
-      <span class="step-num">03</span>
-      <h3>Aynı Gün Rapor</h3>
-      <p>Harita üzerinde işaretlenmiş, öncelik sıralı ve gelir etkisi hesaplanmış rapor, uçuş günü uygulamanıza gelir.</p>
-    </div>
-  </div>
+<div class="how-header reveal">
+<span class="eyebrow">Süreç</span>
+<h2>Üç adımda tam denetim.</h2>
+<p>Basit, hızlı ve kesin. Aynı gün rapor.</p>
+</div>
+<div class="how-img reveal">
+<img src="images/how.jpg" alt="Drone, yapay zeka analizi ve mobil rapor süreci"/>
+</div>
+<div class="how-steps reveal">
+<div class="how-step">
+<span class="step-num">01</span>
+<h3>Drone Taraması</h3>
+<p>Profesyonel pilotumuz arsanıza gelir. GPS güdümlü rota ile tüm panelleriniz sistematik biçimde taranır.</p>
+</div>
+<div class="how-step">
+<span class="step-num">02</span>
+<h3>Yapay Zeka Analizi</h3>
+<p>İki katmanlı YOLO modelimiz önce paneli bulur, ardından kir, çatlak ve kuş pisliğini milimetre hassasiyetiyle sınıflandırır.</p>
+</div>
+<div class="how-step">
+<span class="step-num">03</span>
+<h3>Aynı Gün Rapor</h3>
+<p>Harita üzerinde işaretlenmiş, öncelik sıralı ve gelir etkisi hesaplanmış rapor, uçuş günü uygulamanıza gelir.</p>
+</div>
+</div>
 </section>
 
 <!-- PHONE -->
 <section class="phone-section" id="uygulama">
-  <div class="phone-img reveal">
-    <img src="images/phone.jpg" alt="SolarPeakAI mobil uygulama"/>
-  </div>
-  <div class="phone-text reveal d1">
-    <span class="eyebrow">Mobil Uygulama</span>
-    <h2>Her şey<br>cebinizde.</h2>
-    <div class="feat-item">
-      <div class="fi-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <div><div class="fi-h">Canlı Tarama Takibi</div><p class="fi-p">Drone uçarken her panel anlık olarak haritada güncellenir.</p></div>
-    </div>
-    <div class="feat-item">
-      <div class="fi-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      </div>
-      <div><div class="fi-h">Gelir Etkisi Hesaplama</div><p class="fi-p">Her hasar için tahmini yıllık kayıp otomatik hesaplanır. Neye öncelik vereceğinizi sayılarla bilin.</p></div>
-    </div>
-    <div class="feat-item">
-      <div class="fi-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
-      </div>
-      <div><div class="fi-h">Akıllı Bildirimler</div><p class="fi-p">Yeni hasar tespiti ve bakım hatırlatmaları doğrudan telefonunuza gelir.</p></div>
-    </div>
-    <div class="feat-item">
-      <div class="fi-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <div><div class="fi-h">Performans Trendleri</div><p class="fi-p">Panellerinizin zaman içindeki sağlık durumunu takip edin. Bozulmayı başlamadan önce görün.</p></div>
-    </div>
-  </div>
+<div class="phone-img reveal">
+<img src="images/phone.jpg" alt="SolarPeakAI mobil uygulama"/>
+</div>
+<div class="phone-text reveal d1">
+<span class="eyebrow">Mobil Uygulama</span>
+<h2>Her şey<br>cebinizde.</h2>
+<div class="feat-item">
+<div class="fi-icon">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+</div>
+<div><div class="fi-h">Canlı Tarama Takibi</div><p class="fi-p">Drone uçarken her panel anlık olarak haritada güncellenir.</p></div>
+</div>
+<div class="feat-item">
+<div class="fi-icon">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+</div>
+<div><div class="fi-h">Gelir Etkisi Hesaplama</div><p class="fi-p">Her hasar için tahmini yıllık kayıp otomatik hesaplanır. Neye öncelik vereceğinizi sayılarla bilin.</p></div>
+</div>
+<div class="feat-item">
+<div class="fi-icon">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+</div>
+<div><div class="fi-h">Akıllı Bildirimler</div><p class="fi-p">Yeni hasar tespiti ve bakım hatırlatmaları doğrudan telefonunuza gelir.</p></div>
+</div>
+<div class="feat-item">
+<div class="fi-icon">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+</div>
+<div><div class="fi-h">Performans Trendleri</div><p class="fi-p">Panellerinizin zaman içindeki sağlık durumunu takip edin. Bozulmayı başlamadan önce görün.</p></div>
+</div>
+</div>
 </section>
 
 <!-- MISSION -->
 <section class="mission-section" id="misyon">
-  <div class="mission-inner">
-    <span class="mission-kicker reveal">Misyonumuz</span>
-    <p class="mission-q reveal">
-      Güneş enerjisi Türkiye'nin geleceği.<br>
-      <strong>Kaybettiğiniz her kilovat bizim sorunumuz.</strong>
-    </p>
-    <a href="#" onclick="showWaitlist(event)" class="btn-light reveal">Erken Erişime Katıl</a>
-  </div>
+<div class="mission-inner">
+<span class="mission-kicker reveal">Misyonumuz</span>
+<p class="mission-q reveal">
+Güneş enerjisi Türkiye'nin geleceği.<br>
+<strong>Kaybettiğiniz her kilovat bizim sorunumuz.</strong>
+</p>
+<a href="#" onclick="showWaitlist(event)" class="btn-light reveal">Erken Erişime Katıl</a>
+</div>
 </section>
 
 <!-- CONTACT -->
 <section style="padding:80px 5vw;text-align:center;background:#f5f5f7" id="iletisim">
-  <span class="eyebrow reveal" style="text-align:center;display:block">İletişim</span>
-  <h2 class="reveal" style="font-size:1.8rem;font-weight:600;letter-spacing:-.025em;color:#1d1d1f;margin-bottom:.6rem">Sorularınız için</h2>
-  <p class="reveal" style="font-size:.9rem;color:rgba(29,29,31,.45);margin-bottom:1.75rem">Demo talebi veya iş birliği için bize yazın.</p>
-  <a href="mailto:info@solarpeakai.com" class="reveal" style="color:#1d1d1f;font-size:.9rem;text-decoration:none;border-bottom:1px solid rgba(29,29,31,.2);padding-bottom:.15rem">info@solarpeakai.com</a>
+<span class="eyebrow reveal" style="text-align:center;display:block">İletişim</span>
+<h2 class="reveal" style="font-size:1.8rem;font-weight:600;letter-spacing:-.025em;color:#1d1d1f;margin-bottom:.6rem">Sorularınız için</h2>
+<p class="reveal" style="font-size:.9rem;color:rgba(29,29,31,.45);margin-bottom:1.75rem">Demo talebi veya iş birliği için bize yazın.</p>
+<a href="mailto:info@solarpeakai.com" class="reveal" style="color:#1d1d1f;font-size:.9rem;text-decoration:none;border-bottom:1px solid rgba(29,29,31,.2);padding-bottom:.15rem">info@solarpeakai.com</a>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-inner">
-    <span class="footer-logo">SolarPeakAI</span>
-    <ul class="footer-links">
-      <li><a href="#" onclick="showAbout(event)">Hakkımızda</a></li>
-      <li><a href="#" onclick="showPrivacy(event)">Gizlilik Politikası</a></li>
-      <li><a href="#" onclick="showWaitlist(event)">Erken Erişim</a></li>
-      <li><a href="#iletisim">İletişim</a></li>
-    </ul>
-    <p class="footer-copy">© 2026 SolarPeakAI. Tüm hakları saklıdır.</p>
-  </div>
+<div class="footer-inner">
+<span class="footer-logo">SolarPeakAI</span>
+<ul class="footer-links">
+<li><a href="#" onclick="showAbout(event)">Hakkımızda</a></li>
+<li><a href="#" onclick="showPrivacy(event)">Gizlilik Politikası</a></li>
+<li><a href="#" onclick="showWaitlist(event)">Erken Erişim</a></li>
+<li><a href="#iletisim">İletişim</a></li>
+</ul>
+<p class="footer-copy">© 2026 SolarPeakAI. Tüm hakları saklıdır.</p>
+</div>
 </footer>
+</div>
 
-</div><!-- /main-page -->
-
-<!-- ═══ ERKEN ERİŞİM SAYFASI ═══ -->
+<!-- ERKEN ERİŞİM SAYFASI -->
 <div class="waitlist-page" id="waitlist-page">
-  <div class="wl-inner">
-    <a href="#" onclick="showMain(event)" class="wl-back">← Geri dön</a>
-    <h1>Erken Erişim</h1>
-    <p class="wl-sub">Platform yayına girdiğinde ilk siz haberdar olun. Erken erişim listesindeki kullanıcılara özel fiyatlandırma uygulanacak.</p>
-    <div id="wl-form-wrap">
-      <form onsubmit="handleWaitlist(event)">
-        <div class="form-row">
-          <div>
-            <label>Ad <span class="req">*</span></label>
-            <input type="text" placeholder="Adınız" required/>
-          </div>
-          <div>
-            <label>Soyad <span class="req">*</span></label>
-            <input type="text" placeholder="Soyadınız" required/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>E-posta <span class="req">*</span></label>
-          <input type="email" placeholder="ornek@sirket.com" required/>
-        </div>
-        <div class="form-group">
-          <label>Telefon <span class="req">*</span></label>
-          <input type="tel" placeholder="+90 5XX XXX XX XX" required/>
-        </div>
-        <div class="form-group">
-          <label>Şirket / İşletme Adı</label>
-          <input type="text" placeholder="Şirketinizin adı (opsiyonel)"/>
-        </div>
-        <div class="form-group">
-          <label>Rolünüz</label>
-          <select>
-            <option value="" disabled selected>Seçiniz</option>
-            <option>GES Sahibi / Yatırımcı</option>
-            <option>Şirket Yöneticisi</option>
-            <option>GES Bakım Firması</option>
-            <option>Mühendis / Teknik Uzman</option>
-            <option>Diğer</option>
-          </select>
-        </div>
-        <button type="submit" class="btn-submit">Listeye Katıl</button>
-        <p class="wl-note">Spam yok. İstediğiniz zaman çıkabilirsiniz.</p>
-      </form>
-    </div>
-    <div class="success-msg" id="success-msg">
-      <div class="check">✓</div>
-      <h2>Kaydınız Alındı</h2>
-      <p>Erken erişim listesine başarıyla eklendiniz.<br>Platform hazır olduğunda sizi ilk biz arayacağız.</p>
-    </div>
-  </div>
+<div class="wl-inner">
+<a href="#" onclick="showMain(event)" class="wl-back">← Geri dön</a>
+<h1>Erken Erişim</h1>
+<p class="wl-sub">Platform yayına girdiğinde ilk siz haberdar olun. Erken erişim listesindeki kullanıcılara özel fiyatlandırma uygulanacak.</p>
+<div id="wl-form-wrap">
+<form onsubmit="handleWaitlist(event)">
+<div class="form-row">
+<div><label>Ad <span class="req">*</span></label><input type="text" placeholder="Adınız" required/></div>
+<div><label>Soyad <span class="req">*</span></label><input type="text" placeholder="Soyadınız" required/></div>
+</div>
+<div class="form-group"><label>E-posta <span class="req">*</span></label><input type="email" placeholder="ornek@sirket.com" required/></div>
+<div class="form-group"><label>Telefon <span class="req">*</span></label><input type="tel" placeholder="+90 5XX XXX XX XX" required/></div>
+<div class="form-group"><label>Şirket / İşletme Adı</label><input type="text" placeholder="Şirketinizin adı (opsiyonel)"/></div>
+<div class="form-group">
+<label>Rolünüz</label>
+<select>
+<option value="" disabled selected>Seçiniz</option>
+<option>GES Sahibi / Yatırımcı</option>
+<option>Şirket Yöneticisi</option>
+<option>GES Bakım Firması</option>
+<option>Mühendis / Teknik Uzman</option>
+<option>Diğer</option>
+</select>
+</div>
+<button type="submit" class="btn-submit">Listeye Katıl</button>
+<p class="wl-note">Spam yok. İstediğiniz zaman çıkabilirsiniz.</p>
+</form>
+</div>
+<div class="success-msg" id="success-msg">
+<div class="check">✓</div>
+<h2>Kaydınız Alındı</h2>
+<p>Erken erişim listesine başarıyla eklendiniz.<br>Platform hazır olduğunda sizi ilk biz arayacağız.</p>
+</div>
+</div>
 </div>
 
-<!-- ═══ HAKKIMIZDA SAYFASI ═══ -->
+<!-- HAKKIMIZDA SAYFASI -->
 <div class="about-page" id="about-page">
-  <div class="about-inner">
-    <a href="#" onclick="showMain(event)" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none;margin-bottom:3rem">← Geri dön</a>
-
-    <div class="about-hero">
-      <h1>Türkiye'nin güneş enerjisini<br>korumak için buradayız.</h1>
-      <p>SolarPeakAI, güneş enerjisi yatırımcılarının panel hasarlarını zamanında tespit edip gelir kayıplarını önlemesi için kurulmuş bir yapay zeka platformudur.</p>
-    </div>
-
-    <div class="about-section">
-      <h2>Hikayemiz</h2>
-      <p>Türkiye'de on binlerce güneş enerjisi tesisi var. Ancak bu tesislerin büyük çoğunluğu hiçbir zaman profesyonel bir denetimden geçmiyor. Panel üzerindeki görünmez bir çatlak, aylarca fark edilmeden üretim kaybına yol açabiliyor.</p>
-      <p>Bu sorunu çözmek için yola çıktık. Drone teknolojisi ve yapay zekayı bir araya getirerek Türkiye'ye özel, erişilebilir ve lokalize bir denetim platformu geliştiriyoruz.</p>
-    </div>
-
-    <div class="about-section">
-      <h2>Ne Yapıyoruz</h2>
-      <p>SolarPeakAI, drone görüntüleri üzerinde çalışan iki katmanlı bir yapay zeka modeliyle güneş panellerindeki kir, çatlak ve kuş pisliğini panel düzeyinde tespit eder. Tespit edilen her hasar için tahmini gelir kaybı hesaplanır ve tesis sahibine aynı gün mobil uygulama üzerinden raporlanır.</p>
-    </div>
-
-    <div class="about-section">
-      <h2>Değerlerimiz</h2>
-      <div class="about-values">
-        <div class="about-val">
-          <h3>Dürüstlük</h3>
-          <p>Müşterilerimize gerçek veriler sunarız. Tahmin değil, ölçüm.</p>
-        </div>
-        <div class="about-val">
-          <h3>Erişilebilirlik</h3>
-          <p>Büyük şirketlere değil, küçük ve orta ölçekli tesis sahiplerine odaklanıyoruz.</p>
-        </div>
-        <div class="about-val">
-          <h3>Yerellik</h3>
-          <p>Türkiye pazarını tanıyan, Türkçe konuşan, yerel ihtiyaçlara odaklanan bir ekibiz.</p>
-        </div>
-        <div class="about-val">
-          <h3>Sürdürülebilirlik</h3>
-          <p>Güneş enerjisi verimli çalıştığında hem yatırımcı kazanır hem çevre kazanır.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="about-section">
-      <h2>Teknoloji</h2>
-      <p>Sistemimiz, açık kaynak veri setleri üzerinde eğitilmiş özel YOLO tabanlı modeller kullanmaktadır. Görüntü işleme pipeline'ı bulut altyapısı üzerinde çalışır; sonuçlar gerçek zamanlı olarak mobil uygulamaya iletilir.</p>
-      <div class="tech-stack">
-        <span class="tech-tag">YOLOv8</span>
-        <span class="tech-tag">Python</span>
-        <span class="tech-tag">FastAPI</span>
-        <span class="tech-tag">Flutter</span>
-        <span class="tech-tag">PostgreSQL</span>
-        <span class="tech-tag">Drone SDK</span>
-        <span class="tech-tag">Computer Vision</span>
-      </div>
-    </div>
-
-    <div class="about-section" style="text-align:center;padding:3rem 0;border-top:1px solid rgba(0,0,0,.08)">
-      <p style="font-size:.9rem;color:rgba(29,29,31,.45);margin-bottom:1.5rem">Erken erişim listesine katılın, lansmanı ilk siz öğrenin.</p>
-      <a href="#" onclick="showWaitlist(event)" style="display:inline-block;background:#1d1d1f;color:#fff;padding:.82rem 2rem;border-radius:980px;font-size:.9rem;font-weight:500;text-decoration:none">Erken Erişime Katıl</a>
-    </div>
-  </div>
+<div class="about-inner">
+<a href="#" onclick="showMain(event)" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none;margin-bottom:3rem">← Geri dön</a>
+<div class="about-hero">
+<h1>Türkiye'nin güneş enerjisini<br>korumak için buradayız.</h1>
+<p>SolarPeakAI, güneş enerjisi yatırımcılarının panel hasarlarını zamanında tespit ederek gelir kayıplarını önleyen yapay zeka destekli bir platformdur.</p>
+</div>
+<div class="about-section">
+<h2>Hikayemiz</h2>
+<p>Türkiye'de 10.000'den fazla güneş enerjisi tesisi bulunuyor. Ancak bu tesislerin büyük çoğunluğu düzenli ve profesyonel denetime tabi tutulmuyor. Küçük bir çatlak, toz birikmesi veya kuş pisliği fark edilmeden aylarca üretim kaybına yol açabiliyor ve <strong>yıllık milyonlarca TL'lik kayıp</strong> sessizce büyüyor.</p>
+<p>Biz SolarPeakAI olarak bu sorunu kökten çözmek üzere yola çıktık. Drone teknolojisi ile yapay zekayı birleştirerek, panel başına milimetrik hassasiyetle hasar tespiti yapan, Türkiye koşullarına özel bir platform geliştirdik.</p>
+</div>
+<div class="about-section">
+<h2>Amacımız</h2>
+<p>Güneş enerjisi yatırımlarını korumak ve sistem verimliliğini maksimum seviyeye çıkarmak. Çünkü her kilovat hem yatırımcı için hem de ülkemizin temiz enerji hedefleri için büyük önem taşıyor. Kaybettiğiniz her üretim, bizim için çözülmesi gereken bir sorundur.</p>
+</div>
+<div class="about-section">
+<h2>Değerlerimiz</h2>
+<div class="about-values">
+<div class="about-val"><h3>Dürüstlük</h3><p>Müşterilerimize her zaman gerçek ve ölçülebilir veriler sunarız. Tahmin değil, kesin ölçüm.</p></div>
+<div class="about-val"><h3>Erişilebilirlik</h3><p>Büyük ölçekli şirketlere değil, küçük ve orta ölçekli GES yatırımcılarına da hitap eden çözümler geliştiriyoruz.</p></div>
+<div class="about-val"><h3>Yerellik</h3><p>Türkiye iklimini, panel tiplerini ve saha koşullarını çok iyi bilen, yerel bir ekip olarak çalışıyoruz.</p></div>
+<div class="about-val"><h3>Sürdürülebilirlik</h3><p>Güneş panellerinin maksimum verimle çalışması, hem yatırımcıya hem de çevreye katkı sağlar.</p></div>
+</div>
+</div>
+<div class="about-section">
+<h2>Teknoloji</h2>
+<p>Sistemimiz, açık kaynak veri setleri üzerinde eğitilmiş özel YOLO tabanlı modeller kullanmaktadır. İki katmanlı yapay zeka mimarisi ile önce panelleri tespit ediyor, ardından kir, çatlak ve kuş pisliği gibi hasar türlerini yüksek doğrulukla sınıflandırıyor. Tüm görüntü işleme bulut altyapısı üzerinde çalışır ve sonuçlar anında mobil uygulamaya iletilir.</p>
+<div class="tech-stack">
+<span class="tech-tag">YOLOv8</span>
+<span class="tech-tag">Python</span>
+<span class="tech-tag">FastAPI</span>
+<span class="tech-tag">Flutter</span>
+<span class="tech-tag">PostgreSQL</span>
+<span class="tech-tag">Drone SDK</span>
+<span class="tech-tag">Computer Vision</span>
+</div>
+</div>
+<div class="about-section" style="text-align:center;padding:3rem 0;border-top:1px solid rgba(0,0,0,.08)">
+<p style="font-size:.9rem;color:rgba(29,29,31,.45);margin-bottom:1.5rem">Erken erişim listesine katılın, lansmanı ilk siz öğrenin.</p>
+<a href="#" onclick="showWaitlist(event)" style="display:inline-block;background:#1d1d1f;color:#fff;padding:.82rem 2rem;border-radius:980px;font-size:.9rem;font-weight:500;text-decoration:none">Erken Erişime Katıl</a>
+</div>
+</div>
 </div>
 
-<!-- ═══ GİZLİLİK SAYFASI ═══ -->
+<!-- GİZLİLİK SAYFASI -->
 <div class="privacy-page" id="privacy-page">
-  <a href="#" onclick="showMain(event)" style="display:inline-block;margin-bottom:2rem;font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none">← Geri dön</a>
-  <h1>Gizlilik Politikası</h1>
-  <p style="font-size:.78rem;color:rgba(29,29,31,.3);margin-bottom:2rem">Son güncelleme: Temmuz 2026</p>
-  <h2>Toplanan Veriler</h2>
-  <p>SolarPeakAI, erken erişim kaydı sırasında ad, soyad, e-posta, telefon, şirket adı ve rol bilgilerinizi toplar. Ödeme bilgisi veya hassas kişisel veri talep edilmez.</p>
-  <h2>Kullanım Amacı</h2>
-  <p>Toplanan bilgiler yalnızca platform lansmanı, erken erişim bildirimi ve özel fiyatlandırma iletişimi amacıyla kullanılır. Üçüncü taraflarla paylaşılmaz, satılmaz.</p>
-  <h2>Veri Güvenliği</h2>
-  <p>Verileriniz endüstri standardı güvenlik önlemleriyle korunur.</p>
-  <h2>Çerezler</h2>
-  <p>Bu web sitesi izleme çerezi kullanmamaktadır.</p>
-  <h2>Haklarınız</h2>
-  <p>Veri silme talebi için info@solarpeakai.com adresine yazabilirsiniz. 48 saat içinde işlem yapılır.</p>
+<a href="#" onclick="showMain(event)" style="display:inline-block;margin-bottom:2rem;font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none">← Geri dön</a>
+<h1>Gizlilik Politikası</h1>
+<p style="font-size:.78rem;color:rgba(29,29,31,.3);margin-bottom:2rem">Son güncelleme: Temmuz 2026</p>
+<h2>Toplanan Veriler</h2>
+<p>SolarPeakAI, erken erişim kaydı sırasında ad, soyad, e-posta, telefon, şirket adı ve rol bilgilerinizi toplar. Ödeme bilgisi veya hassas kişisel veri talep edilmez.</p>
+<h2>Kullanım Amacı</h2>
+<p>Toplanan bilgiler yalnızca platform lansmanı, erken erişim bildirimi ve özel fiyatlandırma iletişimi amacıyla kullanılır. Üçüncü taraflarla paylaşılmaz, satılmaz.</p>
+<h2>Veri Güvenliği</h2>
+<p>Verileriniz endüstri standardı güvenlik önlemleriyle korunur.</p>
+<h2>Çerezler</h2>
+<p>Bu web sitesi izleme çerezi kullanmamaktadır.</p>
+<h2>Haklarınız</h2>
+<p>Veri silme talebi için info@solarpeakai.com adresine yazabilirsiniz. 48 saat içinde işlem yapılır.</p>
 </div>
 
 <script>
-// ── COUNTDOWN ──
-const launch = new Date('2026-09-14T09:00:00');
+// COUNTDOWN (45 gün)
+const launch = new Date('2026-08-15T09:00:00');
+
 function updateCountdown(){
-  const now = new Date();
-  const diff = launch - now;
-  if(diff <= 0){
-    document.querySelector('.countdown-bar').style.display='none';
-    return;
-  }
-  const d = Math.floor(diff/86400000);
-  const h = Math.floor((diff%86400000)/3600000);
-  const m = Math.floor((diff%3600000)/60000);
-  const s = Math.floor((diff%60000)/1000);
-  document.getElementById('cd-days').textContent  = String(d).padStart(2,'0');
-  document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
-  document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
-  document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+const now = new Date();
+const diff = launch - now;
+if(diff <= 0){
+document.querySelector('.countdown-bar').style.display='none';
+return;
 }
+const d = Math.floor(diff/86400000);
+const h = Math.floor((diff%86400000)/3600000);
+const m = Math.floor((diff%3600000)/60000);
+const s = Math.floor((diff%60000)/1000);
+
+document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
+document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
+document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
+}
+
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-// ── SCROLL REVEAL ──
+// Scroll Reveal
 const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})
+entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})
 },{threshold:.08})
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el))
 
-// ── PAGES ──
+// Sayfa Fonksiyonları
 function hideAll(){
-  document.getElementById('main-page').style.display='none'
-  document.getElementById('waitlist-page').style.display='none'
-  document.getElementById('about-page').style.display='none'
-  document.getElementById('privacy-page').style.display='none'
-}
-function showMain(e){
-  if(e)e.preventDefault()
-  hideAll()
-  document.getElementById('main-page').style.display='block'
-  window.scrollTo(0,0)
-}
-function showWaitlist(e){
-  if(e)e.preventDefault()
-  hideAll()
-  document.getElementById('waitlist-page').style.display='block'
-  window.scrollTo(0,0)
-}
-function showAbout(e){
-  if(e)e.preventDefault()
-  hideAll()
-  document.getElementById('about-page').style.display='block'
-  window.scrollTo(0,0)
-}
-function showPrivacy(e){
-  if(e)e.preventDefault()
-  hideAll()
-  document.getElementById('privacy-page').style.display='block'
-  window.scrollTo(0,0)
+document.getElementById('main-page').style.display='none'
+document.getElementById('waitlist-page').style.display='none'
+document.getElementById('about-page').style.display='none'
+document.getElementById('privacy-page').style.display='none'
 }
 
-// ── WAITLIST FORM ──
+function showMain(e){if(e)e.preventDefault(); hideAll(); document.getElementById('main-page').style.display='block'; window.scrollTo(0,0);}
+function showWaitlist(e){if(e)e.preventDefault(); hideAll(); document.getElementById('waitlist-page').style.display='block'; window.scrollTo(0,0);}
+function showAbout(e){if(e)e.preventDefault(); hideAll(); document.getElementById('about-page').style.display='block'; window.scrollTo(0,0);}
+function showPrivacy(e){if(e)e.preventDefault(); hideAll(); document.getElementById('privacy-page').style.display='block'; window.scrollTo(0,0);}
+
 function handleWaitlist(e){
-  e.preventDefault()
-  document.getElementById('wl-form-wrap').style.display='none'
-  document.getElementById('success-msg').style.display='block'
+e.preventDefault()
+document.getElementById('wl-form-wrap').style.display='none'
+document.getElementById('success-msg').style.display='block'
 }
 </script>
 </body>
