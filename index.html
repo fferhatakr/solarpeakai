@@ -3,174 +3,287 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SolarPeakAI — Akıllı Panel Denetimi</title>
+<title>SolarPeakAI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --ink:#080808;
-  --amber:#e8a020;
-  --amber-dim:#c4861a;
-  --muted:#6b6760;
-  --line:rgba(255,255,255,0.07);
-  --card:#111111;
-}
 html{scroll-behavior:smooth}
-body{background:var(--ink);color:#e0ddd8;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:#000;color:#1d1d1f;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:64px;background:rgba(8,8,8,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
-.logo{font-family:'DM Serif Display',serif;font-size:1.2rem;color:#fff;text-decoration:none}
-.logo span{color:var(--amber)}
-.nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{color:#888;text-decoration:none;font-size:0.85rem;transition:color .2s}
-.nav-links a:hover{color:#fff}
-.nav-cta{background:var(--amber);color:#000;padding:.5rem 1.2rem;border-radius:6px;font-size:.85rem;font-weight:600;text-decoration:none;transition:background .2s}
-.nav-cta:hover{background:var(--amber-dim)}
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:48px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;
+  background:rgba(0,0,0,0.78);backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.logo{font-size:.9rem;font-weight:500;color:rgba(245,245,247,.9);text-decoration:none;letter-spacing:-.01em}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:.78rem;color:rgba(245,245,247,.58);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:rgba(245,245,247,.9)}
+.nav-cta{font-size:.78rem;color:#2997ff;text-decoration:none;transition:opacity .2s}
+.nav-cta:hover{opacity:.7}
 
-/* HERO */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 5vw 80px;position:relative;overflow:hidden}
-.hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(232,160,32,.13) 0%,transparent 70%);pointer-events:none}
+/* ── SECTIONS — Apple rhythm ── */
+/* Hero: black */
+.s-hero{background:#000;color:#f5f5f7}
+/* Panel visual: very dark gray */
+.s-dark{background:#0a0a0a;color:#f5f5f7}
+/* How: near-black */
+.s-near-black{background:#111;color:#f5f5f7}
+/* Phone: pure black again, but with blue tint */
+.s-phone{background:#000;color:#f5f5f7}
+/* Mission: dark with gradient */
+.s-mission{
+  background:linear-gradient(180deg,#000 0%,#06080f 60%,#000 100%);
+  color:#f5f5f7;
+}
+/* Waitlist: light — Apple always flips to light for CTAs */
+.s-light{background:#f5f5f7;color:#1d1d1f}
+/* Contact: medium gray */
+.s-gray{background:#e8e8ed;color:#1d1d1f}
+/* Footer: very dark */
+.s-footer{background:#1d1d1f;color:#6e6e73}
 
-/* Drone SVG animation */
-.drone-wrap{position:absolute;top:15%;right:8%;opacity:.18;animation:dronefloat 6s ease-in-out infinite}
-@keyframes dronefloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-18px) rotate(2deg)}}
-
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(232,160,32,.3);padding:.35rem 1rem;border-radius:100px;margin-bottom:2.5rem}
-.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
-
-.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(3rem,7vw,6.5rem);line-height:1.05;letter-spacing:-.025em;color:#fff;max-width:900px;margin-bottom:1.75rem}
-.hero h1 em{font-style:italic;color:var(--amber)}
-.hero-sub{font-size:clamp(1rem,1.8vw,1.2rem);color:#888;max-width:540px;margin-bottom:3.5rem;font-weight:300;line-height:1.75}
-.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
-.btn-primary{background:var(--amber);color:#000;border:none;padding:.9rem 2.2rem;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s,transform .15s;text-decoration:none;letter-spacing:.01em}
-.btn-primary:hover{background:var(--amber-dim);transform:translateY(-2px)}
-.btn-ghost{background:transparent;color:#bbb;border:1px solid rgba(255,255,255,.12);padding:.9rem 2.2rem;border-radius:8px;font-size:.95rem;font-weight:400;cursor:pointer;transition:all .2s;text-decoration:none}
-.btn-ghost:hover{border-color:rgba(255,255,255,.3);color:#fff}
-
-/* SCROLL REVEAL */
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+/* ── SCROLL REVEAL ── */
+.reveal{
+  opacity:0;transform:translateY(30px) scale(.98);
+  transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1);
+}
 .reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.18s}.d3{transition-delay:.28s}
 
-/* STATS */
-.stat-bar{display:flex;justify-content:center;gap:0;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.stat{flex:1;min-width:200px;text-align:center;padding:3rem 2rem;border-right:1px solid var(--line)}
-.stat:last-child{border-right:none}
-.stat-num{font-family:'DM Serif Display',serif;font-size:2.8rem;color:#fff;display:block;line-height:1}
-.stat-label{font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:.5rem;display:block}
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:48px 24px 0;position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:800px;height:500px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(41,151,255,.1) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-kicker{
+  font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(245,245,247,.4);margin-bottom:1.5rem;
+}
+.hero h1{
+  font-size:clamp(3.5rem,9vw,8rem);font-weight:700;
+  letter-spacing:-.05em;line-height:.98;
+  color:#f5f5f7;max-width:880px;margin-bottom:1.75rem;
+}
+.hero h1 .thin{
+  display:block;font-weight:200;font-style:italic;
+  color:rgba(245,245,247,.45);font-size:.85em;letter-spacing:-.04em;
+}
+.hero-sub{
+  font-size:clamp(1rem,2vw,1.3rem);font-weight:300;
+  color:rgba(245,245,247,.55);max-width:480px;
+  line-height:1.6;margin-bottom:2.5rem;
+}
+.hero-btns{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-bottom:5rem}
+.btn-solid{
+  background:#2997ff;color:#fff;border:none;
+  padding:.72rem 1.6rem;border-radius:980px;
+  font-size:.9rem;font-weight:400;cursor:pointer;
+  text-decoration:none;transition:opacity .2s;
+}
+.btn-solid:hover{opacity:.82}
+.btn-ghost-light{
+  background:transparent;color:rgba(245,245,247,.8);border:none;
+  padding:.72rem 1.6rem;border-radius:980px;
+  font-size:.9rem;font-weight:400;cursor:pointer;
+  text-decoration:none;transition:opacity .2s;
+}
+.btn-ghost-light:hover{opacity:.6}
+.btn-ghost-dark{
+  background:transparent;color:#1d1d1f;border:none;
+  padding:.72rem 1.6rem;border-radius:980px;
+  font-size:.9rem;font-weight:400;cursor:pointer;
+  text-decoration:none;transition:opacity .2s;
+}
+.btn-ghost-dark:hover{opacity:.5}
 
-/* PANEL VISUAL SECTION */
-.panel-section{padding:120px 5vw;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-.panel-left .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
-.panel-left h2{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,4vw,3.5rem);color:#fff;line-height:1.1;letter-spacing:-.02em;margin-bottom:1.5rem}
-.panel-left p{color:#777;line-height:1.85;margin-bottom:1rem;font-size:.95rem}
+/* Drone hero */
+.hero-drone{width:100%;max-width:780px;height:280px;position:relative;margin:0 auto}
+.drone-svg-wrap{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  animation:drone-float 5s ease-in-out infinite;
+  filter:drop-shadow(0 24px 48px rgba(41,151,255,.25));
+}
+@keyframes drone-float{
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  40%{transform:translateX(-50%) translateY(-14px)}
+  70%{transform:translateX(-50%) translateY(-8px)}
+}
+.drone-glow{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:200px;height:20px;
+  background:radial-gradient(ellipse,rgba(41,151,255,.3) 0%,transparent 70%);
+  filter:blur(6px);
+  animation:drone-shadow 5s ease-in-out infinite;
+}
+@keyframes drone-shadow{
+  0%,100%{opacity:.7;transform:translateX(-50%) scaleX(1)}
+  40%{opacity:.3;transform:translateX(-50%) scaleX(.75)}
+}
 
-/* Panel Grid Visual */
-.panel-grid-visual{background:#0e0e0e;border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:2rem;position:relative;overflow:hidden}
-.panel-grid-visual::before{content:'LIVE SCAN';position:absolute;top:1rem;right:1rem;font-size:.65rem;letter-spacing:.1em;color:var(--amber);background:rgba(232,160,32,.1);padding:.3rem .7rem;border-radius:100px;border:1px solid rgba(232,160,32,.2)}
-.pgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-bottom:1rem}
-.pc{aspect-ratio:1.3;border-radius:4px;position:relative;overflow:hidden;transition:transform .3s}
-.pc:hover{transform:scale(1.05);z-index:2}
-.pc.ok{background:#0d1f0d;border:1px solid #1a3a1a}
-.pc.ok::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,255,255,.03) 8px,rgba(255,255,255,.03) 9px)}
-.pc.dust{background:#1e1608;border:1px solid rgba(232,160,32,.35);animation:dustpulse 3s ease-in-out infinite}
-@keyframes dustpulse{0%,100%{border-color:rgba(232,160,32,.35)}50%{border-color:rgba(232,160,32,.7)}}
-.pc.crack{background:#1a0808;border:1px solid rgba(220,60,60,.4)}
-.pc.crack::after{content:'';position:absolute;top:10%;left:40%;width:2px;height:80%;background:linear-gradient(to bottom,transparent,rgba(220,60,60,.7),transparent);transform:rotate(12deg);box-shadow:6px 2px 0 rgba(220,60,60,.3)}
-.pc.bird{background:#120e18;border:1px solid rgba(140,100,220,.35)}
-.scan-line{height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);animation:scan 3s linear infinite;margin:0 -.5rem}
-@keyframes scan{0%{transform:translateY(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(3000%);opacity:0}}
-.panel-legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1.2rem}
-.pleg{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#666}
-.pdot{width:8px;height:8px;border-radius:2px}
-.pdot.ok{background:#2d6e2d}.pdot.dust{background:var(--amber)}.pdot.crack{background:#dc3c3c}.pdot.bird{background:#8c64dc}
+/* ── SECTION WRAPPER ── */
+.sec{padding:100px 24px}
+.sec-inner{max-width:980px;margin:0 auto}
+.sec-kicker{
+  font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(245,245,247,.35);display:block;text-align:center;margin-bottom:1rem;
+}
+.sec-kicker-dark{color:rgba(29,29,31,.45)}
+.sec-title{
+  font-size:clamp(2.2rem,5vw,4rem);font-weight:600;
+  letter-spacing:-.04em;line-height:1.05;
+  text-align:center;margin-bottom:1.25rem;
+}
+.light-text{color:#f5f5f7}
+.dark-text{color:#1d1d1f}
+.sec-sub{
+  font-size:1.05rem;font-weight:300;
+  text-align:center;max-width:520px;margin:0 auto 4rem;line-height:1.6;
+}
+.light-sub{color:rgba(245,245,247,.5)}
+.dark-sub{color:rgba(29,29,31,.55)}
 
-/* HOW SECTION */
-.how-section{padding:120px 5vw;border-top:1px solid var(--line)}
-.how-inner{max-width:1100px;margin:0 auto}
-.section-head{margin-bottom:5rem;text-align:center}
-.section-head .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
-.section-head h2{font-family:'DM Serif Display',serif;font-size:clamp(2rem,3.5vw,3rem);color:#fff;letter-spacing:-.02em}
+/* ── PANEL VISUAL ── */
+.panel-box{
+  background:#1c1c1e;border:1px solid rgba(255,255,255,.07);
+  border-radius:20px;overflow:hidden;max-width:740px;margin:0 auto;
+}
+.panel-titlebar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.7rem 1.25rem;background:#161618;border-bottom:1px solid rgba(255,255,255,.05);
+}
+.p-dots{display:flex;gap:.4rem}
+.p-dot{width:10px;height:10px;border-radius:50%}
+.p-dot-r{background:#ff5f57}.p-dot-y{background:#febc2e}.p-dot-g{background:#28c840}
+.p-title{font-size:.72rem;color:rgba(245,245,247,.25);letter-spacing:.04em}
+.p-live{
+  font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:#30d158;background:rgba(48,209,88,.08);
+  border:1px solid rgba(48,209,88,.18);padding:.18rem .55rem;border-radius:100px;
+}
+.panel-body{padding:1.5rem 1.5rem .75rem}
+.pgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:.4rem;margin-bottom:.75rem}
+.pc{aspect-ratio:1.4;border-radius:3px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.pc:hover{transform:scale(1.12);z-index:3;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.pc.ok{background:#0c1a0c;border:1px solid rgba(255,255,255,.05)}
+.pc.ok::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 32%,rgba(255,255,255,.03) 32%,rgba(255,255,255,.03) 33%),repeating-linear-gradient(0deg,transparent,transparent 32%,rgba(255,255,255,.03) 32%,rgba(255,255,255,.03) 33%)}
+.pc.dust{background:#1e1500;border:1px solid rgba(255,200,0,.28)}
+.pc.dust::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,200,0,.15) 0%,transparent 70%)}
+.pc.crack{background:#1a0000;border:1px solid rgba(255,60,60,.3)}
+.pc.crack::after{content:'';position:absolute;top:8%;left:48%;width:1.5px;height:84%;background:linear-gradient(to bottom,transparent,rgba(255,70,70,.7),transparent);transform:rotate(9deg)}
+.pc.bird{background:#0c0b1a;border:1px solid rgba(120,100,255,.28)}
+.pc.bird::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 45% 40%,rgba(120,100,255,.2) 0%,transparent 65%)}
+.pc.sel{box-shadow:0 0 0 2px #2997ff!important;transform:scale(1.1)!important;z-index:4}
+.scanline{height:1.5px;background:linear-gradient(90deg,transparent,rgba(41,151,255,.7),transparent);animation:sl 2.4s linear infinite}
+@keyframes sl{0%{opacity:0;transform:translateY(-80px)}8%{opacity:1}92%{opacity:1}100%{opacity:0;transform:translateY(180px)}}
+.panel-legend{display:flex;gap:1.2rem;flex-wrap:wrap;padding:.6rem 0 .5rem}
+.pleg{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:rgba(245,245,247,.35)}
+.pldot{width:7px;height:7px;border-radius:1.5px}
+.pldot.ok{background:rgba(255,255,255,.18)}.pldot.dust{background:#ffc400}.pldot.crack{background:#ff4040}.pldot.bird{background:#7864ff}
+.panel-stats{
+  display:flex;align-items:center;justify-content:space-around;
+  background:#161618;border-top:1px solid rgba(255,255,255,.05);
+  padding:1rem 1.5rem;flex-wrap:wrap;gap:.75rem;
+}
+.pstat{text-align:center}
+.pstat-val{font-size:1.4rem;font-weight:700;letter-spacing:-.03em;display:block;line-height:1}
+.pstat-lbl{font-size:.65rem;color:rgba(245,245,247,.3);text-transform:uppercase;letter-spacing:.05em;margin-top:.25rem;display:block}
+.cv-ok{color:#30d158}.cv-warn{color:#ffd60a}.cv-bad{color:#ff453a}.cv-purple{color:#bf5af2}
 
-.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
-.step{background:var(--ink);padding:3rem 2.5rem;position:relative}
-.step-icon{width:48px;height:48px;border-radius:12px;background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.15);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;font-size:1.2rem}
-.step h3{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:.75rem}
-.step p{font-size:.875rem;color:#666;line-height:1.75}
-.step-num{position:absolute;top:2rem;right:2rem;font-family:'DM Serif Display',serif;font-size:4rem;color:rgba(232,160,32,.06);line-height:1}
+/* ── HOW ── */
+.how-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid rgba(255,255,255,.07);border-radius:20px;overflow:hidden;
+  gap:1px;background:rgba(255,255,255,.05);
+}
+.how-card{background:#111;padding:2.5rem 2rem}
+.how-num{font-size:.7rem;font-weight:500;color:rgba(245,245,247,.25);letter-spacing:.08em;display:block;margin-bottom:1.5rem}
+.how-icon{margin-bottom:1.2rem}
+.how-card h3{font-size:1rem;font-weight:600;color:#f5f5f7;margin-bottom:.55rem;letter-spacing:-.01em}
+.how-card p{font-size:.85rem;color:rgba(245,245,247,.4);line-height:1.65}
 
-/* PHONE MOCKUP SECTION */
-.phone-section{padding:120px 5vw;border-top:1px solid var(--line);overflow:hidden}
-.phone-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-.phone-content .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
-.phone-content h2{font-family:'DM Serif Display',serif;font-size:clamp(2rem,3.5vw,3rem);color:#fff;letter-spacing:-.02em;margin-bottom:1.5rem;line-height:1.15}
-.phone-feature{display:flex;gap:1rem;margin-bottom:1.5rem;align-items:flex-start}
-.pf-icon{width:36px;height:36px;flex-shrink:0;border-radius:8px;background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.12);display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-top:.1rem}
-.pf-text h4{font-size:.9rem;font-weight:600;color:#ddd;margin-bottom:.25rem}
-.pf-text p{font-size:.825rem;color:#666;line-height:1.6}
+/* ── PHONE ── */
+.phone-wrap{
+  max-width:980px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 300px;gap:5rem;align-items:center;
+}
+.feat-item{display:flex;gap:.9rem;margin-bottom:1.6rem;align-items:flex-start}
+.fi-icon{width:30px;height:30px;flex-shrink:0;border-radius:7px;background:rgba(245,245,247,.07);display:flex;align-items:center;justify-content:center;margin-top:.1rem}
+.fi-h{font-size:.875rem;font-weight:500;color:#f5f5f7;margin-bottom:.18rem}
+.fi-p{font-size:.8rem;color:rgba(245,245,247,.4);line-height:1.6}
 
-/* Phone SVG mockup */
-.phone-mockup{display:flex;justify-content:center;position:relative}
-.phone-mockup::after{content:'';position:absolute;bottom:-40px;left:50%;transform:translateX(-50%);width:200px;height:40px;background:radial-gradient(ellipse,rgba(232,160,32,.2) 0%,transparent 70%);filter:blur(10px)}
+/* ── MISSION ── */
+.mission-inner{max-width:680px;margin:0 auto;text-align:center}
+.mission-q{
+  font-size:clamp(1.8rem,4.5vw,3.2rem);font-weight:300;
+  letter-spacing:-.03em;line-height:1.3;color:rgba(245,245,247,.9);
+  margin-bottom:3rem;font-style:italic;
+}
+.mission-q strong{font-weight:700;font-style:normal;color:#f5f5f7}
 
-/* WHY SECTION */
-.why-section{padding:120px 5vw;border-top:1px solid var(--line)}
-.why-inner{max-width:1100px;margin:0 auto}
-.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:var(--line);margin-top:4rem}
-.why-card{background:var(--ink);padding:2.5rem;transition:background .25s}
-.why-card:hover{background:#111}
-.why-card-icon{font-size:1.5rem;margin-bottom:1.25rem;display:block}
-.why-card h3{font-size:1rem;font-weight:600;color:#fff;margin-bottom:.6rem}
-.why-card p{font-size:.85rem;color:#666;line-height:1.7}
-.why-card .tag{display:inline-block;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.15);padding:.2rem .6rem;border-radius:100px;margin-bottom:1rem}
+/* ── WAITLIST (light bg) ── */
+.waitlist-inner{max-width:520px;margin:0 auto;text-align:center}
+.wl-form{display:flex;gap:.5rem;margin:2rem auto 0;flex-wrap:wrap;justify-content:center}
+.wl-form input{
+  flex:1;min-width:240px;
+  background:rgba(0,0,0,.06);
+  border:1px solid rgba(0,0,0,.14);
+  border-radius:980px;padding:.75rem 1.25rem;
+  color:#1d1d1f;font-size:.9rem;font-family:'Inter',sans-serif;
+  outline:none;transition:border-color .2s;-webkit-appearance:none;
+}
+.wl-form input::placeholder{color:rgba(0,0,0,.28)}
+.wl-form input:focus{border-color:rgba(41,151,255,.5)}
+.btn-solid-dark{
+  background:#1d1d1f;color:#fff;border:none;
+  padding:.75rem 1.6rem;border-radius:980px;
+  font-size:.9rem;font-weight:400;cursor:pointer;text-decoration:none;
+  transition:opacity .2s;
+}
+.btn-solid-dark:hover{opacity:.78}
+.wl-note{font-size:.72rem;color:rgba(29,29,31,.35);margin-top:.85rem}
 
-/* CTA */
-.cta-section{padding:140px 5vw;border-top:1px solid var(--line);text-align:center;position:relative;overflow:hidden}
-.cta-glow{position:absolute;bottom:-100px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(232,160,32,.08) 0%,transparent 70%);pointer-events:none}
-.cta-inner{max-width:640px;margin:0 auto;position:relative}
-.cta-inner .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
-.cta-inner h2{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,4vw,3.5rem);color:#fff;letter-spacing:-.02em;margin-bottom:1.25rem;line-height:1.1}
-.cta-inner p{color:#777;margin-bottom:2.5rem;line-height:1.75}
-.waitlist-form{display:flex;gap:.75rem;max-width:440px;margin:0 auto;flex-wrap:wrap;justify-content:center}
-.waitlist-form input{flex:1;min-width:220px;background:#111;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.85rem 1.1rem;color:#fff;font-size:.9rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
-.waitlist-form input::placeholder{color:#444}
-.waitlist-form input:focus{border-color:var(--amber)}
-.form-note{font-size:.75rem;color:#444;margin-top:1rem}
+/* ── CONTACT (gray bg) ── */
+.contact-inner{max-width:480px;margin:0 auto;text-align:center}
 
-/* CONTACT */
-.contact-section{padding:80px 5vw;border-top:1px solid var(--line);text-align:center}
-.contact-section .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
-.contact-section h2{font-family:'DM Serif Display',serif;font-size:2rem;color:#fff;margin-bottom:.75rem}
-.contact-section p{color:#666;margin-bottom:2rem;font-size:.9rem}
+/* ── FOOTER ── */
+.footer-inner{max-width:980px;margin:0 auto}
+.footer-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:1.25rem;border-bottom:1px solid rgba(255,255,255,.08);
+  flex-wrap:wrap;gap:1rem;margin-bottom:1rem;
+}
+.footer-logo{font-size:.82rem;font-weight:500;color:rgba(245,245,247,.35)}
+.footer-links{display:flex;gap:1.5rem;list-style:none;flex-wrap:wrap}
+.footer-links a{font-size:.75rem;color:rgba(245,245,247,.28);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:rgba(245,245,247,.6)}
+.footer-copy{font-size:.72rem;color:rgba(245,245,247,.2)}
 
-/* FOOTER */
-footer{border-top:1px solid var(--line);padding:2.5rem 5vw;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
-.footer-logo{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff}
-.footer-logo span{color:var(--amber)}
-.footer-links{display:flex;gap:2rem;list-style:none}
-.footer-links a{font-size:.8rem;color:#444;text-decoration:none;transition:color .2s}
-.footer-links a:hover{color:#aaa}
-.footer-copy{font-size:.75rem;color:#333;width:100%}
+/* ── LEGAL ── */
+.legal{max-width:640px;margin:80px auto;padding:0 24px;display:none}
+.legal h1{font-size:2rem;font-weight:600;color:#f5f5f7;margin-bottom:2rem;letter-spacing:-.02em}
+.legal h2{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(245,245,247,.4);margin:2rem 0 .5rem}
+.legal p{font-size:.875rem;color:rgba(245,245,247,.4);line-height:1.75;margin-bottom:.6rem}
+.back-link{color:#2997ff;font-size:.875rem;text-decoration:none;display:inline-block;margin-top:2rem}
 
-/* PRIVACY */
-.legal-page{max-width:720px;margin:120px auto 80px;padding:0 5vw;display:none}
-.legal-page h1{font-family:'DM Serif Display',serif;font-size:2.5rem;color:#fff;margin-bottom:2rem}
-.legal-page h2{font-size:1rem;font-weight:600;color:#ccc;margin:2rem 0 .6rem}
-.legal-page p{font-size:.875rem;color:#666;line-height:1.8;margin-bottom:.75rem}
-
-/* DIVIDER */
-.div{height:1px;background:var(--line)}
-
-/* RESPONSIVE */
-@media(max-width:900px){
-  .panel-section,.phone-inner{grid-template-columns:1fr;gap:3rem}
-  .steps-grid{grid-template-columns:1fr}
-  .why-grid{grid-template-columns:1fr}
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .phone-wrap{grid-template-columns:1fr;gap:3rem}
+  .how-grid{grid-template-columns:1fr}
   .nav-links{display:none}
-  .stat{min-width:160px}
+  .iphone-center{display:flex;justify-content:center;overflow:hidden}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -179,392 +292,398 @@ footer{border-top:1px solid var(--line);padding:2.5rem 5vw;display:flex;align-it
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo">Solar<span>Peak</span>AI</a>
+  <a href="#" class="logo">SolarPeakAI</a>
   <ul class="nav-links">
-    <li><a href="#sorun">Sorun</a></li>
-    <li><a href="#nasil">Nasıl Çalışır</a></li>
+    <li><a href="#panel">Nasıl Çalışır</a></li>
     <li><a href="#uygulama">Uygulama</a></li>
-    <li><a href="#neden">Neden Biz</a></li>
+    <li><a href="#misyon">Misyon</a></li>
     <li><a href="#iletisim">İletişim</a></li>
   </ul>
-  <a href="#liste" class="nav-cta">Erken Erişim</a>
+  <a href="#liste" class="nav-cta">Erken Erişim →</a>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
+<!-- ═══ HERO — siyah ═══ -->
+<section class="s-hero hero">
   <div class="hero-glow"></div>
-
-  <!-- Drone SVG -->
-  <div class="drone-wrap">
-    <svg width="220" height="160" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Body -->
-      <rect x="80" y="65" width="60" height="30" rx="8" fill="#1a1a1a" stroke="#e8a020" stroke-width="1.5"/>
-      <!-- Arms -->
-      <line x1="80" y1="70" x2="30" y2="50" stroke="#e8a020" stroke-width="1.5"/>
-      <line x1="140" y1="70" x2="190" y2="50" stroke="#e8a020" stroke-width="1.5"/>
-      <line x1="80" y1="90" x2="30" y2="110" stroke="#e8a020" stroke-width="1.5"/>
-      <line x1="140" y1="90" x2="190" y2="110" stroke="#e8a020" stroke-width="1.5"/>
-      <!-- Rotors -->
-      <ellipse cx="30" cy="50" rx="22" ry="5" fill="none" stroke="rgba(232,160,32,0.5)" stroke-width="1.5" stroke-dasharray="4 2">
-        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 30 50" to="360 30 50" dur=".4s" repeatCount="indefinite"/>
-      </ellipse>
-      <ellipse cx="190" cy="50" rx="22" ry="5" fill="none" stroke="rgba(232,160,32,0.5)" stroke-width="1.5" stroke-dasharray="4 2">
-        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 190 50" to="360 190 50" dur=".4s" repeatCount="indefinite"/>
-      </ellipse>
-      <ellipse cx="30" cy="110" rx="22" ry="5" fill="none" stroke="rgba(232,160,32,0.5)" stroke-width="1.5" stroke-dasharray="4 2">
-        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="360 30 110" to="0 30 110" dur=".35s" repeatCount="indefinite"/>
-      </ellipse>
-      <ellipse cx="190" cy="110" rx="22" ry="5" fill="none" stroke="rgba(232,160,32,0.5)" stroke-width="1.5" stroke-dasharray="4 2">
-        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="360 190 110" to="0 190 110" dur=".35s" repeatCount="indefinite"/>
-      </ellipse>
-      <!-- Camera -->
-      <circle cx="110" cy="95" r="6" fill="#e8a020" opacity=".8"/>
-      <line x1="110" y1="101" x2="110" y2="155" stroke="rgba(232,160,32,0.3)" stroke-width="1" stroke-dasharray="3 3"/>
-      <!-- LED -->
-      <circle cx="110" cy="68" r="3" fill="#e8a020"><animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite"/></circle>
-    </svg>
+  <span class="hero-kicker">Yapay Zeka Destekli Panel Denetimi</span>
+  <h1>
+    Güneş paneliniz
+    <span class="thin">ne kadar verimli?</span>
+  </h1>
+  <p class="hero-sub">Drone ve yapay zekayla panel başına hasar tespiti. Kaybettiğiniz geliri geri kazanın.</p>
+  <div class="hero-btns">
+    <a href="#liste" class="btn-solid">Erken Erişime Katıl</a>
+    <a href="#panel" class="btn-ghost-light">Nasıl çalışır →</a>
   </div>
-
-  <span class="hero-badge"><span class="badge-dot"></span>Yapay Zeka Destekli Panel Denetimi</span>
-  <h1>Güneş paneliniz <em>ne kadar</em> verimli çalışıyor?</h1>
-  <p class="hero-sub">SolarPeakAI, drone ve yapay zeka teknolojisini birleştirerek güneş panellerinizdeki kir, çatlak ve hasarı tespit eder. Kaybettiğiniz geliri geri kazanın.</p>
-  <div class="hero-actions">
-    <a href="#liste" class="btn-primary">Bekleme Listesine Katıl</a>
-    <a href="#nasil" class="btn-ghost">Nasıl Çalışır?</a>
-  </div>
-</section>
-
-<!-- STATS -->
-<div class="stat-bar reveal">
-  <div class="stat"><span class="stat-num">31.745</span><span class="stat-label">Türkiye'de GES Tesisi</span></div>
-  <div class="stat"><span class="stat-num">%30'a</span><span class="stat-label">Kadar Verim Kaybı</span></div>
-  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Lokalize Rakip</span></div>
-  <div class="stat"><span class="stat-num">48 sa.</span><span class="stat-label">İçinde Rapor</span></div>
-</div>
-
-<!-- PANEL VISUAL -->
-<section id="sorun" style="padding:120px 5vw;border-top:1px solid var(--line)">
-  <div class="panel-section" style="padding:0">
-    <div class="panel-left reveal">
-      <span class="eyebrow">Problem</span>
-      <h2>Hasar görünmez,<br>kayıp görünür</h2>
-      <p>Güneş panellerinizdeki toz, çatlak ve kuş pisliği faturanızı sessizce düşürür. Çıplak gözle tespit edilmesi neredeyse imkânsız olan bu hasarlar, yıllık üretim kaybının başlıca nedenidir.</p>
-      <p>Türkiye'deki 31.000'den fazla GES tesisinin büyük çoğunluğu hiçbir zaman profesyonel denetimden geçmiyor. Her geçen gün panel başına kayıp büyüyor.</p>
+  <div class="hero-drone">
+    <div class="drone-svg-wrap">
+      <svg width="320" height="200" viewBox="0 0 320 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Arms -->
+        <line x1="148" y1="96" x2="62" y2="66" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="172" y1="96" x2="258" y2="66" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="148" y1="116" x2="62" y2="146" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="172" y1="116" x2="258" y2="146" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Body -->
+        <rect x="135" y="85" width="50" height="42" rx="12" fill="#1c1c1e" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+        <rect x="144" y="91" width="32" height="8" rx="4" fill="rgba(255,255,255,0.05)"/>
+        <rect x="144" y="103" width="20" height="4" rx="2" fill="rgba(41,151,255,0.15)"/>
+        <!-- Camera -->
+        <line x1="160" y1="127" x2="160" y2="145" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+        <circle cx="160" cy="150" r="8" fill="#111" stroke="rgba(41,151,255,0.45)" stroke-width="1.5"/>
+        <circle cx="160" cy="150" r="4" fill="#0a0a0f"/>
+        <circle cx="160" cy="150" r="2" fill="rgba(41,151,255,0.5)"/>
+        <!-- Scan beam -->
+        <path d="M152 158 L128 195 L192 195 L168 158" fill="rgba(41,151,255,0.04)" stroke="rgba(41,151,255,0.12)" stroke-width="1"/>
+        <!-- LED -->
+        <circle cx="160" cy="88" r="2.5" fill="#2997ff"><animate attributeName="opacity" values="1;.2;1" dur="1.6s" repeatCount="indefinite"/></circle>
+        <!-- Rotor hubs -->
+        <circle cx="62" cy="66" r="5" fill="#1c1c1e" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <circle cx="258" cy="66" r="5" fill="#1c1c1e" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <circle cx="62" cy="146" r="5" fill="#1c1c1e" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <circle cx="258" cy="146" r="5" fill="#1c1c1e" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <!-- Rotors -->
+        <ellipse cx="62" cy="66" rx="40" ry="7" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"><animateTransform attributeName="transform" type="rotate" from="0 62 66" to="360 62 66" dur="0.28s" repeatCount="indefinite"/></ellipse>
+        <ellipse cx="258" cy="66" rx="40" ry="7" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"><animateTransform attributeName="transform" type="rotate" from="360 258 66" to="0 258 66" dur="0.28s" repeatCount="indefinite"/></ellipse>
+        <ellipse cx="62" cy="146" rx="40" ry="7" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"><animateTransform attributeName="transform" type="rotate" from="360 62 146" to="0 62 146" dur="0.3s" repeatCount="indefinite"/></ellipse>
+        <ellipse cx="258" cy="146" rx="40" ry="7" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"><animateTransform attributeName="transform" type="rotate" from="0 258 146" to="360 258 146" dur="0.3s" repeatCount="indefinite"/></ellipse>
+      </svg>
     </div>
-    <div class="panel-grid-visual reveal">
-      <div class="pgrid">
-        <div class="pc ok"></div><div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div>
-        <div class="pc ok"></div><div class="pc crack"></div><div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div>
-        <div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc crack"></div>
-        <div class="pc ok"></div><div class="pc ok"></div><div class="pc bird"></div><div class="pc ok"></div><div class="pc dust"></div>
-        <div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc ok"></div>
-      </div>
-      <div class="scan-line"></div>
-      <div class="panel-legend">
-        <div class="pleg"><div class="pdot ok"></div>Sağlıklı</div>
-        <div class="pleg"><div class="pdot dust"></div>Kirli</div>
-        <div class="pleg"><div class="pdot crack"></div>Çatlak</div>
-        <div class="pleg"><div class="pdot bird"></div>Kuş Pisliği</div>
-      </div>
-    </div>
+    <div class="drone-glow"></div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section id="nasil" class="how-section">
-  <div class="how-inner">
-    <div class="section-head reveal">
-      <span class="eyebrow">Süreç</span>
-      <h2>Üç adımda tam denetim</h2>
+<!-- ═══ PANEL VISUAL — çok koyu gri ═══ -->
+<section class="s-dark sec" id="panel">
+  <div class="sec-inner">
+    <span class="sec-kicker reveal">Akıllı Denetim</span>
+    <h2 class="sec-title light-text reveal">Her paneli görür.<br>Hiçbirini kaçırmaz.</h2>
+    <p class="sec-sub light-sub reveal">Yapay zeka, drone görüntülerini analiz ederek kir, çatlak ve kuş pisliğini panel düzeyinde tespit eder.</p>
+    <div class="panel-box reveal">
+      <div class="panel-titlebar">
+        <div class="p-dots"><div class="p-dot p-dot-r"></div><div class="p-dot p-dot-y"></div><div class="p-dot p-dot-g"></div></div>
+        <span class="p-title">SolarPeakAI — Canlı Tarama</span>
+        <span class="p-live">● Aktif</span>
+      </div>
+      <div class="panel-body">
+        <div class="pgrid">
+          <div class="pc ok"></div><div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc crack"></div><div class="pc ok"></div>
+          <div class="pc ok"></div><div class="pc crack"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc bird"></div>
+          <div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc crack"></div><div class="pc ok"></div><div class="pc dust"></div>
+          <div class="pc ok"></div><div class="pc ok"></div><div class="pc bird"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div>
+        </div>
+        <div class="scanline"></div>
+        <div class="panel-legend">
+          <div class="pleg"><div class="pldot ok"></div>Sağlıklı</div>
+          <div class="pleg"><div class="pldot dust"></div>Kirli</div>
+          <div class="pleg"><div class="pldot crack"></div>Çatlak</div>
+          <div class="pleg"><div class="pldot bird"></div>Kuş Pisliği</div>
+        </div>
+      </div>
+      <div class="panel-stats">
+        <div class="pstat"><span class="pstat-val cv-ok">21</span><span class="pstat-lbl">Sağlıklı</span></div>
+        <div class="pstat"><span class="pstat-val cv-warn">6</span><span class="pstat-lbl">Kirli</span></div>
+        <div class="pstat"><span class="pstat-val cv-bad">3</span><span class="pstat-lbl">Çatlak</span></div>
+        <div class="pstat"><span class="pstat-val cv-purple">2</span><span class="pstat-lbl">Kuş Pisliği</span></div>
+        <div class="pstat"><span class="pstat-val cv-bad" style="font-size:1.1rem">₺12.400</span><span class="pstat-lbl">Aynı Gün Rapor</span></div>
+      </div>
     </div>
-    <div class="steps-grid reveal">
-      <div class="step">
-        <span class="step-num">1</span>
-        <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="1.8" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  </div>
+</section>
+
+<!-- ═══ HOW — #111 ═══ -->
+<section class="s-near-black sec" id="nasil">
+  <div class="sec-inner">
+    <span class="sec-kicker reveal">Süreç</span>
+    <h2 class="sec-title light-text reveal">Basit. Hızlı. Kesin.</h2>
+    <p class="sec-sub light-sub reveal" style="margin-bottom:3rem">Üç adımda eksiksiz denetim raporu.</p>
+    <div class="how-grid reveal">
+      <div class="how-card">
+        <span class="how-num">01</span>
+        <div class="how-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(245,245,247,0.45)" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
         <h3>Drone Taraması</h3>
-        <p>Profesyonel drone pilotumuz arsanıza gelir. GPS destekli rota planlamasıyla tüm panelleriniz milimetre hassasiyetinde, sistematik olarak taranır.</p>
+        <p>Profesyonel pilotumuz arsanıza gelir. GPS güdümlü rota ile tüm panelleriniz sistematik biçimde taranır.</p>
       </div>
-      <div class="step">
-        <span class="step-num">2</span>
-        <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      <div class="how-card">
+        <span class="how-num">02</span>
+        <div class="how-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(245,245,247,0.45)" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
         <h3>Yapay Zeka Analizi</h3>
-        <p>Görüntüler SolarPeakAI'ın YOLO tabanlı modeline aktarılır. İki katmanlı model önce paneli bulur, sonra panel üzerindeki her hasarı sınıflandırır.</p>
+        <p>İki katmanlı YOLO modelimiz önce paneli tespit eder, ardından üzerindeki her hasarı milimetre hassasiyetiyle sınıflandırır.</p>
       </div>
-      <div class="step">
-        <span class="step-num">3</span>
-        <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <div class="how-card">
+        <span class="how-num">03</span>
+        <div class="how-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(245,245,247,0.45)" stroke-width="1.5" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/></svg>
         </div>
-        <h3>Mobil Rapor</h3>
-        <p>48 saat içinde uygulamanıza harita üzerinde işaretlenmiş, öncelik sıralı ve gelir etkisi hesaplanmış detaylı bir bakım raporu ulaşır.</p>
+        <h3>Aynı Gün Rapor</h3>
+        <p>Harita üzerinde işaretlenmiş, öncelik sıralı ve gelir etkisi hesaplanmış rapor uçuş günü uygulamanıza gelir.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PHONE MOCKUP -->
-<section id="uygulama" class="phone-section">
-  <div class="phone-inner">
-    <div class="phone-content reveal">
-      <span class="eyebrow">Mobil Uygulama</span>
-      <h2>Her şey cebinizde,<br>her an erişilebilir</h2>
-      <div class="phone-feature">
-        <div class="pf-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        </div>
-        <div class="pf-text">
-          <h4>Canlı Tarama Takibi</h4>
-          <p>Drone arsanızı tararken ilerlemeyi gerçek zamanlı olarak izleyin. Her geçilen panel anlık olarak haritada güncellenir.</p>
-        </div>
+<!-- ═══ PHONE — siyah ═══ -->
+<section class="s-phone sec" id="uygulama">
+  <div class="phone-wrap">
+    <div>
+      <span class="sec-kicker reveal" style="text-align:left">Mobil Uygulama</span>
+      <h2 class="sec-title light-text reveal" style="text-align:left;font-size:clamp(1.8rem,3.5vw,3rem);margin-bottom:1rem">Her şey<br>cebinizde.</h2>
+      <p class="sec-sub light-sub reveal" style="text-align:left;margin:0 0 2.5rem">Tüm denetim verileriniz, gelir analizleriniz ve tarama geçmişiniz tek bir uygulamada.</p>
+      <div class="feat-item reveal d1">
+        <div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(245,245,247,0.6)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><div class="fi-h">Canlı Tarama Takibi</div><p class="fi-p">Drone uçarken her panel anlık olarak haritada güncellenir.</p></div>
       </div>
-      <div class="phone-feature">
-        <div class="pf-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="2" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-        </div>
-        <div class="pf-text">
-          <h4>Gelir Etkisi Raporu</h4>
-          <p>Her hasar için tahmini yıllık gelir kaybı hesaplanır. Hangi panelin önce temizleneceğini veya değiştirileceğini sayılarla bilin.</p>
-        </div>
+      <div class="feat-item reveal d1">
+        <div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(245,245,247,0.6)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div><div class="fi-h">Gelir Etkisi Hesaplama</div><p class="fi-p">Her hasar için tahmini yıllık kayıp otomatik hesaplanır.</p></div>
       </div>
-      <div class="phone-feature">
-        <div class="pf-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
-        </div>
-        <div class="pf-text">
-          <h4>Akıllı Bildirimler</h4>
-          <p>Yeni hasar tespiti, bakım hatırlatmaları ve mevsimsel temizlik önerileri doğrudan telefonunuza gelir.</p>
-        </div>
+      <div class="feat-item reveal d2">
+        <div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(245,245,247,0.6)" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg></div>
+        <div><div class="fi-h">Akıllı Bildirimler</div><p class="fi-p">Yeni hasar tespiti ve bakım hatırlatmaları doğrudan telefonunuza gelir.</p></div>
       </div>
-      <div class="phone-feature">
-        <div class="pf-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        </div>
-        <div class="pf-text">
-          <h4>Tarama Geçmişi</h4>
-          <p>Tüm denetim raporlarınız, hasar trendleri ve bakım geçmişiniz tek bir yerde arşivlenir. Zaman içindeki değişimi görün.</p>
-        </div>
+      <div class="feat-item reveal d2">
+        <div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(245,245,247,0.6)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div><div class="fi-h">Performans Trendleri</div><p class="fi-p">Zaman içindeki bozulmayı takip edin. Hasar başlamadan önce görün.</p></div>
       </div>
     </div>
 
-    <!-- Phone SVG Mockup -->
-    <div class="phone-mockup reveal">
-      <svg width="280" height="560" viewBox="0 0 280 560" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Phone body -->
-        <rect x="10" y="10" width="260" height="540" rx="36" fill="#0d0d0d" stroke="#2a2a2a" stroke-width="2"/>
-        <rect x="18" y="18" width="244" height="524" rx="30" fill="#080808"/>
+    <!-- iPhone 17 SVG -->
+    <div class="iphone-center reveal d1">
+      <svg width="260" height="540" viewBox="-10 0 280 540" fill="none" xmlns="http://www.w3.org/2000/svg" style="overflow:hidden">
+        <!-- Outer frame -->
+        <rect x="3" y="3" width="234" height="494" rx="42" fill="#1c1c1e"/>
+        <rect x="3" y="3" width="234" height="494" rx="42" fill="none" stroke="url(#pb)" stroke-width="1.5"/>
+        <!-- Screen -->
+        <rect x="9" y="9" width="222" height="482" rx="38" fill="#000"/>
+        <!-- Dynamic Island -->
+        <rect x="84" y="18" width="72" height="24" rx="12" fill="#1c1c1e"/>
+        <circle cx="140" cy="30" r="6" fill="#111"/>
+        <circle cx="140" cy="30" r="3.5" fill="#0a0a0a"/>
+        <circle cx="140" cy="30" r="1.5" fill="#141428"/>
+        <circle cx="141.5" cy="28.5" r=".6" fill="rgba(255,255,255,0.25)"/>
         <!-- Status bar -->
-        <rect x="90" y="22" width="100" height="22" rx="11" fill="#111"/>
-        <!-- Screen content -->
-        <!-- Header -->
-        <rect x="28" y="58" width="224" height="44" rx="10" fill="#111"/>
-        <text x="42" y="85" font-family="Inter,sans-serif" font-size="11" fill="#e8a020" font-weight="600">SolarPeakAI</text>
-        <text x="180" y="85" font-family="Inter,sans-serif" font-size="10" fill="#555">Rapor #47</text>
-        <!-- Map area -->
-        <rect x="28" y="112" width="224" height="130" rx="10" fill="#0e1a0e"/>
-        <!-- Grid panels on map -->
-        <rect x="38" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="60" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="82" y="122" width="18" height="12" rx="2" fill="#2a1a08" stroke="#e8a020" stroke-width=".8"/>
-        <rect x="104" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="126" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="148" y="122" width="18" height="12" rx="2" fill="#1a0808" stroke="#dc3c3c" stroke-width=".8"/>
-        <rect x="170" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="192" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <text x="22" y="17" font-family="Inter,sans-serif" font-size="8" font-weight="600" fill="rgba(245,245,247,0.85)">9:41</text>
+        <text x="218" y="17" font-family="Inter,sans-serif" font-size="7" fill="rgba(245,245,247,0.5)" text-anchor="end">●●● ▲</text>
+        <!-- App header -->
+        <rect x="9" y="46" width="222" height="40" fill="#0d0d0d"/>
+        <text x="22" y="62" font-family="Inter,sans-serif" font-size="9.5" font-weight="600" fill="rgba(245,245,247,0.92)">SolarPeakAI</text>
+        <text x="22" y="76" font-family="Inter,sans-serif" font-size="7.5" fill="rgba(245,245,247,0.28)">Konya Tesisi — 32 Panel</text>
+        <circle cx="208" cy="66" r="12" fill="rgba(255,255,255,0.05)"/>
+        <text x="208" y="70" font-family="Inter,sans-serif" font-size="10" fill="rgba(245,245,247,0.5)" text-anchor="middle">⚙</text>
+        <!-- Map -->
+        <rect x="9" y="86" width="222" height="125" fill="#0b140b"/>
+        <!-- Panel rows -->
+        <rect x="18" y="95" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="40" y="95" width="18" height="12" rx="2" fill="#1c1300" stroke="rgba(255,200,0,0.4)" stroke-width=".8"/>
+        <rect x="62" y="95" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="84" y="95" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="106" y="95" width="18" height="12" rx="2" fill="#1a0000" stroke="rgba(255,60,60,0.4)" stroke-width=".8"/>
+        <rect x="128" y="95" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="150" y="95" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="172" y="95" width="18" height="12" rx="2" fill="#1c1300" stroke="rgba(255,200,0,0.4)" stroke-width=".8"/>
+        <rect x="194" y="95" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
 
-        <rect x="38" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="60" y="138" width="18" height="12" rx="2" fill="#1a0808" stroke="#dc3c3c" stroke-width=".8"/>
-        <rect x="82" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="104" y="138" width="18" height="12" rx="2" fill="#2a1a08" stroke="#e8a020" stroke-width=".8"/>
-        <rect x="126" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="148" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="170" y="138" width="18" height="12" rx="2" fill="#120e18" stroke="#8c64dc" stroke-width=".8"/>
-        <rect x="192" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="18" y="111" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="40" y="111" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="62" y="111" width="18" height="12" rx="2" fill="#1a0000" stroke="rgba(255,60,60,0.4)" stroke-width=".8"/>
+        <rect x="84" y="111" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="106" y="111" width="18" height="12" rx="2" fill="#0b0a18" stroke="rgba(120,100,255,0.3)" stroke-width=".8"/>
+        <rect x="128" y="111" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="150" y="111" width="18" height="12" rx="2" fill="#1c1300" stroke="rgba(255,200,0,0.4)" stroke-width=".8"/>
+        <rect x="172" y="111" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="194" y="111" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
 
-        <rect x="38" y="154" width="18" height="12" rx="2" fill="#2a1a08" stroke="#e8a020" stroke-width=".8"/>
-        <rect x="60" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="82" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="104" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="126" y="154" width="18" height="12" rx="2" fill="#1a0808" stroke="#dc3c3c" stroke-width=".8"/>
-        <rect x="148" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="170" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
-        <rect x="192" y="154" width="18" height="12" rx="2" fill="#2a1a08" stroke="#e8a020" stroke-width=".8"/>
+        <rect x="18" y="127" width="18" height="12" rx="2" fill="#1c1300" stroke="rgba(255,200,0,0.4)" stroke-width=".8"/>
+        <rect x="40" y="127" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="62" y="127" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="84" y="127" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="106" y="127" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="128" y="127" width="18" height="12" rx="2" fill="#1a0000" stroke="rgba(255,60,60,0.4)" stroke-width=".8"/>
+        <rect x="150" y="127" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="172" y="127" width="18" height="12" rx="2" fill="#0e240e" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <rect x="194" y="127" width="18" height="12" rx="2" fill="#1c1300" stroke="rgba(255,200,0,0.4)" stroke-width=".8"/>
 
-        <!-- Scan line animation -->
-        <line x1="28" y1="170" x2="252" y2="170" stroke="#e8a020" stroke-width="1" opacity=".6">
-          <animate attributeName="y1" values="122;242;122" dur="3s" repeatCount="indefinite"/>
-          <animate attributeName="y2" values="122;242;122" dur="3s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0;0.8;0" dur="3s" repeatCount="indefinite"/>
+        <!-- Scan line phone -->
+        <line x1="9" y1="130" x2="231" y2="130" stroke="rgba(41,151,255,0.55)" stroke-width="1.5">
+          <animate attributeName="y1" values="86;211;86" dur="2.2s" repeatCount="indefinite"/>
+          <animate attributeName="y2" values="86;211;86" dur="2.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;1;0" dur="2.2s" repeatCount="indefinite"/>
         </line>
 
-        <!-- Stats row -->
-        <rect x="28" y="252" width="68" height="52" rx="8" fill="#111"/>
-        <text x="62" y="272" font-family="Inter,sans-serif" font-size="14" fill="#e8a020" font-weight="700" text-anchor="middle">3</text>
-        <text x="62" y="286" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Kirli Panel</text>
-        <text x="62" y="297" font-family="Inter,sans-serif" font-size="7" fill="#e8a020" text-anchor="middle">▲ Acil</text>
+        <!-- Stats -->
+        <rect x="9" y="218" width="68" height="52" rx="10" fill="#111"/>
+        <text x="43" y="237" font-family="Inter,sans-serif" font-size="15" font-weight="700" fill="#30d158" text-anchor="middle">24</text>
+        <text x="43" y="249" font-family="Inter,sans-serif" font-size="6.5" fill="rgba(245,245,247,0.3)" text-anchor="middle">SAĞLIKLI</text>
+        <text x="43" y="261" font-family="Inter,sans-serif" font-size="6" fill="#30d158" text-anchor="middle">● Normal</text>
 
-        <rect x="102" y="252" width="68" height="52" rx="8" fill="#111"/>
-        <text x="136" y="272" font-family="Inter,sans-serif" font-size="14" fill="#dc3c3c" font-weight="700" text-anchor="middle">2</text>
-        <text x="136" y="286" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Çatlak</text>
-        <text x="136" y="297" font-family="Inter,sans-serif" font-size="7" fill="#dc3c3c" text-anchor="middle">Kritik</text>
+        <rect x="85" y="218" width="68" height="52" rx="10" fill="#111"/>
+        <text x="119" y="237" font-family="Inter,sans-serif" font-size="15" font-weight="700" fill="#ffd60a" text-anchor="middle">5</text>
+        <text x="119" y="249" font-family="Inter,sans-serif" font-size="6.5" fill="rgba(245,245,247,0.3)" text-anchor="middle">KİRLİ</text>
+        <text x="119" y="261" font-family="Inter,sans-serif" font-size="6" fill="#ffd60a" text-anchor="middle">▲ Temizlik</text>
 
-        <rect x="176" y="252" width="76" height="52" rx="8" fill="#111"/>
-        <text x="214" y="272" font-family="Inter,sans-serif" font-size="11" fill="#4caf50" font-weight="700" text-anchor="middle">18</text>
-        <text x="214" y="286" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Sağlıklı</text>
-        <text x="214" y="297" font-family="Inter,sans-serif" font-size="7" fill="#4caf50" text-anchor="middle">Normal</text>
+        <rect x="161" y="218" width="70" height="52" rx="10" fill="#111"/>
+        <text x="196" y="237" font-family="Inter,sans-serif" font-size="15" font-weight="700" fill="#ff453a" text-anchor="middle">3</text>
+        <text x="196" y="249" font-family="Inter,sans-serif" font-size="6.5" fill="rgba(245,245,247,0.3)" text-anchor="middle">ÇATLAK</text>
+        <text x="196" y="261" font-family="Inter,sans-serif" font-size="6" fill="#ff453a" text-anchor="middle">⚠ Kritik</text>
 
-        <!-- Revenue impact -->
-        <rect x="28" y="314" width="224" height="50" rx="8" fill="#111"/>
-        <text x="42" y="334" font-family="Inter,sans-serif" font-size="9" fill="#555">Tahmini Yıllık Gelir Kaybı</text>
-        <text x="42" y="352" font-family="Inter,sans-serif" font-size="16" fill="#e8a020" font-weight="700">₺ 14.280</text>
-        <text x="200" y="352" font-family="Inter,sans-serif" font-size="9" fill="#dc3c3c" text-anchor="middle">Yüksek Risk</text>
+        <!-- Revenue card -->
+        <rect x="9" y="278" width="222" height="50" rx="10" fill="#111"/>
+        <text x="22" y="296" font-family="Inter,sans-serif" font-size="7.5" fill="rgba(245,245,247,0.3)">Tahmini Yıllık Gelir Kaybı</text>
+        <text x="22" y="315" font-family="Inter,sans-serif" font-size="18" font-weight="700" fill="#ff453a" letter-spacing="-0.8">₺ 14.280</text>
+        <rect x="174" y="287" width="48" height="18" rx="6" fill="rgba(255,69,58,0.1)"/>
+        <text x="198" y="300" font-family="Inter,sans-serif" font-size="6.5" fill="#ff453a" text-anchor="middle" font-weight="500">Yüksek Risk</text>
 
-        <!-- Action button -->
-        <rect x="28" y="374" width="224" height="38" rx="10" fill="#e8a020"/>
-        <text x="140" y="397" font-family="Inter,sans-serif" font-size="11" fill="#000" font-weight="700" text-anchor="middle">Bakım Planı Oluştur</text>
+        <!-- Critical panel -->
+        <text x="22" y="348" font-family="Inter,sans-serif" font-size="6.5" font-weight="600" fill="rgba(245,245,247,0.25)" letter-spacing=".05em">EN KRİTİK PANEL</text>
+        <rect x="9" y="354" width="222" height="46" rx="10" fill="#111"/>
+        <rect x="18" y="362" width="30" height="22" rx="3" fill="#1a0000" stroke="rgba(255,69,58,0.5)" stroke-width=".8"/>
+        <text x="33" y="377" font-family="Inter,sans-serif" font-size="6" fill="#ff453a" text-anchor="middle">Çatlak</text>
+        <text x="62" y="370" font-family="Inter,sans-serif" font-size="8" font-weight="500" fill="rgba(245,245,247,0.8)">Panel C3 — 3. Sıra</text>
+        <text x="62" y="382" font-family="Inter,sans-serif" font-size="7" fill="rgba(245,245,247,0.3)">₺4.200 yıllık kayıp</text>
+        <rect x="183" y="362" width="38" height="18" rx="6" fill="rgba(41,151,255,0.1)"/>
+        <text x="202" y="375" font-family="Inter,sans-serif" font-size="6.5" fill="#2997ff" text-anchor="middle">Detay →</text>
+
+        <!-- CTA Button -->
+        <rect x="9" y="410" width="222" height="36" rx="12" fill="#2997ff"/>
+        <text x="120" y="432" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">Bakım Planı Oluştur</text>
 
         <!-- Bottom nav -->
-        <rect x="28" y="424" width="224" height="44" rx="10" fill="#0e0e0e"/>
-        <text x="72" y="449" font-family="Inter,sans-serif" font-size="8" fill="#e8a020" text-anchor="middle">Ana Sayfa</text>
-        <text x="140" y="449" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Taramalar</text>
-        <text x="208" y="449" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Raporlar</text>
+        <line x1="9" y1="453" x2="231" y2="453" stroke="rgba(255,255,255,0.05)" stroke-width=".5"/>
+        <text x="55" y="467" font-family="Inter,sans-serif" font-size="7" fill="#2997ff" text-anchor="middle">⊙ Ana Sayfa</text>
+        <text x="120" y="467" font-family="Inter,sans-serif" font-size="7" fill="rgba(245,245,247,0.25)" text-anchor="middle">◫ Taramalar</text>
+        <text x="186" y="467" font-family="Inter,sans-serif" font-size="7" fill="rgba(245,245,247,0.25)" text-anchor="middle">≡ Raporlar</text>
 
         <!-- Home indicator -->
-        <rect x="110" y="530" width="60" height="4" rx="2" fill="#2a2a2a"/>
+        <rect x="90" y="483" width="60" height="3" rx="1.5" fill="rgba(255,255,255,0.2)"/>
+
+        <!-- Side buttons -->
+        <rect x="237" y="130" width="3" height="44" rx="1.5" fill="#2a2a2c"/>
+        <rect x="237" y="182" width="3" height="64" rx="1.5" fill="#2a2a2c"/>
+        <rect x="0" y="148" width="3" height="28" rx="1.5" fill="#2a2a2c"/>
+        <rect x="0" y="186" width="3" height="28" rx="1.5" fill="#2a2a2c"/>
+        <rect x="0" y="224" width="3" height="28" rx="1.5" fill="#2a2a2c"/>
+
+        <defs>
+          <linearGradient id="pb" x1="0" y1="0" x2="240" y2="500" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.22)"/>
+            <stop offset="40%" stop-color="rgba(255,255,255,0.07)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,0.16)"/>
+          </linearGradient>
+        </defs>
       </svg>
     </div>
   </div>
 </section>
 
-<!-- WHY US -->
-<section id="neden" class="why-section">
-  <div class="why-inner">
-    <div class="section-head reveal">
-      <span class="eyebrow">Neden SolarPeakAI</span>
-      <h2>Rakiplerimizden farkımız</h2>
-    </div>
-    <div class="why-grid reveal">
-      <div class="why-card">
-        <span class="tag">Teknoloji</span>
-        <span class="why-card-icon">🎯</span>
-        <h3>Panel Düzeyinde Hassasiyet</h3>
-        <p>Genel değil, tam olarak hangi panelin, hangi bölgesinde sorun olduğunu koordinatıyla tespit ederiz. Tahmin değil, kesinlik.</p>
-      </div>
-      <div class="why-card">
-        <span class="tag">Erişim</span>
-        <span class="why-card-icon">🚁</span>
-        <h3>Drone'unuz Olmak Zorunda Değil</h3>
-        <p>Kendi drone'unuz yoksa sorun değil. Profesyonel pilot ağımız aracılığıyla hizmet almanız mümkün. Tek iletişim noktası sizsiniz.</p>
-      </div>
-      <div class="why-card">
-        <span class="tag">Lokalizasyon</span>
-        <span class="why-card-icon">🇹🇷</span>
-        <h3>Türkiye'ye Özel, Türkçe Destek</h3>
-        <p>Global platformların fiyatları ve dili Türkiye pazarına uygun değil. Biz yerel fiyatlandırma, Türkçe arayüz ve yerli müşteri desteği sunuyoruz.</p>
-      </div>
-      <div class="why-card">
-        <span class="tag">Küçük Ölçek</span>
-        <span class="why-card-icon">⚡</span>
-        <h3>Küçük Tesis de Büyük Tesis de</h3>
-        <p>Global rakipler yalnızca MW ölçeğindeki büyük çiftliklere odaklanır. Biz 10 kW'lık çatı tesisinden 500 kW'lık arazi kurulumuna kadar herkese hizmet veririz.</p>
-      </div>
-      <div class="why-card">
-        <span class="tag">Verimlilik</span>
-        <span class="why-card-icon">📊</span>
-        <h3>Gelir Etkisi Her Raporda</h3>
-        <p>Sizi soyut bulgularla bırakmayız. Her hasar için tahmini yıllık gelir kaybı ve bakım öncelik puanı hesaplanır. Kararınızı sayılarla verin.</p>
-      </div>
-      <div class="why-card">
-        <span class="tag">Güvenilirlik</span>
-        <span class="why-card-icon">🔒</span>
-        <h3>Verileriniz Sizindir</h3>
-        <p>Tüm tarama verileri ve raporlar yalnızca sizin hesabınızda saklanır. Üçüncü taraflarla paylaşılmaz, satılmaz.</p>
-      </div>
-    </div>
+<!-- ═══ MISSION — siyah + mavi tint ═══ -->
+<section class="s-mission sec" id="misyon">
+  <div class="mission-inner">
+    <span class="sec-kicker reveal" style="color:rgba(245,245,247,.3)">Misyonumuz</span>
+    <p class="mission-q reveal">
+      Güneş enerjisi Türkiye'nin geleceği.<br>
+      <strong>Kaybettiğiniz her kilovat bizim sorunumuz.</strong>
+    </p>
+    <a href="#liste" class="btn-solid reveal">Erken Erişime Katıl</a>
   </div>
 </section>
 
-<!-- WAITLIST CTA -->
-<section id="liste" class="cta-section">
-  <div class="cta-glow"></div>
-  <div class="cta-inner reveal">
-    <span class="eyebrow">Erken Erişim</span>
-    <h2>Listenin başına geçin</h2>
-    <p>SolarPeakAI henüz geliştirme aşamasında. Erken erişim listesine katılın, platform yayına girdiğinde ilk siz haberdar olun ve özel fiyatlandırmadan yararlanın.</p>
-    <form class="waitlist-form" onsubmit="handleSubmit(event)">
+<!-- ═══ WAITLIST — açık arka plan ═══ -->
+<section class="s-light sec" id="liste">
+  <div class="waitlist-inner">
+    <span class="sec-kicker dark-text sec-kicker-dark reveal">Erken Erişim</span>
+    <h2 class="sec-title dark-text reveal" style="font-size:clamp(1.8rem,3.5vw,2.8rem)">İlk siz haberdar olun.</h2>
+    <p class="sec-sub dark-sub reveal" style="margin-bottom:0">Platform yayına girdiğinde özel fiyatlandırma ve erken erişim için listeye katılın.</p>
+    <form class="wl-form reveal" onsubmit="handleSubmit(event)">
       <input type="email" id="email-input" placeholder="e-posta adresiniz" required/>
-      <button type="submit" class="btn-primary">Katıl</button>
+      <button type="submit" class="btn-solid-dark">Katıl</button>
     </form>
-    <p class="form-note" id="form-msg">Spam yok. İstediğiniz zaman çıkabilirsiniz.</p>
+    <p class="wl-note" id="form-msg">Spam yok. İstediğiniz zaman çıkabilirsiniz.</p>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="iletisim" class="contact-section">
-  <span class="eyebrow">İletişim</span>
-  <h2>Bir sorunuz mu var?</h2>
-  <p>Demo talebi, iş birliği veya erken erişim için bize ulaşın.</p>
-  <a href="mailto:info@solarpeakai.com" class="btn-primary">info@solarpeakai.com</a>
+<!-- ═══ CONTACT — orta gri ═══ -->
+<section class="s-gray sec" id="iletisim" style="padding:80px 24px">
+  <div class="contact-inner">
+    <span class="sec-kicker sec-kicker-dark reveal">İletişim</span>
+    <h2 class="sec-title dark-text reveal" style="font-size:1.9rem;margin-bottom:.75rem">Sorularınız için</h2>
+    <p style="font-size:.9rem;color:rgba(29,29,31,.5);margin-bottom:1.75rem;text-align:center" class="reveal">Demo talebi veya iş birliği için bize yazın.</p>
+    <div style="text-align:center" class="reveal">
+      <a href="mailto:info@solarpeakai.com" style="color:#1d1d1f;font-size:.9rem;text-decoration:none;border-bottom:1px solid rgba(29,29,31,.3);padding-bottom:.15rem">info@solarpeakai.com</a>
+    </div>
+  </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">Solar<span>Peak</span>AI</div>
-  <ul class="footer-links">
-    <li><a href="#" onclick="showPrivacy(event)">Gizlilik Politikası</a></li>
-    <li><a href="#iletisim">İletişim</a></li>
-  </ul>
-  <p class="footer-copy">© 2026 SolarPeakAI. Tüm hakları saklıdır.</p>
+<!-- ═══ FOOTER — çok koyu ═══ -->
+<footer class="s-footer" style="padding:2rem 24px">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <span class="footer-logo">SolarPeakAI</span>
+      <ul class="footer-links">
+        <li><a href="#" onclick="showPrivacy(event)">Gizlilik Politikası</a></li>
+        <li><a href="#nasil">Nasıl Çalışır</a></li>
+        <li><a href="#iletisim">İletişim</a></li>
+      </ul>
+    </div>
+    <p class="footer-copy">© 2026 SolarPeakAI. Tüm hakları saklıdır.</p>
+  </div>
 </footer>
 
 <!-- PRIVACY -->
-<div class="legal-page" id="privacy-page">
+<div class="legal s-dark" id="privacy-page" style="background:#0a0a0a">
   <h1>Gizlilik Politikası</h1>
-  <p>Son güncelleme: Temmuz 2026</p>
-  <h2>1. Toplanan Veriler</h2>
-  <p>SolarPeakAI, yalnızca bekleme listesi kaydı sırasında e-posta adresinizi toplar. Herhangi bir ödeme bilgisi veya hassas kişisel veri talep edilmez.</p>
-  <h2>2. Verilerin Kullanımı</h2>
-  <p>Toplanan e-posta adresi yalnızca platform lansmanı ve önemli güncellemeler hakkında bilgilendirme amacıyla kullanılır. Üçüncü taraflarla paylaşılmaz, satılmaz.</p>
-  <h2>3. Veri Güvenliği</h2>
-  <p>E-posta adresleriniz endüstri standardı güvenlik önlemleriyle korunmaktadır.</p>
-  <h2>4. Çerezler</h2>
-  <p>Bu web sitesi şu an herhangi bir izleme çerezi kullanmamaktadır.</p>
-  <h2>5. Haklarınız</h2>
-  <p>Verilerinizin silinmesini talep etmek için info@solarpeakai.com adresine e-posta gönderebilirsiniz. Talebiniz 48 saat içinde işleme alınır.</p>
-  <br/>
-  <a href="#" onclick="hidePrivacy(event)" class="btn-ghost">← Geri Dön</a>
+  <p style="color:rgba(245,245,247,.25);font-size:.78rem;margin-bottom:2rem">Son güncelleme: Temmuz 2026</p>
+  <h2>Toplanan Veriler</h2>
+  <p>SolarPeakAI yalnızca bekleme listesi kaydı sırasında e-posta adresinizi toplar. Ödeme bilgisi veya hassas kişisel veri talep edilmez.</p>
+  <h2>Kullanım Amacı</h2>
+  <p>E-posta adresiniz yalnızca platform lansmanı ve önemli güncellemeler için kullanılır. Üçüncü taraflarla paylaşılmaz.</p>
+  <h2>Veri Güvenliği</h2>
+  <p>Verileriniz endüstri standardı güvenlik önlemleriyle korunur.</p>
+  <h2>Çerezler</h2>
+  <p>Bu web sitesi izleme çerezi kullanmamaktadır.</p>
+  <h2>Haklarınız</h2>
+  <p>Veri silme için info@solarpeakai.com adresine yazabilirsiniz. 48 saat içinde işlem yapılır.</p>
+  <a href="#" onclick="hidePrivacy(event)" class="back-link">← Geri dön</a>
 </div>
 
 <script>
 // Scroll reveal
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible') })
-}, { threshold: 0.1 })
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible')}})
+},{threshold:.08})
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el))
 
-// Waitlist form
-function handleSubmit(e) {
+// Panel click
+document.querySelectorAll('.pc').forEach(pc=>{
+  pc.addEventListener('click',function(){
+    document.querySelectorAll('.pc').forEach(p=>p.classList.remove('sel'))
+    this.classList.add('sel')
+  })
+})
+
+// Waitlist
+function handleSubmit(e){
   e.preventDefault()
-  const msg = document.getElementById('form-msg')
-  msg.style.color = '#4caf50'
-  msg.textContent = '✓ Kaydınız alındı. Yakında görüşürüz.'
-  document.getElementById('email-input').value = ''
+  const msg=document.getElementById('form-msg')
+  msg.style.color='#1d1d1f'
+  msg.style.fontWeight='500'
+  msg.textContent='✓ Kaydınız alındı. Yakında görüşürüz.'
+  document.getElementById('email-input').value=''
 }
 
 // Privacy
-function showPrivacy(e) {
+function showPrivacy(e){
   e.preventDefault()
-  document.getElementById('privacy-page').style.display = 'block'
-  document.querySelector('nav').style.display = 'none'
+  document.getElementById('privacy-page').style.display='block'
+  document.querySelector('nav').style.display='none'
   window.scrollTo(0,0)
 }
-function hidePrivacy(e) {
+function hidePrivacy(e){
   e.preventDefault()
-  document.getElementById('privacy-page').style.display = 'none'
-  document.querySelector('nav').style.display = 'flex'
+  document.getElementById('privacy-page').style.display='none'
+  document.querySelector('nav').style.display='flex'
 }
 </script>
 </body>
