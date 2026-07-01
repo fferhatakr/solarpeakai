@@ -1,554 +1,190 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SolarPeakAI — Akıllı Panel Denetimi</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SolarPeakAI — Akıllı Panel Denetimi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#080808;
+  --amber:#e8a020;
+  --amber-dim:#c4861a;
+  --muted:#6b6760;
+  --line:rgba(255,255,255,0.07);
+  --card:#111111;
+}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:#e0ddd8;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-    :root {
-      --ink:      #0d0d0d;
-      --paper:    #f5f2ec;
-      --amber:    #e8a020;
-      --amber-dim:#b87a14;
-      --muted:    #6b6760;
-      --line:     rgba(255,255,255,0.08);
-      --card-bg:  #141414;
-    }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:64px;background:rgba(8,8,8,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.logo{font-family:'DM Serif Display',serif;font-size:1.2rem;color:#fff;text-decoration:none}
+.logo span{color:var(--amber)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:#888;text-decoration:none;font-size:0.85rem;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-cta{background:var(--amber);color:#000;padding:.5rem 1.2rem;border-radius:6px;font-size:.85rem;font-weight:600;text-decoration:none;transition:background .2s}
+.nav-cta:hover{background:var(--amber-dim)}
 
-    html { scroll-behavior: smooth; }
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 5vw 80px;position:relative;overflow:hidden}
+.hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(232,160,32,.13) 0%,transparent 70%);pointer-events:none}
 
-    body {
-      background: var(--ink);
-      color: #e8e5df;
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
+/* Drone SVG animation */
+.drone-wrap{position:absolute;top:15%;right:8%;opacity:.18;animation:dronefloat 6s ease-in-out infinite}
+@keyframes dronefloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-18px) rotate(2deg)}}
 
-    /* ── NAV ── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 5vw;
-      height: 64px;
-      background: rgba(13,13,13,0.80);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--line);
-    }
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(232,160,32,.3);padding:.35rem 1rem;border-radius:100px;margin-bottom:2.5rem}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 
-    .logo {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.25rem;
-      letter-spacing: -0.01em;
-      color: #fff;
-    }
-    .logo span { color: var(--amber); }
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(3rem,7vw,6.5rem);line-height:1.05;letter-spacing:-.025em;color:#fff;max-width:900px;margin-bottom:1.75rem}
+.hero h1 em{font-style:italic;color:var(--amber)}
+.hero-sub{font-size:clamp(1rem,1.8vw,1.2rem);color:#888;max-width:540px;margin-bottom:3.5rem;font-weight:300;line-height:1.75}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.btn-primary{background:var(--amber);color:#000;border:none;padding:.9rem 2.2rem;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s,transform .15s;text-decoration:none;letter-spacing:.01em}
+.btn-primary:hover{background:var(--amber-dim);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:#bbb;border:1px solid rgba(255,255,255,.12);padding:.9rem 2.2rem;border-radius:8px;font-size:.95rem;font-weight:400;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-ghost:hover{border-color:rgba(255,255,255,.3);color:#fff}
 
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-    .nav-links a {
-      color: #b0aca4;
-      text-decoration: none;
-      font-size: 0.875rem;
-      font-weight: 400;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: #fff; }
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
 
-    .nav-cta {
-      background: var(--amber);
-      color: #000;
-      border: none;
-      padding: 0.5rem 1.25rem;
-      border-radius: 6px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      text-decoration: none;
-    }
-    .nav-cta:hover { background: var(--amber-dim); }
+/* STATS */
+.stat-bar{display:flex;justify-content:center;gap:0;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat{flex:1;min-width:200px;text-align:center;padding:3rem 2rem;border-right:1px solid var(--line)}
+.stat:last-child{border-right:none}
+.stat-num{font-family:'DM Serif Display',serif;font-size:2.8rem;color:#fff;display:block;line-height:1}
+.stat-label{font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:.5rem;display:block}
 
-    /* ── HERO ── */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 120px 5vw 80px;
-      position: relative;
-      overflow: hidden;
-    }
+/* PANEL VISUAL SECTION */
+.panel-section{padding:120px 5vw;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.panel-left .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
+.panel-left h2{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,4vw,3.5rem);color:#fff;line-height:1.1;letter-spacing:-.02em;margin-bottom:1.5rem}
+.panel-left p{color:#777;line-height:1.85;margin-bottom:1rem;font-size:.95rem}
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -200px; left: 50%;
-      transform: translateX(-50%);
-      width: 800px; height: 800px;
-      background: radial-gradient(circle, rgba(232,160,32,0.12) 0%, transparent 70%);
-      pointer-events: none;
-    }
+/* Panel Grid Visual */
+.panel-grid-visual{background:#0e0e0e;border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:2rem;position:relative;overflow:hidden}
+.panel-grid-visual::before{content:'LIVE SCAN';position:absolute;top:1rem;right:1rem;font-size:.65rem;letter-spacing:.1em;color:var(--amber);background:rgba(232,160,32,.1);padding:.3rem .7rem;border-radius:100px;border:1px solid rgba(232,160,32,.2)}
+.pgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-bottom:1rem}
+.pc{aspect-ratio:1.3;border-radius:4px;position:relative;overflow:hidden;transition:transform .3s}
+.pc:hover{transform:scale(1.05);z-index:2}
+.pc.ok{background:#0d1f0d;border:1px solid #1a3a1a}
+.pc.ok::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,255,255,.03) 8px,rgba(255,255,255,.03) 9px)}
+.pc.dust{background:#1e1608;border:1px solid rgba(232,160,32,.35);animation:dustpulse 3s ease-in-out infinite}
+@keyframes dustpulse{0%,100%{border-color:rgba(232,160,32,.35)}50%{border-color:rgba(232,160,32,.7)}}
+.pc.crack{background:#1a0808;border:1px solid rgba(220,60,60,.4)}
+.pc.crack::after{content:'';position:absolute;top:10%;left:40%;width:2px;height:80%;background:linear-gradient(to bottom,transparent,rgba(220,60,60,.7),transparent);transform:rotate(12deg);box-shadow:6px 2px 0 rgba(220,60,60,.3)}
+.pc.bird{background:#120e18;border:1px solid rgba(140,100,220,.35)}
+.scan-line{height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);animation:scan 3s linear infinite;margin:0 -.5rem}
+@keyframes scan{0%{transform:translateY(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(3000%);opacity:0}}
+.panel-legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1.2rem}
+.pleg{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#666}
+.pdot{width:8px;height:8px;border-radius:2px}
+.pdot.ok{background:#2d6e2d}.pdot.dust{background:var(--amber)}.pdot.crack{background:#dc3c3c}.pdot.bird{background:#8c64dc}
 
-    .hero-eyebrow {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--amber);
-      border: 1px solid rgba(232,160,32,0.3);
-      padding: 0.35rem 0.9rem;
-      border-radius: 100px;
-      margin-bottom: 2rem;
-    }
+/* HOW SECTION */
+.how-section{padding:120px 5vw;border-top:1px solid var(--line)}
+.how-inner{max-width:1100px;margin:0 auto}
+.section-head{margin-bottom:5rem;text-align:center}
+.section-head .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
+.section-head h2{font-family:'DM Serif Display',serif;font-size:clamp(2rem,3.5vw,3rem);color:#fff;letter-spacing:-.02em}
 
-    .hero h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2.8rem, 6vw, 5.5rem);
-      line-height: 1.08;
-      letter-spacing: -0.02em;
-      color: #fff;
-      max-width: 820px;
-      margin-bottom: 1.5rem;
-    }
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
+.step{background:var(--ink);padding:3rem 2.5rem;position:relative}
+.step-icon{width:48px;height:48px;border-radius:12px;background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.15);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;font-size:1.2rem}
+.step h3{font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:.75rem}
+.step p{font-size:.875rem;color:#666;line-height:1.75}
+.step-num{position:absolute;top:2rem;right:2rem;font-family:'DM Serif Display',serif;font-size:4rem;color:rgba(232,160,32,.06);line-height:1}
 
-    .hero h1 em {
-      font-style: italic;
-      color: var(--amber);
-    }
+/* PHONE MOCKUP SECTION */
+.phone-section{padding:120px 5vw;border-top:1px solid var(--line);overflow:hidden}
+.phone-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.phone-content .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
+.phone-content h2{font-family:'DM Serif Display',serif;font-size:clamp(2rem,3.5vw,3rem);color:#fff;letter-spacing:-.02em;margin-bottom:1.5rem;line-height:1.15}
+.phone-feature{display:flex;gap:1rem;margin-bottom:1.5rem;align-items:flex-start}
+.pf-icon{width:36px;height:36px;flex-shrink:0;border-radius:8px;background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.12);display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-top:.1rem}
+.pf-text h4{font-size:.9rem;font-weight:600;color:#ddd;margin-bottom:.25rem}
+.pf-text p{font-size:.825rem;color:#666;line-height:1.6}
 
-    .hero-sub {
-      font-size: clamp(1rem, 1.8vw, 1.2rem);
-      color: #9d9890;
-      max-width: 560px;
-      margin-bottom: 3rem;
-      font-weight: 300;
-      line-height: 1.7;
-    }
+/* Phone SVG mockup */
+.phone-mockup{display:flex;justify-content:center;position:relative}
+.phone-mockup::after{content:'';position:absolute;bottom:-40px;left:50%;transform:translateX(-50%);width:200px;height:40px;background:radial-gradient(ellipse,rgba(232,160,32,.2) 0%,transparent 70%);filter:blur(10px)}
 
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+/* WHY SECTION */
+.why-section{padding:120px 5vw;border-top:1px solid var(--line)}
+.why-inner{max-width:1100px;margin:0 auto}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:var(--line);margin-top:4rem}
+.why-card{background:var(--ink);padding:2.5rem;transition:background .25s}
+.why-card:hover{background:#111}
+.why-card-icon{font-size:1.5rem;margin-bottom:1.25rem;display:block}
+.why-card h3{font-size:1rem;font-weight:600;color:#fff;margin-bottom:.6rem}
+.why-card p{font-size:.85rem;color:#666;line-height:1.7}
+.why-card .tag{display:inline-block;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.15);padding:.2rem .6rem;border-radius:100px;margin-bottom:1rem}
 
-    .btn-primary {
-      background: var(--amber);
-      color: #000;
-      border: none;
-      padding: 0.85rem 2rem;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
-      text-decoration: none;
-    }
-    .btn-primary:hover { background: var(--amber-dim); transform: translateY(-1px); }
+/* CTA */
+.cta-section{padding:140px 5vw;border-top:1px solid var(--line);text-align:center;position:relative;overflow:hidden}
+.cta-glow{position:absolute;bottom:-100px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(232,160,32,.08) 0%,transparent 70%);pointer-events:none}
+.cta-inner{max-width:640px;margin:0 auto;position:relative}
+.cta-inner .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
+.cta-inner h2{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,4vw,3.5rem);color:#fff;letter-spacing:-.02em;margin-bottom:1.25rem;line-height:1.1}
+.cta-inner p{color:#777;margin-bottom:2.5rem;line-height:1.75}
+.waitlist-form{display:flex;gap:.75rem;max-width:440px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+.waitlist-form input{flex:1;min-width:220px;background:#111;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.85rem 1.1rem;color:#fff;font-size:.9rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.waitlist-form input::placeholder{color:#444}
+.waitlist-form input:focus{border-color:var(--amber)}
+.form-note{font-size:.75rem;color:#444;margin-top:1rem}
 
-    .btn-ghost {
-      background: transparent;
-      color: #c8c4bc;
-      border: 1px solid rgba(255,255,255,0.15);
-      padding: 0.85rem 2rem;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 400;
-      cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
-      text-decoration: none;
-    }
-    .btn-ghost:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+/* CONTACT */
+.contact-section{padding:80px 5vw;border-top:1px solid var(--line);text-align:center}
+.contact-section .eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:1rem}
+.contact-section h2{font-family:'DM Serif Display',serif;font-size:2rem;color:#fff;margin-bottom:.75rem}
+.contact-section p{color:#666;margin-bottom:2rem;font-size:.9rem}
 
-    /* ── STAT BAR ── */
-    .stat-bar {
-      display: flex;
-      justify-content: center;
-      gap: 4rem;
-      flex-wrap: wrap;
-      padding: 3rem 5vw;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
+/* FOOTER */
+footer{border-top:1px solid var(--line);padding:2.5rem 5vw;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+.footer-logo{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff}
+.footer-logo span{color:var(--amber)}
+.footer-links{display:flex;gap:2rem;list-style:none}
+.footer-links a{font-size:.8rem;color:#444;text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:#aaa}
+.footer-copy{font-size:.75rem;color:#333;width:100%}
 
-    .stat { text-align: center; }
-    .stat-num {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.2rem;
-      color: #fff;
-      display: block;
-    }
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
+/* PRIVACY */
+.legal-page{max-width:720px;margin:120px auto 80px;padding:0 5vw;display:none}
+.legal-page h1{font-family:'DM Serif Display',serif;font-size:2.5rem;color:#fff;margin-bottom:2rem}
+.legal-page h2{font-size:1rem;font-weight:600;color:#ccc;margin:2rem 0 .6rem}
+.legal-page p{font-size:.875rem;color:#666;line-height:1.8;margin-bottom:.75rem}
 
-    /* ── SECTION ── */
-    section { padding: 100px 5vw; }
+/* DIVIDER */
+.div{height:1px;background:var(--line)}
 
-    .section-eyebrow {
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--amber);
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    .section-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2rem, 3.5vw, 3rem);
-      color: #fff;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-      max-width: 600px;
-      margin-bottom: 1.5rem;
-    }
-
-    .section-body {
-      font-size: 1rem;
-      color: #9d9890;
-      max-width: 520px;
-      line-height: 1.8;
-    }
-
-    /* ── WHY ── */
-    .why {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6rem;
-      align-items: center;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .why-visual {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 2.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .panel-row {
-      display: flex;
-      gap: 0.6rem;
-    }
-
-    .panel-cell {
-      flex: 1;
-      aspect-ratio: 1.4;
-      border-radius: 4px;
-      background: #1e1e1e;
-      border: 1px solid #2a2a2a;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s;
-    }
-
-    .panel-cell.ok { background: #1a2a1a; border-color: #2a4a2a; }
-    .panel-cell.dirty {
-      background: #2a2318;
-      border-color: #5c4a20;
-    }
-    .panel-cell.dirty::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 3px,
-        rgba(232,160,32,0.08) 3px,
-        rgba(232,160,32,0.08) 4px
-      );
-    }
-    .panel-cell.cracked {
-      background: #2a1a1a;
-      border-color: #5c2020;
-    }
-    .panel-cell.cracked::after {
-      content: '';
-      position: absolute;
-      top: 20%; left: 30%;
-      width: 2px; height: 60%;
-      background: rgba(200,60,60,0.5);
-      transform: rotate(15deg);
-      box-shadow: 8px 4px 0 rgba(200,60,60,0.3);
-    }
-
-    .panel-legend {
-      display: flex;
-      gap: 1.2rem;
-      margin-top: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-    .legend-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-    }
-    .dot-ok { background: #4caf50; }
-    .dot-dirty { background: var(--amber); }
-    .dot-cracked { background: #e85050; }
-
-    /* ── HOW IT WORKS ── */
-    .how { max-width: 1100px; margin: 0 auto; }
-
-    .how-header { margin-bottom: 4rem; }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-    }
-
-    .step {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.06);
-      padding: 2.5rem;
-      position: relative;
-    }
-    .step:first-child { border-radius: 12px 0 0 12px; }
-    .step:last-child  { border-radius: 0 12px 12px 0; }
-
-    .step-num {
-      font-family: 'DM Serif Display', serif;
-      font-size: 3rem;
-      color: rgba(232,160,32,0.15);
-      line-height: 1;
-      margin-bottom: 1.5rem;
-      display: block;
-    }
-
-    .step h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 0.75rem;
-    }
-
-    .step p {
-      font-size: 0.9rem;
-      color: #7a7670;
-      line-height: 1.7;
-    }
-
-    /* ── FEATURES ── */
-    .features { max-width: 1100px; margin: 0 auto; }
-    .features-header { margin-bottom: 4rem; }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5px;
-    }
-
-    .feature-card {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.06);
-      padding: 2.5rem;
-      transition: background 0.25s;
-    }
-    .feature-card:first-child { border-radius: 12px 0 0 0; }
-    .feature-card:nth-child(2) { border-radius: 0 12px 0 0; }
-    .feature-card:nth-child(3) { border-radius: 0 0 0 12px; }
-    .feature-card:last-child { border-radius: 0 0 12px 0; }
-    .feature-card:hover { background: #1a1a1a; }
-
-    .feature-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      background: rgba(232,160,32,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.25rem;
-      font-size: 1.1rem;
-    }
-
-    .feature-card h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 0.6rem;
-    }
-    .feature-card p {
-      font-size: 0.875rem;
-      color: #7a7670;
-      line-height: 1.7;
-    }
-
-    /* ── CTA ── */
-    .cta-section {
-      max-width: 700px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .cta-section .section-title { margin: 0 auto 1.5rem; }
-    .cta-section .section-body { margin: 0 auto 2.5rem; }
-
-    .waitlist-form {
-      display: flex;
-      gap: 0.75rem;
-      max-width: 460px;
-      margin: 0 auto;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .waitlist-form input {
-      flex: 1;
-      min-width: 220px;
-      background: #1a1a1a;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 8px;
-      padding: 0.85rem 1.1rem;
-      color: #fff;
-      font-size: 0.9rem;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .waitlist-form input::placeholder { color: #555; }
-    .waitlist-form input:focus { border-color: var(--amber); }
-
-    .form-note {
-      font-size: 0.78rem;
-      color: #555;
-      margin-top: 1rem;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 3rem 5vw;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-
-    .footer-logo {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.1rem;
-      color: #fff;
-    }
-    .footer-logo span { color: var(--amber); }
-
-    .footer-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-    .footer-links a {
-      font-size: 0.825rem;
-      color: #555;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: #aaa; }
-
-    .footer-copy {
-      font-size: 0.78rem;
-      color: #444;
-      width: 100%;
-    }
-
-    /* ── PRIVACY PAGE ── */
-    .legal-page {
-      max-width: 720px;
-      margin: 120px auto 80px;
-      padding: 0 5vw;
-      display: none;
-    }
-    .legal-page h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.5rem;
-      color: #fff;
-      margin-bottom: 2rem;
-    }
-    .legal-page h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #ddd;
-      margin: 2rem 0 0.75rem;
-    }
-    .legal-page p {
-      font-size: 0.9rem;
-      color: #7a7670;
-      line-height: 1.8;
-      margin-bottom: 1rem;
-    }
-
-    /* ── DIVIDER ── */
-    .divider {
-      height: 1px;
-      background: var(--line);
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .why { grid-template-columns: 1fr; gap: 3rem; }
-      .steps { grid-template-columns: 1fr; }
-      .step:first-child { border-radius: 12px 12px 0 0; }
-      .step:last-child  { border-radius: 0 0 12px 12px; }
-      .feature-grid { grid-template-columns: 1fr; }
-      .feature-card:first-child  { border-radius: 12px 12px 0 0; }
-      .feature-card:nth-child(2) { border-radius: 0; }
-      .feature-card:nth-child(3) { border-radius: 0; }
-      .feature-card:last-child   { border-radius: 0 0 12px 12px; }
-      .nav-links { display: none; }
-      .stat-bar { gap: 2.5rem; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; animation: none !important; }
-    }
-  </style>
+/* RESPONSIVE */
+@media(max-width:900px){
+  .panel-section,.phone-inner{grid-template-columns:1fr;gap:3rem}
+  .steps-grid{grid-template-columns:1fr}
+  .why-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .stat{min-width:160px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <div class="logo">Solar<span>Peak</span>AI</div>
+  <a href="#" class="logo">Solar<span>Peak</span>AI</a>
   <ul class="nav-links">
-    <li><a href="#neden">Neden?</a></li>
+    <li><a href="#sorun">Sorun</a></li>
     <li><a href="#nasil">Nasıl Çalışır</a></li>
-    <li><a href="#ozellikler">Özellikler</a></li>
+    <li><a href="#uygulama">Uygulama</a></li>
+    <li><a href="#neden">Neden Biz</a></li>
     <li><a href="#iletisim">İletişim</a></li>
   </ul>
   <a href="#liste" class="nav-cta">Erken Erişim</a>
@@ -556,169 +192,321 @@
 
 <!-- HERO -->
 <section class="hero">
-  <span class="hero-eyebrow">Yapay Zeka Destekli Panel Denetimi</span>
+  <div class="hero-glow"></div>
+
+  <!-- Drone SVG -->
+  <div class="drone-wrap">
+    <svg width="220" height="160" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Body -->
+      <rect x="80" y="65" width="60" height="30" rx="8" fill="#1a1a1a" stroke="#e8a020" stroke-width="1.5"/>
+      <!-- Arms -->
+      <line x1="80" y1="70" x2="30" y2="50" stroke="#e8a020" stroke-width="1.5"/>
+      <line x1="140" y1="70" x2="190" y2="50" stroke="#e8a020" stroke-width="1.5"/>
+      <line x1="80" y1="90" x2="30" y2="110" stroke="#e8a020" stroke-width="1.5"/>
+      <line x1="140" y1="90" x2="190" y2="110" stroke="#e8a020" stroke-width="1.5"/>
+      <!-- Rotors -->
+      <ellipse cx="30" cy="50" rx="22" ry="5" fill="none" stroke="rgba(232,160,32,0.5)" stroke-width="1.5" stroke-dasharray="4 2">
+        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 30 50" to="360 30 50" dur=".4s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="190" cy="50" rx="22" ry="5" fill="none" stroke="rgba(232,160,32,0.5)" stroke-width="1.5" stroke-dasharray="4 2">
+        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 190 50" to="360 190 50" dur=".4s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="30" cy="110" rx="22" ry="5" fill="none" stroke="rgba(232,160,32,0.5)" stroke-width="1.5" stroke-dasharray="4 2">
+        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="360 30 110" to="0 30 110" dur=".35s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="190" cy="110" rx="22" ry="5" fill="none" stroke="rgba(232,160,32,0.5)" stroke-width="1.5" stroke-dasharray="4 2">
+        <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="360 190 110" to="0 190 110" dur=".35s" repeatCount="indefinite"/>
+      </ellipse>
+      <!-- Camera -->
+      <circle cx="110" cy="95" r="6" fill="#e8a020" opacity=".8"/>
+      <line x1="110" y1="101" x2="110" y2="155" stroke="rgba(232,160,32,0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+      <!-- LED -->
+      <circle cx="110" cy="68" r="3" fill="#e8a020"><animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite"/></circle>
+    </svg>
+  </div>
+
+  <span class="hero-badge"><span class="badge-dot"></span>Yapay Zeka Destekli Panel Denetimi</span>
   <h1>Güneş paneliniz <em>ne kadar</em> verimli çalışıyor?</h1>
-  <p class="hero-sub">
-    SolarPeakAI, drone ve yapay zeka teknolojisini birleştirerek güneş panellerinizdeki kir, çatlak ve hasarı tespit eder. Kaybettiğiniz geliri geri kazanın.
-  </p>
+  <p class="hero-sub">SolarPeakAI, drone ve yapay zeka teknolojisini birleştirerek güneş panellerinizdeki kir, çatlak ve hasarı tespit eder. Kaybettiğiniz geliri geri kazanın.</p>
   <div class="hero-actions">
     <a href="#liste" class="btn-primary">Bekleme Listesine Katıl</a>
     <a href="#nasil" class="btn-ghost">Nasıl Çalışır?</a>
   </div>
 </section>
 
-<!-- STAT BAR -->
-<div class="stat-bar">
-  <div class="stat">
-    <span class="stat-num">31.745</span>
-    <span class="stat-label">Türkiye'de GES Tesisi</span>
-  </div>
-  <div class="stat">
-    <span class="stat-num">%30</span>
-    <span class="stat-label">Ortalama Verim Kaybı</span>
-  </div>
-  <div class="stat">
-    <span class="stat-num">0</span>
-    <span class="stat-label">Lokalize Rakip</span>
-  </div>
-  <div class="stat">
-    <span class="stat-num">48 sa.</span>
-    <span class="stat-label">İçinde Rapor Teslimi</span>
-  </div>
+<!-- STATS -->
+<div class="stat-bar reveal">
+  <div class="stat"><span class="stat-num">31.745</span><span class="stat-label">Türkiye'de GES Tesisi</span></div>
+  <div class="stat"><span class="stat-num">%30'a</span><span class="stat-label">Kadar Verim Kaybı</span></div>
+  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Lokalize Rakip</span></div>
+  <div class="stat"><span class="stat-num">48 sa.</span><span class="stat-label">İçinde Rapor</span></div>
 </div>
 
-<!-- WHY -->
-<section id="neden">
-  <div class="why">
-    <div class="why-content">
-      <span class="section-eyebrow">Problem</span>
-      <h2 class="section-title">Hasar görünmez, kayıp görünür</h2>
-      <p class="section-body">
-        Güneş panelleri üzerindeki toz, çatlak ve kuş pisliği faturanızı sessizce düşürür. Çıplak gözle tespit edilmesi neredeyse imkânsız olan bu hasarlar, yıllık üretim kaybının başlıca nedenidir.
-      </p>
-      <br />
-      <p class="section-body">
-        SolarPeakAI, drone'u arsanızın üzerinde uçurur; görüntüleri yapay zeka ile analiz eder ve size hangi panelin sorunlu olduğunu, tam olarak nerede olduğunu ve ne kadar üretime mal olduğunu söyler.
-      </p>
+<!-- PANEL VISUAL -->
+<section id="sorun" style="padding:120px 5vw;border-top:1px solid var(--line)">
+  <div class="panel-section" style="padding:0">
+    <div class="panel-left reveal">
+      <span class="eyebrow">Problem</span>
+      <h2>Hasar görünmez,<br>kayıp görünür</h2>
+      <p>Güneş panellerinizdeki toz, çatlak ve kuş pisliği faturanızı sessizce düşürür. Çıplak gözle tespit edilmesi neredeyse imkânsız olan bu hasarlar, yıllık üretim kaybının başlıca nedenidir.</p>
+      <p>Türkiye'deki 31.000'den fazla GES tesisinin büyük çoğunluğu hiçbir zaman profesyonel denetimden geçmiyor. Her geçen gün panel başına kayıp büyüyor.</p>
     </div>
-    <div class="why-visual">
-      <div class="panel-row">
-        <div class="panel-cell ok"></div>
-        <div class="panel-cell ok"></div>
-        <div class="panel-cell dirty"></div>
-        <div class="panel-cell ok"></div>
+    <div class="panel-grid-visual reveal">
+      <div class="pgrid">
+        <div class="pc ok"></div><div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div>
+        <div class="pc ok"></div><div class="pc crack"></div><div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div>
+        <div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc crack"></div>
+        <div class="pc ok"></div><div class="pc ok"></div><div class="pc bird"></div><div class="pc ok"></div><div class="pc dust"></div>
+        <div class="pc ok"></div><div class="pc dust"></div><div class="pc ok"></div><div class="pc ok"></div><div class="pc ok"></div>
       </div>
-      <div class="panel-row">
-        <div class="panel-cell ok"></div>
-        <div class="panel-cell cracked"></div>
-        <div class="panel-cell ok"></div>
-        <div class="panel-cell dirty"></div>
-      </div>
-      <div class="panel-row">
-        <div class="panel-cell dirty"></div>
-        <div class="panel-cell ok"></div>
-        <div class="panel-cell ok"></div>
-        <div class="panel-cell cracked"></div>
-      </div>
+      <div class="scan-line"></div>
       <div class="panel-legend">
-        <div class="legend-item"><div class="legend-dot dot-ok"></div> Sağlıklı</div>
-        <div class="legend-item"><div class="legend-dot dot-dirty"></div> Kirli</div>
-        <div class="legend-item"><div class="legend-dot dot-cracked"></div> Hasarlı</div>
+        <div class="pleg"><div class="pdot ok"></div>Sağlıklı</div>
+        <div class="pleg"><div class="pdot dust"></div>Kirli</div>
+        <div class="pleg"><div class="pdot crack"></div>Çatlak</div>
+        <div class="pleg"><div class="pdot bird"></div>Kuş Pisliği</div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
 <!-- HOW IT WORKS -->
-<section id="nasil">
-  <div class="how">
-    <div class="how-header">
-      <span class="section-eyebrow">Süreç</span>
-      <h2 class="section-title">Üç adımda tam denetim</h2>
+<section id="nasil" class="how-section">
+  <div class="how-inner">
+    <div class="section-head reveal">
+      <span class="eyebrow">Süreç</span>
+      <h2>Üç adımda tam denetim</h2>
     </div>
-    <div class="steps">
+    <div class="steps-grid reveal">
       <div class="step">
         <span class="step-num">1</span>
+        <div class="step-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="1.8" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
         <h3>Drone Taraması</h3>
-        <p>Profesyonel drone pilotumuz arsanıza gelir, GPS destekli rota planlamasıyla tüm panelleri sistematik olarak tarar.</p>
+        <p>Profesyonel drone pilotumuz arsanıza gelir. GPS destekli rota planlamasıyla tüm panelleriniz milimetre hassasiyetinde, sistematik olarak taranır.</p>
       </div>
       <div class="step">
         <span class="step-num">2</span>
+        <div class="step-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </div>
         <h3>Yapay Zeka Analizi</h3>
-        <p>Drone görüntüleri SolarPeakAI modelimize aktarılır. YOLO tabanlı sistemimiz kir, çatlak ve fiziksel hasarı panel düzeyinde tespit eder.</p>
+        <p>Görüntüler SolarPeakAI'ın YOLO tabanlı modeline aktarılır. İki katmanlı model önce paneli bulur, sonra panel üzerindeki her hasarı sınıflandırır.</p>
       </div>
       <div class="step">
         <span class="step-num">3</span>
-        <h3>Detaylı Rapor</h3>
-        <p>48 saat içinde mobil uygulamanıza harita üzerinde işaretlenmiş, öncelik sıralı bir bakım raporu ulaşır.</p>
+        <div class="step-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3>Mobil Rapor</h3>
+        <p>48 saat içinde uygulamanıza harita üzerinde işaretlenmiş, öncelik sıralı ve gelir etkisi hesaplanmış detaylı bir bakım raporu ulaşır.</p>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- FEATURES -->
-<section id="ozellikler">
-  <div class="features">
-    <div class="features-header">
-      <span class="section-eyebrow">Özellikler</span>
-      <h2 class="section-title">Neden SolarPeakAI?</h2>
+<!-- PHONE MOCKUP -->
+<section id="uygulama" class="phone-section">
+  <div class="phone-inner">
+    <div class="phone-content reveal">
+      <span class="eyebrow">Mobil Uygulama</span>
+      <h2>Her şey cebinizde,<br>her an erişilebilir</h2>
+      <div class="phone-feature">
+        <div class="pf-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        </div>
+        <div class="pf-text">
+          <h4>Canlı Tarama Takibi</h4>
+          <p>Drone arsanızı tararken ilerlemeyi gerçek zamanlı olarak izleyin. Her geçilen panel anlık olarak haritada güncellenir.</p>
+        </div>
+      </div>
+      <div class="phone-feature">
+        <div class="pf-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="2" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </div>
+        <div class="pf-text">
+          <h4>Gelir Etkisi Raporu</h4>
+          <p>Her hasar için tahmini yıllık gelir kaybı hesaplanır. Hangi panelin önce temizleneceğini veya değiştirileceğini sayılarla bilin.</p>
+        </div>
+      </div>
+      <div class="phone-feature">
+        <div class="pf-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <div class="pf-text">
+          <h4>Akıllı Bildirimler</h4>
+          <p>Yeni hasar tespiti, bakım hatırlatmaları ve mevsimsel temizlik önerileri doğrudan telefonunuza gelir.</p>
+        </div>
+      </div>
+      <div class="phone-feature">
+        <div class="pf-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8a020" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div class="pf-text">
+          <h4>Tarama Geçmişi</h4>
+          <p>Tüm denetim raporlarınız, hasar trendleri ve bakım geçmişiniz tek bir yerde arşivlenir. Zaman içindeki değişimi görün.</p>
+        </div>
+      </div>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🎯</div>
-        <h3>Panel Düzeyinde Tespit</h3>
-        <p>Hangi panelin, tam olarak hangi bölgesinde sorun olduğunu koordinatıyla birlikte raporlar. Tahmin değil, kesinlik.</p>
+
+    <!-- Phone SVG Mockup -->
+    <div class="phone-mockup reveal">
+      <svg width="280" height="560" viewBox="0 0 280 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Phone body -->
+        <rect x="10" y="10" width="260" height="540" rx="36" fill="#0d0d0d" stroke="#2a2a2a" stroke-width="2"/>
+        <rect x="18" y="18" width="244" height="524" rx="30" fill="#080808"/>
+        <!-- Status bar -->
+        <rect x="90" y="22" width="100" height="22" rx="11" fill="#111"/>
+        <!-- Screen content -->
+        <!-- Header -->
+        <rect x="28" y="58" width="224" height="44" rx="10" fill="#111"/>
+        <text x="42" y="85" font-family="Inter,sans-serif" font-size="11" fill="#e8a020" font-weight="600">SolarPeakAI</text>
+        <text x="180" y="85" font-family="Inter,sans-serif" font-size="10" fill="#555">Rapor #47</text>
+        <!-- Map area -->
+        <rect x="28" y="112" width="224" height="130" rx="10" fill="#0e1a0e"/>
+        <!-- Grid panels on map -->
+        <rect x="38" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="60" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="82" y="122" width="18" height="12" rx="2" fill="#2a1a08" stroke="#e8a020" stroke-width=".8"/>
+        <rect x="104" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="126" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="148" y="122" width="18" height="12" rx="2" fill="#1a0808" stroke="#dc3c3c" stroke-width=".8"/>
+        <rect x="170" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="192" y="122" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+
+        <rect x="38" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="60" y="138" width="18" height="12" rx="2" fill="#1a0808" stroke="#dc3c3c" stroke-width=".8"/>
+        <rect x="82" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="104" y="138" width="18" height="12" rx="2" fill="#2a1a08" stroke="#e8a020" stroke-width=".8"/>
+        <rect x="126" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="148" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="170" y="138" width="18" height="12" rx="2" fill="#120e18" stroke="#8c64dc" stroke-width=".8"/>
+        <rect x="192" y="138" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+
+        <rect x="38" y="154" width="18" height="12" rx="2" fill="#2a1a08" stroke="#e8a020" stroke-width=".8"/>
+        <rect x="60" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="82" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="104" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="126" y="154" width="18" height="12" rx="2" fill="#1a0808" stroke="#dc3c3c" stroke-width=".8"/>
+        <rect x="148" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="170" y="154" width="18" height="12" rx="2" fill="#1a3a1a" stroke="#2d6e2d" stroke-width=".5"/>
+        <rect x="192" y="154" width="18" height="12" rx="2" fill="#2a1a08" stroke="#e8a020" stroke-width=".8"/>
+
+        <!-- Scan line animation -->
+        <line x1="28" y1="170" x2="252" y2="170" stroke="#e8a020" stroke-width="1" opacity=".6">
+          <animate attributeName="y1" values="122;242;122" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="y2" values="122;242;122" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.8;0" dur="3s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Stats row -->
+        <rect x="28" y="252" width="68" height="52" rx="8" fill="#111"/>
+        <text x="62" y="272" font-family="Inter,sans-serif" font-size="14" fill="#e8a020" font-weight="700" text-anchor="middle">3</text>
+        <text x="62" y="286" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Kirli Panel</text>
+        <text x="62" y="297" font-family="Inter,sans-serif" font-size="7" fill="#e8a020" text-anchor="middle">▲ Acil</text>
+
+        <rect x="102" y="252" width="68" height="52" rx="8" fill="#111"/>
+        <text x="136" y="272" font-family="Inter,sans-serif" font-size="14" fill="#dc3c3c" font-weight="700" text-anchor="middle">2</text>
+        <text x="136" y="286" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Çatlak</text>
+        <text x="136" y="297" font-family="Inter,sans-serif" font-size="7" fill="#dc3c3c" text-anchor="middle">Kritik</text>
+
+        <rect x="176" y="252" width="76" height="52" rx="8" fill="#111"/>
+        <text x="214" y="272" font-family="Inter,sans-serif" font-size="11" fill="#4caf50" font-weight="700" text-anchor="middle">18</text>
+        <text x="214" y="286" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Sağlıklı</text>
+        <text x="214" y="297" font-family="Inter,sans-serif" font-size="7" fill="#4caf50" text-anchor="middle">Normal</text>
+
+        <!-- Revenue impact -->
+        <rect x="28" y="314" width="224" height="50" rx="8" fill="#111"/>
+        <text x="42" y="334" font-family="Inter,sans-serif" font-size="9" fill="#555">Tahmini Yıllık Gelir Kaybı</text>
+        <text x="42" y="352" font-family="Inter,sans-serif" font-size="16" fill="#e8a020" font-weight="700">₺ 14.280</text>
+        <text x="200" y="352" font-family="Inter,sans-serif" font-size="9" fill="#dc3c3c" text-anchor="middle">Yüksek Risk</text>
+
+        <!-- Action button -->
+        <rect x="28" y="374" width="224" height="38" rx="10" fill="#e8a020"/>
+        <text x="140" y="397" font-family="Inter,sans-serif" font-size="11" fill="#000" font-weight="700" text-anchor="middle">Bakım Planı Oluştur</text>
+
+        <!-- Bottom nav -->
+        <rect x="28" y="424" width="224" height="44" rx="10" fill="#0e0e0e"/>
+        <text x="72" y="449" font-family="Inter,sans-serif" font-size="8" fill="#e8a020" text-anchor="middle">Ana Sayfa</text>
+        <text x="140" y="449" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Taramalar</text>
+        <text x="208" y="449" font-family="Inter,sans-serif" font-size="8" fill="#555" text-anchor="middle">Raporlar</text>
+
+        <!-- Home indicator -->
+        <rect x="110" y="530" width="60" height="4" rx="2" fill="#2a2a2a"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section id="neden" class="why-section">
+  <div class="why-inner">
+    <div class="section-head reveal">
+      <span class="eyebrow">Neden SolarPeakAI</span>
+      <h2>Rakiplerimizden farkımız</h2>
+    </div>
+    <div class="why-grid reveal">
+      <div class="why-card">
+        <span class="tag">Teknoloji</span>
+        <span class="why-card-icon">🎯</span>
+        <h3>Panel Düzeyinde Hassasiyet</h3>
+        <p>Genel değil, tam olarak hangi panelin, hangi bölgesinde sorun olduğunu koordinatıyla tespit ederiz. Tahmin değil, kesinlik.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">📱</div>
-        <h3>Mobil Uygulama</h3>
-        <p>Tüm raporlarınız, geçmiş tarama sonuçlarınız ve bakım geçmişiniz cebinizdeki uygulamada, her an erişilebilir.</p>
+      <div class="why-card">
+        <span class="tag">Erişim</span>
+        <span class="why-card-icon">🚁</span>
+        <h3>Drone'unuz Olmak Zorunda Değil</h3>
+        <p>Kendi drone'unuz yoksa sorun değil. Profesyonel pilot ağımız aracılığıyla hizmet almanız mümkün. Tek iletişim noktası sizsiniz.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">🇹🇷</div>
-        <h3>Türkiye'ye Özel</h3>
-        <p>Türkçe destek, yerel fiyatlandırma ve küçük-orta ölçekli GES tesislerine odaklı tek platform.</p>
+      <div class="why-card">
+        <span class="tag">Lokalizasyon</span>
+        <span class="why-card-icon">🇹🇷</span>
+        <h3>Türkiye'ye Özel, Türkçe Destek</h3>
+        <p>Global platformların fiyatları ve dili Türkiye pazarına uygun değil. Biz yerel fiyatlandırma, Türkçe arayüz ve yerli müşteri desteği sunuyoruz.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h3>Gelir Etkisi Raporu</h3>
-        <p>Tespit edilen her hasar için tahmini üretim kaybı ve yıllık gelir etkisi hesaplanır. Bakım önceliğinizi sayılarla belirleyin.</p>
+      <div class="why-card">
+        <span class="tag">Küçük Ölçek</span>
+        <span class="why-card-icon">⚡</span>
+        <h3>Küçük Tesis de Büyük Tesis de</h3>
+        <p>Global rakipler yalnızca MW ölçeğindeki büyük çiftliklere odaklanır. Biz 10 kW'lık çatı tesisinden 500 kW'lık arazi kurulumuna kadar herkese hizmet veririz.</p>
+      </div>
+      <div class="why-card">
+        <span class="tag">Verimlilik</span>
+        <span class="why-card-icon">📊</span>
+        <h3>Gelir Etkisi Her Raporda</h3>
+        <p>Sizi soyut bulgularla bırakmayız. Her hasar için tahmini yıllık gelir kaybı ve bakım öncelik puanı hesaplanır. Kararınızı sayılarla verin.</p>
+      </div>
+      <div class="why-card">
+        <span class="tag">Güvenilirlik</span>
+        <span class="why-card-icon">🔒</span>
+        <h3>Verileriniz Sizindir</h3>
+        <p>Tüm tarama verileri ve raporlar yalnızca sizin hesabınızda saklanır. Üçüncü taraflarla paylaşılmaz, satılmaz.</p>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- CTA / WAITLIST -->
-<section id="liste">
-  <div class="cta-section">
-    <span class="section-eyebrow">Erken Erişim</span>
-    <h2 class="section-title">Listenin başına geçin</h2>
-    <p class="section-body">
-      SolarPeakAI henüz geliştirme aşamasında. Erken erişim listesine katılın, platform yayına girdiğinde ilk siz haberdar olun.
-    </p>
+<!-- WAITLIST CTA -->
+<section id="liste" class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="cta-inner reveal">
+    <span class="eyebrow">Erken Erişim</span>
+    <h2>Listenin başına geçin</h2>
+    <p>SolarPeakAI henüz geliştirme aşamasında. Erken erişim listesine katılın, platform yayına girdiğinde ilk siz haberdar olun ve özel fiyatlandırmadan yararlanın.</p>
     <form class="waitlist-form" onsubmit="handleSubmit(event)">
-      <input type="email" id="email-input" placeholder="e-posta adresiniz" required />
+      <input type="email" id="email-input" placeholder="e-posta adresiniz" required/>
       <button type="submit" class="btn-primary">Katıl</button>
     </form>
     <p class="form-note" id="form-msg">Spam yok. İstediğiniz zaman çıkabilirsiniz.</p>
   </div>
 </section>
 
-<div class="divider"></div>
-
 <!-- CONTACT -->
-<section id="iletisim" style="text-align:center;">
-  <span class="section-eyebrow">İletişim</span>
-  <h2 class="section-title" style="margin:0 auto 1rem;">Bir sorunuz mu var?</h2>
-  <p class="section-body" style="margin:0 auto 2rem;">
-    Sorularınız, iş birliği teklifleriniz veya erken demo talepleriniz için bize ulaşın.
-  </p>
+<section id="iletisim" class="contact-section">
+  <span class="eyebrow">İletişim</span>
+  <h2>Bir sorunuz mu var?</h2>
+  <p>Demo talebi, iş birliği veya erken erişim için bize ulaşın.</p>
   <a href="mailto:info@solarpeakai.com" class="btn-primary">info@solarpeakai.com</a>
 </section>
 
@@ -732,56 +520,52 @@
   <p class="footer-copy">© 2026 SolarPeakAI. Tüm hakları saklıdır.</p>
 </footer>
 
-<!-- PRIVACY MODAL / PAGE -->
+<!-- PRIVACY -->
 <div class="legal-page" id="privacy-page">
   <h1>Gizlilik Politikası</h1>
   <p>Son güncelleme: Temmuz 2026</p>
-
   <h2>1. Toplanan Veriler</h2>
-  <p>SolarPeakAI, yalnızca bekleme listesi kaydı sırasında e-posta adresinizi toplar. Herhangi bir kişisel ödeme bilgisi veya hassas veri talep edilmez.</p>
-
+  <p>SolarPeakAI, yalnızca bekleme listesi kaydı sırasında e-posta adresinizi toplar. Herhangi bir ödeme bilgisi veya hassas kişisel veri talep edilmez.</p>
   <h2>2. Verilerin Kullanımı</h2>
   <p>Toplanan e-posta adresi yalnızca platform lansmanı ve önemli güncellemeler hakkında bilgilendirme amacıyla kullanılır. Üçüncü taraflarla paylaşılmaz, satılmaz.</p>
-
   <h2>3. Veri Güvenliği</h2>
-  <p>E-posta adresleriniz endüstri standardı güvenlik önlemleriyle korunmaktadır. SolarPeakAI, verilerinizin yetkisiz erişime karşı güvende tutulması için gerekli teknik tedbirleri almaktadır.</p>
-
+  <p>E-posta adresleriniz endüstri standardı güvenlik önlemleriyle korunmaktadır.</p>
   <h2>4. Çerezler</h2>
   <p>Bu web sitesi şu an herhangi bir izleme çerezi kullanmamaktadır.</p>
-
   <h2>5. Haklarınız</h2>
   <p>Verilerinizin silinmesini talep etmek için info@solarpeakai.com adresine e-posta gönderebilirsiniz. Talebiniz 48 saat içinde işleme alınır.</p>
-
-  <h2>6. İletişim</h2>
-  <p>Gizlilik politikamıza ilişkin sorularınız için: info@solarpeakai.com</p>
-
-  <br />
+  <br/>
   <a href="#" onclick="hidePrivacy(event)" class="btn-ghost">← Geri Dön</a>
 </div>
 
 <script>
-  function handleSubmit(e) {
-    e.preventDefault();
-    const email = document.getElementById('email-input').value;
-    const msg = document.getElementById('form-msg');
-    msg.style.color = '#4caf50';
-    msg.textContent = '✓ Kaydınız alındı. Yakında görüşürüz.';
-    document.getElementById('email-input').value = '';
-  }
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible') })
+}, { threshold: 0.1 })
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
 
-  function showPrivacy(e) {
-    e.preventDefault();
-    document.getElementById('privacy-page').style.display = 'block';
-    document.querySelector('nav').style.display = 'none';
-    window.scrollTo(0, 0);
-  }
+// Waitlist form
+function handleSubmit(e) {
+  e.preventDefault()
+  const msg = document.getElementById('form-msg')
+  msg.style.color = '#4caf50'
+  msg.textContent = '✓ Kaydınız alındı. Yakında görüşürüz.'
+  document.getElementById('email-input').value = ''
+}
 
-  function hidePrivacy(e) {
-    e.preventDefault();
-    document.getElementById('privacy-page').style.display = 'none';
-    document.querySelector('nav').style.display = 'flex';
-  }
+// Privacy
+function showPrivacy(e) {
+  e.preventDefault()
+  document.getElementById('privacy-page').style.display = 'block'
+  document.querySelector('nav').style.display = 'none'
+  window.scrollTo(0,0)
+}
+function hidePrivacy(e) {
+  e.preventDefault()
+  document.getElementById('privacy-page').style.display = 'none'
+  document.querySelector('nav').style.display = 'flex'
+}
 </script>
-
 </body>
 </html>
