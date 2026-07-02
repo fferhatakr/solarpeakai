@@ -637,10 +637,18 @@ function showWaitlist(e){if(e)e.preventDefault(); hideAll(); document.getElement
 function showAbout(e){if(e)e.preventDefault(); hideAll(); document.getElementById('about-page').style.display='block'; window.scrollTo(0,0);}
 function showPrivacy(e){if(e)e.preventDefault(); hideAll(); document.getElementById('privacy-page').style.display='block'; window.scrollTo(0,0);}
 
-function handleWaitlist(e){
-e.preventDefault()
-document.getElementById('wl-form-wrap').style.display='none'
-document.getElementById('success-msg').style.display='block'
+async function handleWaitlist(e){
+  e.preventDefault()
+  const form = document.getElementById('wl-form')
+  
+  await fetch('https://formspree.io/f/mojopajz', {
+    method:'POST',
+    headers:{'Accept':'application/json'},
+    body:new FormData(form)
+  })
+  
+  document.getElementById('wl-form-wrap').style.display='none'
+  document.getElementById('success-msg').style.display='block'
 }
 </script>
 </body>
