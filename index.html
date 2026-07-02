@@ -499,17 +499,17 @@ Güneş enerjisi Türkiye'nin geleceği.<br>
 <h1>Erken Erişim</h1>
 <p class="wl-sub">Platform yayına girdiğinde ilk siz haberdar olun. Erken erişim listesindeki kullanıcılara özel fiyatlandırma uygulanacak.</p>
 <div id="wl-form-wrap">
-<form id="wl-form" onsubmit="handleWaitlist(event)">
+<form onsubmit="handleWaitlist(event)">
 <div class="form-row">
-<div><label>Ad <span class="req">*</span></label><input type="text" name = "Ad" placeholder="Adınız" required/></div>
-<div><label>Soyad <span class="req">*</span></label><input type="text" name = "Soyad" placeholder="Soyadınız" required/></div>
+<div><label>Ad <span class="req">*</span></label><input type="text" placeholder="Adınız" required/></div>
+<div><label>Soyad <span class="req">*</span></label><input type="text" placeholder="Soyadınız" required/></div>
 </div>
-<div class="form-group"><label>E-posta <span class="req">*</span></label><input type="email" name = "E-posta" placeholder="ornek@sirket.com" required/></div>
-<div class="form-group"><label>Telefon <span class="req">*</span></label><input type="tel" name = "Telefon" placeholder="+90 5XX XXX XX XX" required/></div>
-<div class="form-group"><label>Şirket / İşletme Adı</label><input type="text" name = "Şirket" placeholder="Şirketinizin adı (opsiyonel)"/></div>
+<div class="form-group"><label>E-posta <span class="req">*</span></label><input type="email" placeholder="ornek@sirket.com" required/></div>
+<div class="form-group"><label>Telefon <span class="req">*</span></label><input type="tel" placeholder="+90 5XX XXX XX XX" required/></div>
+<div class="form-group"><label>Şirket / İşletme Adı</label><input type="text" placeholder="Şirketinizin adı (opsiyonel)"/></div>
 <div class="form-group">
 <label>Rolünüz</label>
-<select name="Rol">
+<select>
 <option value="" disabled selected>Seçiniz</option>
 <option>GES Sahibi / Yatırımcı</option>
 <option>Şirket Yöneticisi</option>
@@ -637,20 +637,10 @@ function showWaitlist(e){if(e)e.preventDefault(); hideAll(); document.getElement
 function showAbout(e){if(e)e.preventDefault(); hideAll(); document.getElementById('about-page').style.display='block'; window.scrollTo(0,0);}
 function showPrivacy(e){if(e)e.preventDefault(); hideAll(); document.getElementById('privacy-page').style.display='block'; window.scrollTo(0,0);}
 
-async function handleWaitlist(e){
-  e.preventDefault()
-  const form = document.getElementById('wl-form')
-  const data = Object.fromEntries(new FormData(form))
-  data.tarih = new Date().toLocaleString('tr-TR')
-  
-  await fetch('https://hook.eu1.make.com/icfhvqwk5ybgbmkf9vnjy9t4h189q8c2', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(data)
-  })
-  
-  document.getElementById('wl-form-wrap').style.display='none'
-  document.getElementById('success-msg').style.display='block'
+function handleWaitlist(e){
+e.preventDefault()
+document.getElementById('wl-form-wrap').style.display='none'
+document.getElementById('success-msg').style.display='block'
 }
 </script>
 </body>
