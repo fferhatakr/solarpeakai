@@ -3,348 +3,402 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SolarPeakAI — Güneş Panelinizi Koruyun</title>
+<title>SolarPeakAI — GES Anomali Tespiti ve Karar Destek Platformu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
+:root{
+--void:#FFFFFF;
+--panel:#F5F5F7;
+--panel-raised:#FBFBFD;
+--line:rgba(0,0,0,.08);
+--line-strong:rgba(0,0,0,.14);
+--ink:#1D1D1F;
+--ink-2:rgba(29,29,31,.62);
+--ink-3:rgba(29,29,31,.42);
+--hot:#FF3B30;
+--hot-dim:rgba(255,59,48,.10);
+--cool:#0071E3;
+--cool-dim:rgba(0,113,227,.08);
+--disp:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica Neue,Arial,sans-serif;
+--body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica Neue,Arial,sans-serif;
+--mono:'IBM Plex Mono',ui-monospace,monospace;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:#fff;color:#1d1d1f;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--void);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:var(--disp)}
+a{color:inherit}
+.mono{font-family:var(--mono)}
+.eyebrow{
+font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+color:rgba(29,29,31,.5);display:inline-block;margin-bottom:1.1rem;
+}
+.eyebrow::before{content:'// ';color:var(--ink-3)}
+section{padding:100px 6vw}
+.section-head{max-width:640px;margin-bottom:3.5rem}
+.section-head h2{font-size:clamp(1.9rem,3.6vw,2.7rem);font-weight:600;letter-spacing:-.03em;line-height:1.15;color:var(--ink);margin-bottom:1rem}
+.section-head p{font-size:1rem;font-weight:300;color:var(--ink-2);line-height:1.7;max-width:520px}
+
+/* GRID BACKDROP */
+.grid-bg{
+position:absolute;inset:0;pointer-events:none;
+background-image:
+linear-gradient(var(--line) 1px,transparent 1px),
+linear-gradient(90deg,var(--line) 1px,transparent 1px);
+background-size:56px 56px;
+mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 40%,transparent 100%);
+opacity:.5;
+}
+
+/* CORNER FRAME (bounding-box motif) */
+.frame{position:relative}
+.frame .corner{position:absolute;width:16px;height:16px;border-color:var(--ink-3);border-style:solid;opacity:.5}
+.frame .corner.tl{top:-1px;left:-1px;border-width:1.5px 0 0 1.5px}
+.frame .corner.tr{top:-1px;right:-1px;border-width:1.5px 1.5px 0 0}
+.frame .corner.bl{bottom:-1px;left:-1px;border-width:0 0 1.5px 1.5px}
+.frame .corner.br{bottom:-1px;right:-1px;border-width:0 1.5px 1.5px 0}
 
 /* NAV */
 nav{
 position:fixed;top:0;left:0;right:0;z-index:500;
 height:52px;display:flex;align-items:center;justify-content:space-between;
 padding:0 5vw;
-background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(20px);
-border-bottom:1px solid rgba(0,0,0,.08);
+background:rgba(255,255,255,.78);backdrop-filter:saturate(180%) blur(20px);
+border-bottom:1px solid var(--line);
 }
-.logo{font-size:.95rem;font-weight:600;color:#1d1d1f;text-decoration:none;letter-spacing:-.01em}
+.logo{display:flex;align-items:center;gap:.55rem;text-decoration:none}
+.logo-mark{width:8px;height:8px;background:var(--ink);border-radius:2px}
+.logo-word{font-family:var(--mono);font-size:.82rem;font-weight:500;letter-spacing:.02em;color:var(--ink)}
 .nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:.82rem;color:rgba(29,29,31,.55);text-decoration:none;transition:color .2s}
-.nav-links a:hover{color:#1d1d1f}
+.nav-links a{font-family:var(--body);font-size:.82rem;font-weight:400;color:var(--ink-2);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
 .nav-cta{
-background:#1d1d1f;color:#fff;
-padding:.5rem 1.2rem;border-radius:980px;
-font-size:.82rem;font-weight:500;text-decoration:none;transition:opacity .2s;
+background:var(--ink);color:#FFFFFF;
+padding:.5rem 1.15rem;border-radius:980px;
+font-family:var(--body);font-size:.8rem;font-weight:400;letter-spacing:0;text-decoration:none;transition:opacity .2s;
 }
 .nav-cta:hover{opacity:.78}
 
 /* HERO */
 .hero{
-position:relative;height:100vh;min-height:600px;
-display:flex;flex-direction:column;
-align-items:center;justify-content:center;
-text-align:center;padding:52px 5vw 0;overflow:hidden;
+position:relative;min-height:100vh;display:flex;align-items:center;padding:120px 6vw 60px;overflow:hidden;
+background:linear-gradient(180deg,#FFFFFF 0%,#FBFBFD 60%,#F5F5F7 100%);
 }
-.hero-img{position:absolute;inset:0;background:url('images/hero.jpg') center/cover no-repeat;z-index:0}
-.hero-overlay{
-position:absolute;inset:0;
-background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.55) 60%,rgba(0,0,0,.75) 100%);
-z-index:1;
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr .95fr;gap:4vw;align-items:center;max-width:1300px;margin:0 auto;width:100%}
+.hero-kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;color:rgba(29,29,31,.5);text-transform:uppercase;margin-bottom:1.4rem;display:block}
+.hero-kicker::before{content:'// ';color:var(--ink-3)}
+.hero h1{font-size:clamp(2.4rem,4.6vw,4.1rem);font-weight:600;letter-spacing:-.03em;line-height:1.05;color:var(--ink);margin-bottom:1.4rem}
+.hero-sub{font-size:1.05rem;font-weight:300;color:var(--ink-2);max-width:460px;margin-bottom:2.1rem;line-height:1.7}
+.hero-btns{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:2.2rem}
+.btn-primary{
+background:var(--ink);color:#FFFFFF;border:none;
+padding:.8rem 1.6rem;border-radius:980px;
+font-family:var(--body);font-size:.9rem;font-weight:400;cursor:pointer;
+text-decoration:none;transition:opacity .2s;display:inline-block;
 }
-.hero-content{position:relative;z-index:2}
-.hero-kicker{
-font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
-color:rgba(255,255,255,.6);margin-bottom:1.25rem;display:block;
+.btn-primary:hover{opacity:.78}
+.btn-ghost{
+background:transparent;color:var(--ink);
+border:1px solid var(--line-strong);
+padding:.8rem 1.6rem;border-radius:980px;
+font-family:var(--body);font-size:.9rem;cursor:pointer;
+text-decoration:none;transition:all .2s;display:inline-block;
 }
-.hero h1{
-font-size:clamp(3rem,8vw,7rem);font-weight:700;
-letter-spacing:-.05em;line-height:.98;
-color:#fff;max-width:860px;margin-bottom:1.5rem;
-}
-.hero h1 em{font-style:italic;font-weight:200;color:rgba(255,255,255,.65);display:block;font-size:.85em}
-.hero-sub{
-font-size:clamp(1rem,1.8vw,1.2rem);font-weight:300;
-color:rgba(255,255,255,.7);max-width:480px;
-margin:0 auto 2.5rem;line-height:1.6;
-}
-.hero-btns{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
-.btn-white{
-background:#fff;color:#1d1d1f;border:none;
-padding:.78rem 1.8rem;border-radius:980px;
-font-size:.9rem;font-weight:500;cursor:pointer;
-text-decoration:none;transition:opacity .2s;
-}
-.btn-white:hover{opacity:.85}
-.btn-outline-white{
-background:transparent;color:#fff;
-border:1px solid rgba(255,255,255,.4);
-padding:.78rem 1.8rem;border-radius:980px;
-font-size:.9rem;font-weight:400;cursor:pointer;
-text-decoration:none;transition:all .2s;
-}
-.btn-outline-white:hover{border-color:rgba(255,255,255,.8)}
+.btn-ghost:hover{border-color:var(--cool);color:var(--cool)}
+.hero-meta{display:flex;gap:.7rem;align-items:center;font-size:.75rem;color:var(--ink-3);flex-wrap:wrap}
+.hero-meta .dot{color:var(--line-strong)}
 
-/* COUNTDOWN - DÜZELTİLDİ */
-.countdown-bar{
-background:#1d1d1f;
-padding:1rem 5vw;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:1.2rem;
-flex-wrap:wrap;
-text-align:center;
-}
-.cd-label{
-font-size:.78rem;
-font-weight:500;
-letter-spacing:.08em;
-text-transform:uppercase;
-color:rgba(255,255,255,.65);
-white-space:nowrap;
-}
-.cd-units{
-display:flex;
-align-items:center;
-gap:0.8rem;
-flex-wrap:wrap;
-justify-content:center;
-}
-.cd-unit{
-text-align:center;
-min-width:65px;
-}
-.cd-num{
-font-size:1.65rem;
-font-weight:700;
-color:#fff;
-letter-spacing:-.03em;
-display:block;
-line-height:1;
-font-variant-numeric:tabular-nums;
-}
-.cd-sub{
-font-size:.62rem;
-color:rgba(255,255,255,.45);
-text-transform:uppercase;
-letter-spacing:.06em;
-margin-top:4px;
-display:block;
-}
-.cd-sep{
-font-size:1.4rem;
-color:rgba(255,255,255,.25);
-margin:0 4px;
-}
+.hero-visual{padding:28px 22px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+.hero-visual svg{width:100%;height:auto;display:block}
+.pulse-ring{animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{opacity:.9;r:7}70%{opacity:0;r:22}100%{opacity:0;r:22}}
+.tag-box{opacity:0;animation:fadeup .7s ease-out .5s forwards}
+@keyframes fadeup{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* SCAN */
-.scan-section{display:grid;grid-template-columns:1fr 1fr;min-height:580px}
-.scan-img{background:url('images/scan.jpg') center/cover no-repeat}
-.scan-text{
-background:#f5f5f7;
-display:flex;flex-direction:column;justify-content:center;
-padding:80px 6vw;
+/* DRONE FLIGHT */
+.drone-fly{position:absolute;top:16%;left:-220px;width:220px;height:80px;z-index:1;pointer-events:none;animation:droneFly 19s linear infinite}
+.drone-fly svg{width:100%;height:100%;overflow:visible}
+.propeller-spin{animation:propSpin .35s linear infinite;transform-origin:0 0}
+@keyframes propSpin{to{transform:rotate(360deg)}}
+@keyframes droneFly{
+0%{transform:translate(0,0)}
+20%{transform:translate(26vw,-34px)}
+40%{transform:translate(48vw,18px)}
+60%{transform:translate(66vw,-22px)}
+80%{transform:translate(88vw,12px)}
+100%{transform:translate(118vw,-6px)}
 }
-.eyebrow{
-font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-color:rgba(29,29,31,.4);display:block;margin-bottom:1rem;
-}
-.scan-text h2{
-font-size:clamp(2rem,3.5vw,3rem);font-weight:600;
-letter-spacing:-.03em;line-height:1.08;color:#1d1d1f;margin-bottom:1.25rem;
-}
-.scan-text p{font-size:1rem;font-weight:300;color:rgba(29,29,31,.6);line-height:1.75;max-width:420px}
+@media(prefers-reduced-motion:reduce){.drone-fly{display:none}}
 
-/* HOW */
-.how-section{background:#fff;padding:100px 5vw}
-.how-header{text-align:center;margin-bottom:4rem}
-.how-header h2{
-font-size:clamp(2rem,4vw,3.5rem);font-weight:600;
-letter-spacing:-.04em;color:#1d1d1f;margin-bottom:.75rem;
+/* STAT BAR */
+.stat-bar{
+display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+background:var(--panel);
 }
-.how-header p{font-size:1.05rem;font-weight:300;color:rgba(29,29,31,.5);max-width:480px;margin:0 auto}
-.how-img{width:100%;max-width:1000px;margin:0 auto 4rem;border-radius:20px;overflow:hidden;display:block}
-.how-img img{width:100%;height:420px;object-fit:cover;display:block}
-.how-steps{
-display:grid;grid-template-columns:repeat(3,1fr);
-gap:1px;background:rgba(0,0,0,.06);
-border:1px solid rgba(0,0,0,.06);border-radius:18px;overflow:hidden;
-max-width:1000px;margin:0 auto;
-}
-.how-step{background:#fff;padding:2.5rem 2rem}
-.step-num{font-size:.7rem;font-weight:500;letter-spacing:.08em;color:rgba(29,29,31,.3);display:block;margin-bottom:1.5rem}
-.how-step h3{font-size:1rem;font-weight:600;color:#1d1d1f;margin-bottom:.6rem}
-.how-step p{font-size:.875rem;color:rgba(29,29,31,.5);line-height:1.65}
+.stat-cell{flex:1;min-width:150px;padding:1.6rem 2vw;border-right:1px solid var(--line)}
+.stat-cell:last-child{border-right:none}
+.stat-num{font-family:var(--disp);font-size:1.7rem;font-weight:700;color:var(--ink);letter-spacing:-.02em;display:block}
+.stat-num span{color:var(--hot)}
+.stat-label{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase;margin-top:.3rem;display:block}
 
-/* PHONE */
-.phone-section{
-background:#f5f5f7;
-display:grid;grid-template-columns:1fr 1fr;
-min-height:680px;align-items:center;
+/* PROBLEM / COMPARISON */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);max-width:1000px}
+.compare-col{background:var(--void);padding:2.4rem 2rem;border-radius:18px}
+.compare-col.hi{background:var(--panel)}
+.compare-label{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.4rem;display:block}
+.compare-col:not(.hi) .compare-label{color:var(--ink-3)}
+.compare-col.hi .compare-label{color:var(--cool)}
+.compare-item{display:flex;gap:.7rem;margin-bottom:1.1rem;font-size:.9rem;line-height:1.6;color:var(--ink-2)}
+.compare-item .mark{flex-shrink:0;font-family:var(--mono);font-size:.8rem;margin-top:.15rem}
+.compare-col:not(.hi) .mark{color:rgba(255,59,48,.75)}
+.compare-col.hi .mark{color:var(--cool)}
+
+/* PIPELINE */
+.pipeline{padding:2.6rem 2vw 2rem;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow-x:auto}
+.pipeline-track{display:flex;align-items:stretch;gap:0;min-width:820px}
+.pipe-node{flex:1;position:relative;padding:0 1.4rem}
+.pipe-node:not(:last-child)::after{
+content:'';position:absolute;top:19px;right:-2px;width:calc(100% - 20px);height:1px;background:var(--line-strong);
 }
-.phone-img{display:flex;align-items:center;justify-content:center;padding:60px 4vw}
-.phone-img img{
-max-width:420px;width:100%;
-filter:drop-shadow(0 40px 80px rgba(0,0,0,.18));
+.pipe-num{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);display:block;margin-bottom:1rem}
+.pipe-node h4{font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:.5rem;letter-spacing:-.01em}
+.pipe-node p{font-size:.78rem;color:var(--ink-3);line-height:1.55}
+
+/* CAPABILITY */
+.cap-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);max-width:1100px}
+.cap-col{background:var(--void);padding:2.2rem 1.9rem;border-radius:18px}
+.cap-col.now{background:var(--panel)}
+.cap-tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:4px;display:inline-block;margin-bottom:1.2rem}
+.cap-col.now .cap-tag{background:var(--cool-dim);color:var(--cool)}
+.cap-col:not(.now) .cap-tag{background:rgba(0,0,0,.045);color:var(--ink-3)}
+.cap-col h4{font-size:1rem;font-weight:600;margin-bottom:1rem;color:var(--ink)}
+.cap-list{list-style:none;font-size:.85rem;color:var(--ink-2);line-height:2}
+.cap-list li{padding-left:1.1rem;position:relative}
+.cap-col.now .cap-list li::before{content:'✓';position:absolute;left:0;color:var(--cool);font-family:var(--mono);font-size:.75rem}
+.cap-col:not(.now) .cap-list li::before{content:'—';position:absolute;left:0;color:var(--ink-3);font-family:var(--mono)}
+.cap-note{font-size:.78rem;color:var(--ink-3);margin-top:2.4rem;max-width:640px;line-height:1.7}
+
+/* REALISTIC PHONE MOCKUP */
+.app-section{display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;align-items:center}
+.phone-frame{
+position:relative;width:278px;margin:0 auto;padding:12px;border-radius:48px;
+background:linear-gradient(150deg,#2c333c,#14181d 55%,#1c222a);
+box-shadow:0 60px 110px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.07);
 }
-.phone-text{padding:80px 6vw 80px 4vw}
-.phone-text h2{
-font-size:clamp(2rem,3.5vw,3rem);font-weight:600;
-letter-spacing:-.03em;line-height:1.08;color:#1d1d1f;margin-bottom:1.5rem;
+.btn-side{position:absolute;background:#0a0c0f;border:1px solid rgba(255,255,255,.06)}
+.btn-power{right:-2px;top:132px;width:3px;height:62px;border-radius:0 3px 3px 0}
+.btn-vol-up{left:-2px;top:108px;width:3px;height:34px;border-radius:3px 0 0 3px}
+.btn-vol-down{left:-2px;top:150px;width:3px;height:34px;border-radius:3px 0 0 3px}
+.phone-screen{position:relative;background:#FFFFFF;border-radius:38px;overflow:hidden;border:2px solid #000;min-height:540px;display:flex;flex-direction:column}
+.phone-notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:86px;height:23px;background:#000;border-radius:14px;z-index:5;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.phone-statusbar{display:flex;justify-content:space-between;align-items:center;padding:16px 22px 6px;font-family:var(--mono);font-size:.62rem;color:var(--ink-2);letter-spacing:.02em}
+.phone-statusbar .ico-row{display:flex;gap:4px;align-items:center}
+.phone-appbar{display:flex;align-items:center;gap:.5rem;padding:12px 18px 13px;border-bottom:1px solid var(--line)}
+.phone-appbar .am{width:7px;height:7px;background:#1D1D1F;border-radius:2px}
+.phone-appbar .aw{font-family:var(--mono);font-size:.68rem;color:var(--ink);letter-spacing:.03em;flex:1}
+.phone-appbar .bell{opacity:.5}
+.phone-map{margin:12px 14px 10px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
+.phone-map svg{width:100%;display:block}
+.phone-map-tag{position:absolute}
+.phone-body{flex:1;padding:0 14px 6px;overflow:hidden}
+.phone-list-label{font-family:var(--mono);font-size:.6rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin:2px 0 8px}
+.phone-navbar{display:flex;justify-content:space-around;padding:11px 0 8px;border-top:1px solid var(--line);background:var(--panel-raised)}
+.pnav-item{display:flex;flex-direction:column;align-items:center;gap:3px}
+.pnav-item svg{opacity:.4}
+.pnav-item.active svg{opacity:1}
+.pnav-label{font-family:var(--mono);font-size:.52rem;color:var(--ink-3)}
+.pnav-item.active .pnav-label{color:var(--cool)}
+.phone-home{width:92px;height:4px;background:rgba(0,0,0,.2);border-radius:3px;margin:8px auto 10px}
+.pm-row{background:var(--panel-raised);border:1px solid var(--line);border-radius:8px;padding:.65rem .8rem;margin-bottom:.55rem}
+.pm-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
+.pm-id{font-family:var(--mono);font-size:.72rem;color:var(--ink)}
+.pm-dot{width:7px;height:7px;border-radius:50%}
+.pm-dot.done{background:var(--cool)}
+.pm-dot.busy{background:var(--hot)}
+.pm-status{font-family:var(--mono);font-size:.62rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+.app-feats h2{font-size:clamp(1.9rem,3.6vw,2.7rem);font-weight:600;letter-spacing:-.03em;line-height:1.1;color:var(--ink);margin-bottom:2.2rem}
+.feat-item{display:flex;gap:1rem;margin-bottom:1.6rem;align-items:flex-start}
+.fi-icon{width:32px;height:32px;flex-shrink:0;border:1px solid var(--line-strong);border-radius:6px;display:flex;align-items:center;justify-content:center;margin-top:.1rem}
+.fi-h{font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.fi-p{font-size:.83rem;color:var(--ink-3);line-height:1.6}
+
+/* MARKET */
+.market-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);max-width:1000px;margin-bottom:1.2rem}
+.market-card{background:var(--void);padding:2rem 1.8rem;border-radius:18px}
+.market-num{font-family:var(--disp);font-size:2.4rem;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.market-label{font-size:.85rem;color:var(--ink-2);margin-top:.5rem;line-height:1.5}
+.market-source{font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
+
+/* REPORT PREVIEW */
+.report-preview{background:var(--panel);padding:1.9rem 2.1rem;max-width:800px;border-radius:18px}
+.report-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.report-title{font-size:.76rem;color:var(--ink);letter-spacing:.03em}
+.report-date{font-size:.72rem;color:var(--ink-3)}
+.report-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.report-table th{text-align:left;font-family:var(--mono);font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);padding-bottom:.6rem;border-bottom:1px solid var(--line);font-weight:500}
+.report-table td{padding:.75rem 0;border-bottom:1px solid var(--line);color:var(--ink-2);font-size:.85rem}
+.report-table tr:last-child td{border-bottom:none}
+.tag{font-family:var(--mono);font-size:.68rem;padding:.22rem .6rem;border-radius:4px;white-space:nowrap}
+.tag.hot{background:var(--hot-dim);color:var(--hot)}
+.tag.soil{background:rgba(0,0,0,.055);color:var(--ink-2)}
+.tag.warn{background:rgba(255,59,48,.08);color:#B23A28}
+
+/* FAQ */
+.faq-list{max-width:740px}
+.faq-item{border-bottom:1px solid var(--line);padding:1.35rem 0}
+.faq-item summary{cursor:pointer;font-family:var(--disp);font-size:1rem;font-weight:600;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'+';font-family:var(--mono);color:rgba(29,29,31,.45);font-size:1.3rem;flex-shrink:0}
+.faq-item[open] summary::after{content:'−'}
+.faq-item p{font-size:.88rem;color:var(--ink-2);line-height:1.75;margin-top:.9rem;max-width:600px}
+
+/* FOUNDER */
+.founder-card{display:flex;gap:1.1rem;align-items:center;background:var(--panel);border:1px solid var(--line);padding:1.3rem 1.5rem;margin-top:1rem;border-radius:18px}
+.founder-avatar{width:52px;height:52px;border-radius:50%;background:var(--panel-raised);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--cool);flex-shrink:0}
+.founder-name{font-size:1rem;font-weight:600;color:var(--ink);font-family:var(--disp)}
+.founder-role{font-size:.75rem;color:var(--ink-3);margin-top:.15rem;font-family:var(--mono)}
+
+/* STICKY CTA */
+.sticky-cta{
+position:fixed;bottom:24px;right:24px;z-index:400;
+background:var(--ink);color:#FFFFFF;
+padding:.8rem 1.4rem;border-radius:980px;
+font-family:var(--body);font-size:.88rem;font-weight:400;text-decoration:none;
+box-shadow:0 16px 34px rgba(0,0,0,.2);
+opacity:0;transform:translateY(16px);pointer-events:none;
+transition:opacity .3s,transform .3s;
 }
-.feat-item{display:flex;gap:.9rem;margin-bottom:1.5rem;align-items:flex-start}
-.fi-icon{
-width:30px;height:30px;flex-shrink:0;border-radius:7px;
-background:rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;margin-top:.1rem;
-}
-.fi-h{font-size:.875rem;font-weight:500;color:#1d1d1f;margin-bottom:.2rem}
-.fi-p{font-size:.8rem;color:rgba(29,29,31,.45);line-height:1.6}
+.sticky-cta.show{opacity:1;transform:none;pointer-events:auto}
+@media(max-width:640px){.sticky-cta{left:16px;right:16px;bottom:16px;text-align:center}}
 
 /* MISSION */
-.mission-section{background:#1d1d1f;padding:120px 5vw;text-align:center}
-.mission-inner{max-width:680px;margin:0 auto}
-.mission-kicker{
-font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-color:rgba(245,245,247,.3);display:block;margin-bottom:2rem;
-}
-.mission-q{
-font-size:clamp(1.8rem,4vw,3rem);font-weight:300;
-letter-spacing:-.025em;line-height:1.3;
-color:rgba(245,245,247,.85);margin-bottom:3rem;font-style:italic;
-}
-.mission-q strong{font-weight:700;font-style:normal;color:#f5f5f7}
-.btn-light{
-background:#f5f5f7;color:#1d1d1f;border:none;
-padding:.82rem 2rem;border-radius:980px;
-font-size:.95rem;font-weight:500;cursor:pointer;
-text-decoration:none;transition:opacity .2s;
-}
-.btn-light:hover{opacity:.85}
+.mission-section{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
+.mission-inner{max-width:700px;margin:0 auto}
+.mission-q{font-size:clamp(1.5rem,3.2vw,2.3rem);font-weight:300;letter-spacing:-.02em;line-height:1.4;color:var(--ink-2);margin-bottom:2.4rem}
+.mission-q strong{font-weight:600;color:var(--ink);font-family:var(--disp)}
+
+/* TRANSPARENCY */
+.transparency{text-align:center;padding:64px 6vw}
+.transparency p{font-size:.85rem;color:var(--ink-3);max-width:660px;margin:0 auto;line-height:1.8}
+
+/* CONTACT */
+.contact-section{text-align:center;background:var(--panel);border-top:1px solid var(--line)}
+.contact-section h2{font-size:1.7rem;font-weight:600;letter-spacing:-.02em;color:var(--ink);margin-bottom:.6rem}
+.contact-section p{font-size:.9rem;color:var(--ink-3);margin-bottom:1.6rem}
+.contact-section a.mail{color:var(--ink);font-family:var(--mono);font-size:.88rem;text-decoration:none;border-bottom:1px solid rgba(29,29,31,.3);padding-bottom:.15rem}
 
 /* FOOTER */
-footer{background:#f5f5f7;border-top:1px solid rgba(0,0,0,.08);padding:2rem 5vw}
-.footer-inner{
-max-width:1100px;margin:0 auto;
-display:flex;align-items:center;justify-content:space-between;
-flex-wrap:wrap;gap:1rem;
-}
-.footer-logo{font-size:.85rem;font-weight:600;color:rgba(29,29,31,.5)}
-.footer-links{display:flex;gap:1.5rem;list-style:none;flex-wrap:wrap}
-.footer-links a{font-size:.78rem;color:rgba(29,29,31,.35);text-decoration:none;transition:color .2s}
-.footer-links a:hover{color:rgba(29,29,31,.7)}
-.footer-copy{font-size:.72rem;color:rgba(29,29,31,.25);width:100%}
+footer{background:var(--void);border-top:1px solid var(--line);padding:2.2rem 5vw}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{font-family:var(--mono);font-size:.8rem;color:var(--ink-3)}
+.footer-links{display:flex;gap:1.6rem;list-style:none;flex-wrap:wrap}
+.footer-links a{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--cool)}
+.footer-copy{font-family:var(--mono);font-size:.68rem;color:rgba(29,29,31,.35);width:100%}
 
-/* WAITLIST PAGE */
-.waitlist-page{display:none;min-height:100vh;background:#f5f5f7;padding:100px 5vw 80px}
+/* SECONDARY PAGES */
+.waitlist-page,.about-page,.privacy-page{display:none}
+.waitlist-page{min-height:100vh;background:var(--void);padding:130px 5vw 80px}
 .wl-inner{max-width:560px;margin:0 auto}
-.wl-back{
-display:inline-flex;align-items:center;gap:.4rem;
-font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none;
-margin-bottom:3rem;transition:color .2s;
-}
-.wl-back:hover{color:#1d1d1f}
-.wl-inner h1{
-font-size:clamp(2rem,4vw,3rem);font-weight:600;
-letter-spacing:-.035em;color:#1d1d1f;margin-bottom:.75rem;
-}
-.wl-sub{font-size:1rem;font-weight:300;color:rgba(29,29,31,.5);margin-bottom:3rem;line-height:1.6}
+.wl-back,.ab-back,.pv-back{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.78rem;color:var(--ink-3);text-decoration:none;margin-bottom:3rem;transition:color .2s}
+.wl-back:hover,.ab-back:hover,.pv-back:hover{color:var(--cool)}
+.wl-inner h1{font-size:clamp(1.9rem,3.6vw,2.6rem);font-weight:600;letter-spacing:-.03em;color:var(--ink);margin-bottom:.75rem}
+.wl-sub{font-size:.95rem;font-weight:300;color:var(--ink-2);margin-bottom:2.6rem;line-height:1.6}
 .form-group{margin-bottom:1.25rem}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
-label{display:block;font-size:.78rem;font-weight:500;color:rgba(29,29,31,.55);margin-bottom:.4rem;letter-spacing:.02em}
-label .req{color:#ff453a;margin-left:.2rem}
+label{display:block;font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--ink-3);margin-bottom:.45rem;letter-spacing:.03em;text-transform:uppercase}
+label .req{color:var(--hot);margin-left:.2rem}
 input,select{
-width:100%;background:#fff;
-border:1px solid rgba(0,0,0,.12);
-border-radius:10px;padding:.82rem 1rem;
-color:#1d1d1f;font-size:.9rem;font-family:'Inter',sans-serif;
-outline:none;transition:border-color .2s;
+width:100%;background:var(--panel);
+border:1px solid var(--line-strong);
+border-radius:12px;padding:.82rem 1rem;
+color:var(--ink);font-size:.9rem;font-family:var(--body);
+outline:none;transition:border-color .2s,box-shadow .2s;
 -webkit-appearance:none;appearance:none;
 }
-input::placeholder{color:rgba(29,29,31,.28)}
-input:focus,select:focus{border-color:#1d1d1f}
+input::placeholder{color:var(--ink-3)}
+input:focus,select:focus{border-color:var(--cool);box-shadow:0 0 0 4px var(--cool-dim)}
 select{
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231d1d1f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E6E73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
 background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;
 }
 .btn-submit{
-width:100%;background:#1d1d1f;color:#fff;border:none;
-padding:.9rem;border-radius:10px;
-font-size:.95rem;font-weight:500;cursor:pointer;
-transition:opacity .2s;margin-top:.5rem;font-family:'Inter',sans-serif;
+width:100%;background:var(--ink);color:#FFFFFF;border:none;
+padding:.9rem;border-radius:980px;
+font-family:var(--body);font-size:.95rem;font-weight:400;cursor:pointer;
+transition:opacity .2s;margin-top:.5rem;
 }
-.btn-submit:hover{opacity:.78}
-.wl-note{font-size:.75rem;color:rgba(29,29,31,.3);text-align:center;margin-top:1rem}
+.btn-submit:hover{opacity:.8}
+.wl-note{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);text-align:center;margin-top:1rem}
 .success-msg{display:none;text-align:center;padding:3rem 0}
 .success-msg .check{
 width:56px;height:56px;border-radius:50%;
-background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.2);
+background:var(--cool-dim);border:1px solid rgba(0,113,227,.3);
 display:flex;align-items:center;justify-content:center;
-margin:0 auto 1.5rem;font-size:1.4rem;
+margin:0 auto 1.5rem;font-size:1.4rem;color:var(--cool);
 }
-.success-msg h2{font-size:1.5rem;font-weight:600;color:#1d1d1f;margin-bottom:.6rem}
-.success-msg p{font-size:.9rem;color:rgba(29,29,31,.5)}
+.success-msg h2{font-size:1.4rem;font-weight:600;color:var(--ink);margin-bottom:.6rem}
+.success-msg p{font-size:.9rem;color:var(--ink-3)}
 
-/* HAKKIMIZDA PAGE */
-.about-page{display:none;min-height:100vh;background:#fff;padding:100px 5vw 80px}
+.about-page{background:var(--void);padding:130px 5vw 80px}
 .about-inner{max-width:760px;margin:0 auto}
-.about-hero{
-background:#1d1d1f;border-radius:20px;padding:60px 5vw;
-margin-bottom:4rem;text-align:center;
-}
-.about-hero h1{
-font-size:clamp(2rem,5vw,4rem);font-weight:700;
-letter-spacing:-.04em;color:#fff;margin-bottom:1rem;line-height:1.05;
-}
-.about-hero p{font-size:1.1rem;font-weight:300;color:rgba(245,245,247,.6);line-height:1.7;max-width:520px;margin:0 auto}
+.about-hero{background:var(--panel);border:1px solid var(--line);padding:60px 5vw;margin-bottom:4rem;text-align:center;border-radius:24px}
+.about-hero h1{font-size:clamp(1.9rem,4.4vw,3.2rem);font-weight:600;letter-spacing:-.03em;color:var(--ink);margin-bottom:1rem;line-height:1.15}
+.about-hero p{font-size:1.05rem;font-weight:300;color:var(--ink-2);line-height:1.7;max-width:540px;margin:0 auto}
 .about-section{margin-bottom:3.5rem}
-.about-section h2{
-font-size:1.4rem;font-weight:600;color:#1d1d1f;
-letter-spacing:-.02em;margin-bottom:1rem;
-}
-.about-section p{font-size:.95rem;color:rgba(29,29,31,.6);line-height:1.8;margin-bottom:.75rem}
-.about-values{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.5rem}
-.about-val{
-background:#f5f5f7;border-radius:12px;padding:1.5rem;
-}
-.about-val h3{font-size:.9rem;font-weight:600;color:#1d1d1f;margin-bottom:.4rem}
-.about-val p{font-size:.82rem;color:rgba(29,29,31,.5);line-height:1.6}
-.tech-stack{
-display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;
-}
-.tech-tag{
-font-size:.75rem;font-weight:500;
-background:#f5f5f7;color:rgba(29,29,31,.6);
-border:1px solid rgba(0,0,0,.08);
-padding:.3rem .75rem;border-radius:980px;
-}
+.about-section h2{font-size:1.3rem;font-weight:600;color:var(--ink);letter-spacing:-.01em;margin-bottom:1rem}
+.about-section p{font-size:.93rem;color:var(--ink-2);line-height:1.8;margin-bottom:.75rem}
+.about-values{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:1.5rem}
+.about-val{background:var(--panel);padding:1.5rem;border-radius:16px}
+.about-val h3{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.4rem;font-family:var(--mono)}
+.about-val p{font-size:.82rem;color:var(--ink-3);line-height:1.6}
+.tech-stack{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.tech-tag{font-family:var(--mono);font-size:.72rem;color:var(--cool);background:var(--cool-dim);border:1px solid rgba(0,113,227,.22);padding:.32rem .7rem;border-radius:6px}
 
-/* PRIVACY PAGE */
-.privacy-page{display:none;max-width:680px;margin:100px auto 80px;padding:0 5vw}
-.privacy-page h1{font-size:2rem;font-weight:600;color:#1d1d1f;margin-bottom:2rem;letter-spacing:-.02em}
-.privacy-page h2{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(29,29,31,.4);margin:2rem 0 .5rem}
-.privacy-page p{font-size:.875rem;color:rgba(29,29,31,.5);line-height:1.75;margin-bottom:.6rem}
+.privacy-page{max-width:680px;margin:130px auto 80px;padding:0 5vw;background:var(--void)}
+.privacy-page h1{font-size:1.8rem;font-weight:600;color:var(--ink);margin-bottom:2rem;letter-spacing:-.02em}
+.privacy-page h2{font-family:var(--mono);font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--cool);margin:2rem 0 .6rem}
+.privacy-page p{font-size:.87rem;color:var(--ink-2);line-height:1.75;margin-bottom:.6rem}
 
 /* REVEAL */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
 .reveal.visible{opacity:1;transform:none}
 .d1{transition-delay:.1s}.d2{transition-delay:.2s}
 
 /* RESPONSIVE */
-@media(max-width:860px){
-.scan-section,.phone-section{grid-template-columns:1fr}
-.scan-img{height:300px}
-.how-steps{grid-template-columns:1fr}
-.nav-links{display:none}
+@media(max-width:900px){
+.hero-inner{grid-template-columns:1fr}
+.hero-visual{order:-1}
+.compare{grid-template-columns:1fr}
+.cap-grid{grid-template-columns:1fr}
+.app-section{grid-template-columns:1fr}
+.market-cards{grid-template-columns:1fr}
+.stat-cell{flex:1 1 50%;border-bottom:1px solid var(--line)}
+nav .nav-links{display:none}
 .form-row{grid-template-columns:1fr}
 .about-values{grid-template-columns:1fr}
-.cd-units{gap:.6rem}
-.cd-num{font-size:1.35rem}
+.phone-frame{width:250px}
+.report-preview{overflow-x:auto}
+.report-table{min-width:480px}
+section{padding:72px 6vw}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 
+<a href="#" onclick="showWaitlist(event)" class="sticky-cta" id="sticky-cta">Erken Erişime Katıl →</a>
+
 <!-- NAV -->
 <nav>
-<a href="#" class="logo" onclick="showMain(event)">SolarPeakAI</a>
+<a href="#" class="logo" onclick="showMain(event)"><span class="logo-mark"></span><span class="logo-word">SOLARPEAK—AI</span></a>
 <ul class="nav-links">
-<li><a href="#nasil">Nasıl Çalışır</a></li>
+<li><a href="#pipeline">Nasıl Çalışır</a></li>
+<li><a href="#kapsam">Kapsam</a></li>
 <li><a href="#uygulama">Uygulama</a></li>
-<li><a href="#misyon">Misyon</a></li>
+<li><a href="#sss">SSS</a></li>
 <li><a href="#" onclick="showAbout(event)">Hakkımızda</a></li>
 <li><a href="#iletisim">İletişim</a></li>
 </ul>
@@ -353,134 +407,323 @@ padding:.3rem .75rem;border-radius:980px;
 
 <!-- ANA SAYFA -->
 <div id="main-page">
+
 <!-- HERO -->
 <section class="hero">
-<div class="hero-img"></div>
-<div class="hero-overlay"></div>
-<div class="hero-content">
-<span class="hero-kicker">Yapay Zeka Destekli Panel Denetimi</span>
-<h1>Güneş paneliniz <em>ne kadar verimli?</em></h1>
-<p class="hero-sub">Drone ve yapay zeka ile panel başına hasar tespiti. Kaybettiğiniz geliri geri kazanın.</p>
-<div class="hero-btns">
-<a href="#" onclick="showWaitlist(event)" class="btn-white">Erken Erişime Katıl</a>
-<a href="#nasil" class="btn-outline-white">Nasıl Çalışır →</a>
+<div class="grid-bg"></div>
+<div class="drone-fly">
+<svg viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="trailGrad" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#1D1D1F" stop-opacity="0"/>
+<stop offset="55%" stop-color="#1D1D1F" stop-opacity=".18"/>
+<stop offset="100%" stop-color="#0071E3" stop-opacity=".8"/>
+</linearGradient>
+</defs>
+<!-- tarama izi -->
+<rect x="0" y="37" width="150" height="2.4" rx="1.2" fill="url(#trailGrad)"/>
+<!-- kollar -->
+<g stroke="#1D1D1F" stroke-width="1.4" opacity=".35">
+<line x1="166" y1="32" x2="153" y2="15"/>
+<line x1="196" y1="32" x2="209" y2="15"/>
+<line x1="166" y1="40" x2="153" y2="57"/>
+<line x1="196" y1="40" x2="209" y2="57"/>
+</g>
+<!-- gövde -->
+<rect x="168" y="30" width="26" height="12" rx="4" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.4"/>
+<circle cx="181" cy="36" r="2" fill="#0071E3"/>
+<!-- pervaneler -->
+<g transform="translate(153,15)"><g class="propeller-spin"><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28"/><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28" transform="rotate(90)"/></g><circle r="1.6" fill="#1D1D1F"/></g>
+<g transform="translate(209,15)"><g class="propeller-spin"><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28"/><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28" transform="rotate(90)"/></g><circle r="1.6" fill="#1D1D1F"/></g>
+<g transform="translate(153,57)"><g class="propeller-spin"><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28"/><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28" transform="rotate(90)"/></g><circle r="1.6" fill="#1D1D1F"/></g>
+<g transform="translate(209,57)"><g class="propeller-spin"><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28"/><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28" transform="rotate(90)"/></g><circle r="1.6" fill="#1D1D1F"/></g>
+</svg>
+</div>
+<div class="hero-inner">
+<div class="hero-copy">
+<span class="hero-kicker">GES Anomali Tespiti · Karar Destek Platformu</span>
+<h1 class="reveal">Sahaya çıkmadan,<br>sahayı bilin.</h1>
+<p class="hero-sub reveal d1">Drone ile toplanan RGB ve termal görüntüleri yapay zeka analiz eder; panel bazlı anomalileri haritada işaretler. Bakım ekibiniz doğru panele, daha hızlı ulaşır.</p>
+<div class="hero-btns reveal d1">
+<a href="#" onclick="showWaitlist(event)" class="btn-primary">Erken Erişime Katıl</a>
+<a href="#pipeline" class="btn-ghost">Nasıl Çalışır ↓</a>
+</div>
+<div class="hero-meta mono reveal d2">
+<span>40.000+ GES · Türkiye</span><span class="dot">·</span><span>Karar desteği, kesin teşhis değil</span>
+</div>
+</div>
+
+<div class="hero-visual frame reveal d1">
+<span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+<svg viewBox="0 0 472 260" xmlns="http://www.w3.org/2000/svg">
+<!-- panel grid -->
+<g fill="none" stroke="rgba(0,0,0,.16)" stroke-width="1.2">
+<rect x="16" y="16" width="48" height="26" rx="2"/><rect x="72" y="16" width="48" height="26" rx="2"/><rect x="128" y="16" width="48" height="26" rx="2"/><rect x="184" y="16" width="48" height="26" rx="2"/><rect x="240" y="16" width="48" height="26" rx="2"/><rect x="296" y="16" width="48" height="26" rx="2"/><rect x="352" y="16" width="48" height="26" rx="2"/><rect x="408" y="16" width="48" height="26" rx="2"/>
+<rect x="16" y="50" width="48" height="26" rx="2"/><rect x="72" y="50" width="48" height="26" rx="2"/><rect x="128" y="50" width="48" height="26" rx="2"/><rect x="184" y="50" width="48" height="26" rx="2"/><rect x="240" y="50" width="48" height="26" rx="2"/><rect x="352" y="50" width="48" height="26" rx="2"/><rect x="408" y="50" width="48" height="26" rx="2"/>
+<rect x="16" y="84" width="48" height="26" rx="2"/><rect x="72" y="84" width="48" height="26" rx="2"/><rect x="128" y="84" width="48" height="26" rx="2"/><rect x="184" y="84" width="48" height="26" rx="2"/><rect x="240" y="84" width="48" height="26" rx="2"/><rect x="352" y="84" width="48" height="26" rx="2"/><rect x="408" y="84" width="48" height="26" rx="2"/>
+<rect x="16" y="118" width="48" height="26" rx="2"/><rect x="72" y="118" width="48" height="26" rx="2"/><rect x="128" y="118" width="48" height="26" rx="2"/><rect x="184" y="118" width="48" height="26" rx="2"/><rect x="240" y="118" width="48" height="26" rx="2"/><rect x="296" y="118" width="48" height="26" rx="2"/><rect x="352" y="118" width="48" height="26" rx="2"/><rect x="408" y="118" width="48" height="26" rx="2"/>
+<rect x="16" y="152" width="48" height="26" rx="2"/><rect x="72" y="152" width="48" height="26" rx="2"/><rect x="128" y="152" width="48" height="26" rx="2"/><rect x="184" y="152" width="48" height="26" rx="2"/><rect x="240" y="152" width="48" height="26" rx="2"/><rect x="296" y="152" width="48" height="26" rx="2"/><rect x="352" y="152" width="48" height="26" rx="2"/><rect x="408" y="152" width="48" height="26" rx="2"/>
+</g>
+<!-- anomaly panel P0310 -->
+<rect x="296" y="84" width="48" height="26" rx="2" fill="rgba(255,59,48,.10)" stroke="#FF3B30" stroke-width="1.6"/>
+<circle class="pulse-ring" cx="320" cy="97" r="7" fill="none" stroke="#FF3B30" stroke-width="1.4"/>
+<circle cx="320" cy="97" r="3" fill="#FF3B30"/>
+<!-- leader line -->
+<polyline points="344,97 372,97 372,190" fill="none" stroke="rgba(255,59,48,.45)" stroke-width="1"/>
+<!-- data tag -->
+<g class="tag-box">
+<rect x="300" y="196" width="150" height="52" rx="8" fill="#FFFFFF" stroke="rgba(0,0,0,.1)" stroke-width="1"/>
+<text x="312" y="213" font-family="IBM Plex Mono" font-size="9.5" fill="#1D1D1F">PANEL · P0310</text>
+<text x="312" y="227" font-family="IBM Plex Mono" font-size="9.5" fill="#FF3B30">HOTSPOT · 97% GÜVEN</text>
+<text x="312" y="241" font-family="IBM Plex Mono" font-size="9.5" fill="rgba(29,29,31,.45)">MAKS. 84.6°C</text>
+</g>
+<text x="16" y="9" font-family="IBM Plex Mono" font-size="8" fill="rgba(29,29,31,.35)">MISSION-014 · RGB+TERMAL · ANALİZ EDİLİYOR</text>
+</svg>
 </div>
 </div>
 </section>
 
 <!-- COUNTDOWN -->
-<div class="countdown-bar">
-<span class="cd-label">Platform lansmanına</span>
-<div class="cd-units">
-<div class="cd-unit"><span class="cd-num" id="cd-days">00</span><span class="cd-sub">Gün</span></div>
-<span class="cd-sep">:</span>
-<div class="cd-unit"><span class="cd-num" id="cd-hours">00</span><span class="cd-sub">Saat</span></div>
-<span class="cd-sep">:</span>
-<div class="cd-unit"><span class="cd-num" id="cd-mins">00</span><span class="cd-sub">Dakika</span></div>
-<span class="cd-sep">:</span>
-<div class="cd-unit"><span class="cd-num" id="cd-secs">00</span><span class="cd-sub">Saniye</span></div>
-</div>
-<span class="cd-label">kaldı</span>
+<div class="stat-bar countdown-bar">
+<div class="stat-cell"><span class="stat-num mono" id="cd-days">00</span><span class="stat-label">Gün</span></div>
+<div class="stat-cell"><span class="stat-num mono" id="cd-hours">00</span><span class="stat-label">Saat</span></div>
+<div class="stat-cell"><span class="stat-num mono" id="cd-mins">00</span><span class="stat-label">Dakika</span></div>
+<div class="stat-cell"><span class="stat-num mono" id="cd-secs">00</span><span class="stat-label">Saniye</span></div>
 </div>
 
-<!-- SCAN -->
-<div class="scan-section" id="tarama">
-<div class="scan-img"></div>
-<div class="scan-text reveal">
-<span class="eyebrow">Akıllı Denetim</span>
-<h2>Her paneli görür.<br>Hiçbirini kaçırmaz.</h2>
-<p>Güneş panellerinizdeki toz, çatlak ve kuş pisliği faturanızı sessizce düşürür. Yapay zeka destekli sistemimiz drone görüntülerini analiz ederek her hasarı panel düzeyinde tespit eder ve size raporlar.</p>
+<!-- PROBLEM -->
+<section id="problem">
+<div class="section-head reveal">
+<span class="eyebrow">Sorun</span>
+<h2>Binlerce panel, tek tek elle mi denetlenecek?</h2>
+<p>Büyük ölçekli GES sahalarında denetim süreçleri hâlâ büyük ölçüde manuel yürütülüyor: teknik ekip sahaya gitmek zorunda kalıyor, sorunlu noktaların konumu geç belirleniyor ve raporlama süreçleri yavaş ilerliyor.</p>
 </div>
+<div class="compare reveal d1">
+<div class="compare-col">
+<span class="compare-label">Bugün</span>
+<div class="compare-item"><span class="mark">×</span>Teknik ekip sahaya fiziksel olarak gitmek zorunda</div>
+<div class="compare-item"><span class="mark">×</span>Binlerce panel tek tek incelenir</div>
+<div class="compare-item"><span class="mark">×</span>Termal anomalilerin tespiti zaman alır</div>
+<div class="compare-item"><span class="mark">×</span>Raporlama manuel ilerler</div>
+<div class="compare-item"><span class="mark">×</span>Sorunlu noktanın kesin konumu geç belirlenir</div>
 </div>
-
-<!-- HOW IT WORKS -->
-<section class="how-section" id="nasil">
-<div class="how-header reveal">
-<span class="eyebrow">Süreç</span>
-<h2>Üç adımda tam denetim.</h2>
-<p>Basit, hızlı ve kesin. Aynı gün rapor.</p>
-</div>
-<div class="how-img reveal">
-<img src="images/how.jpg" alt="Drone, yapay zeka analizi ve mobil rapor süreci"/>
-</div>
-<div class="how-steps reveal">
-<div class="how-step">
-<span class="step-num">01</span>
-<h3>Drone Taraması</h3>
-<p>Profesyonel pilotumuz arsanıza gelir. GPS güdümlü rota ile tüm panelleriniz sistematik biçimde taranır.</p>
-</div>
-<div class="how-step">
-<span class="step-num">02</span>
-<h3>Yapay Zeka Analizi</h3>
-<p>İki katmanlı YOLO modelimiz önce paneli bulur, ardından kir, çatlak ve kuş pisliğini milimetre hassasiyetiyle sınıflandırır.</p>
-</div>
-<div class="how-step">
-<span class="step-num">03</span>
-<h3>Aynı Gün Rapor</h3>
-<p>Harita üzerinde işaretlenmiş, öncelik sıralı ve gelir etkisi hesaplanmış rapor, uçuş günü uygulamanıza gelir.</p>
+<div class="compare-col hi">
+<span class="compare-label">SolarPeak-AI ile</span>
+<div class="compare-item"><span class="mark">✓</span>Drone RGB + termal görüntüleri toplar</div>
+<div class="compare-item"><span class="mark">✓</span>Panel bazlı otomatik yapay zeka analizi</div>
+<div class="compare-item"><span class="mark">✓</span>Hotspot ve sıcaklık anomalileri işaretlenir</div>
+<div class="compare-item"><span class="mark">✓</span>Panel ID + GPS ile harita üzerinde konum</div>
+<div class="compare-item"><span class="mark">✓</span>Dijital PDF teknik rapor</div>
 </div>
 </div>
 </section>
 
-<!-- PHONE -->
-<section class="phone-section" id="uygulama">
-<div class="phone-img reveal">
-<img src="images/phone.jpg" alt="SolarPeakAI mobil uygulama"/>
+<!-- PIPELINE -->
+<section id="pipeline">
+<div class="section-head reveal">
+<span class="eyebrow">Süreç</span>
+<h2>Görüntüden rapora, altı adımlı bir hat.</h2>
+<p>Yapay zeka yalnızca anomaliyi tespit eder; platformun temelini görüntüyü konumlandıran, panelleri kimliklendiren ve sonucu haritaya işleyen veri akışı oluşturur.</p>
 </div>
-<div class="phone-text reveal d1">
+<div class="pipeline frame reveal d1">
+<span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+<div class="pipeline-track">
+<div class="pipe-node"><span class="pipe-num">01</span><h4>Veri Alma</h4><p>RGB ve termal görüntüler yüklenir; GPS, yükseklik ve zaman bilgisi okunur.</p></div>
+<div class="pipe-node"><span class="pipe-num">02</span><h4>Ön İşleme</h4><p>Görüntüler normalize edilir, RGB ve termal kareler eşleştirilir.</p></div>
+<div class="pipe-node"><span class="pipe-num">03</span><h4>Panel Tespiti &amp; Kimlik</h4><p>Paneller tespit edilir; satır, panel no ve GPS ile Panel ID atanır.</p></div>
+<div class="pipe-node"><span class="pipe-num">04</span><h4>RGB + Termal Analiz</h4><p>İki bağımsız model yüzey kirliliğini ve sıcaklık anomalisini işaretler.</p></div>
+<div class="pipe-node"><span class="pipe-num">05</span><h4>Sonuç Birleştirme</h4><p>Panel bazlı tüm bulgular tek kayıt altında birleştirilir.</p></div>
+<div class="pipe-node"><span class="pipe-num">06</span><h4>Harita &amp; Rapor</h4><p>İnteraktif harita, PDF teknik rapor ve mobil bildirim üretilir.</p></div>
+</div>
+</div>
+</section>
+
+<!-- REPORT PREVIEW -->
+<section id="rapor">
+<div class="section-head reveal">
+<span class="eyebrow">Çıktı</span>
+<h2>Panel bazlı, paylaşılabilir teknik rapor.</h2>
+<p>Her analiz sonucu Panel ID ile eşleşir, harita üzerinde işaretlenir ve PDF teknik rapor olarak indirilebilir.</p>
+</div>
+<div class="report-preview frame reveal d1">
+<span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+<div class="report-head">
+<span class="report-title mono">TEKNİK RAPOR · MISSION-014</span>
+<span class="report-date mono">Örnek çıktı</span>
+</div>
+<table class="report-table">
+<thead><tr><th>Panel ID</th><th>Bulgu</th><th>Güven</th><th>Maks. Sıcaklık</th></tr></thead>
+<tbody>
+<tr><td class="mono">P0310</td><td><span class="tag hot">Hotspot</span></td><td>%97</td><td>84.6°C</td></tr>
+<tr><td class="mono">P0212</td><td><span class="tag soil">Surface Soiling</span></td><td>%94</td><td>—</td></tr>
+<tr><td class="mono">P0455</td><td><span class="tag warn">Temperature Anomaly</span></td><td>%89</td><td>61.2°C</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- CAPABILITY / SCOPE -->
+<section id="kapsam">
+<div class="section-head reveal">
+<span class="eyebrow">Kapsam</span>
+<h2>MVP'de gerçekten ne var, ne yok?</h2>
+<p>Güvenilir bir platform abartılı vaatlerden değil, net tanımlanmış kapsamdan doğar. Kesin arıza teşhisi, elektriksel test veya bakım kararı yerine geçmeyiz.</p>
+</div>
+<div class="cap-grid reveal d1">
+<div class="cap-col now">
+<span class="cap-tag">v1.0 — Şimdi</span>
+<h4>MVP'de Var</h4>
+<ul class="cap-list">
+<li>Panel Detection &amp; Indexing</li>
+<li>Surface Soiling (toz, çamur, kuş pisliği)</li>
+<li>Hotspot tespiti</li>
+<li>Temperature Anomaly işaretleme</li>
+<li>İnteraktif harita</li>
+<li>PDF teknik rapor</li>
+<li>Web + mobil erişim</li>
+</ul>
+</div>
+<div class="cap-col">
+<span class="cap-tag">v2.0 — Yol Haritası</span>
+<h4>Planlanan</h4>
+<ul class="cap-list">
+<li>Kablo güzergâhı ısı analizi</li>
+<li>Bağlantı noktası sıcaklık anomalileri</li>
+<li>SCADA veri entegrasyonu</li>
+<li>Gelişmiş raporlama</li>
+<li>Çoklu saha yönetimi</li>
+</ul>
+</div>
+<div class="cap-col">
+<span class="cap-tag">v3.0 — Vizyon</span>
+<h4>Uzun Vade</h4>
+<ul class="cap-list">
+<li>Predictive Maintenance</li>
+<li>Dijital ikiz entegrasyonu</li>
+<li>Enerji üretim verisiyle karar desteği</li>
+<li>Çoklu drone entegrasyonu</li>
+</ul>
+</div>
+</div>
+<p class="cap-note reveal d2">MVP kapsamı dışında: PID, mikro çatlak, delamination, diyot arızası sınıflandırması, string arızası analizi, enerji üretim kaybı hesaplaması. Bu bulguların güvenilir tespiti için Elektrolüminesans (EL) görüntüleme veya elektriksel test gibi ek veri kaynakları gerekir.</p>
+</section>
+
+<!-- APP -->
+<section id="uygulama" class="app-section">
+<div class="phone-frame reveal">
+<span class="btn-power"></span><span class="btn-vol-up"></span><span class="btn-vol-down"></span>
+<div class="phone-screen">
+<div class="phone-notch"></div>
+<div class="phone-statusbar"><span>9:41</span><span class="ico-row"><span>●●●</span><span>Wi-Fi</span><span>78%</span></span></div>
+<div class="phone-appbar"><span class="am"></span><span class="aw">SOLARPEAK—AI</span>
+<svg class="bell" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+</div>
+<div class="phone-map">
+<svg viewBox="0 0 240 96" xmlns="http://www.w3.org/2000/svg">
+<g fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1">
+<rect x="10" y="10" width="32" height="18" rx="2"/><rect x="46" y="10" width="32" height="18" rx="2"/><rect x="82" y="10" width="32" height="18" rx="2"/><rect x="118" y="10" width="32" height="18" rx="2"/><rect x="154" y="10" width="32" height="18" rx="2"/><rect x="190" y="10" width="32" height="18" rx="2"/>
+<rect x="10" y="32" width="32" height="18" rx="2"/><rect x="46" y="32" width="32" height="18" rx="2"/><rect x="118" y="32" width="32" height="18" rx="2"/><rect x="154" y="32" width="32" height="18" rx="2"/><rect x="190" y="32" width="32" height="18" rx="2"/>
+<rect x="10" y="54" width="32" height="18" rx="2"/><rect x="46" y="54" width="32" height="18" rx="2"/><rect x="82" y="54" width="32" height="18" rx="2"/><rect x="118" y="54" width="32" height="18" rx="2"/><rect x="154" y="54" width="32" height="18" rx="2"/><rect x="190" y="54" width="32" height="18" rx="2"/>
+</g>
+<rect x="82" y="32" width="32" height="18" rx="2" fill="rgba(255,59,48,.10)" stroke="#FF3B30" stroke-width="1.4"/>
+<circle cx="98" cy="41" r="4.5" fill="none" stroke="#FF3B30" stroke-width="1.2"><animate attributeName="r" values="4.5;10;4.5" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".8;0;.8" dur="2.2s" repeatCount="indefinite"/></circle>
+<circle cx="98" cy="41" r="2.2" fill="#FF3B30"/>
+<text x="10" y="88" font-family="IBM Plex Mono" font-size="7" fill="rgba(29,29,31,.4)">GES-021 · SEKTÖR B</text>
+</svg>
+</div>
+<div class="phone-body">
+<div class="phone-list-label">Son Görevler</div>
+<div class="pm-row"><div class="pm-row-top"><span class="pm-id">GES-014</span><span class="pm-dot done"></span></div><span class="pm-status">Tamamlandı</span></div>
+<div class="pm-row"><div class="pm-row-top"><span class="pm-id">GES-021</span><span class="pm-dot busy"></span></div><span class="pm-status">Analiz Ediliyor</span></div>
+<div class="pm-row"><div class="pm-row-top"><span class="pm-id">GES-009</span><span class="pm-dot done"></span></div><span class="pm-status">Tamamlandı</span></div>
+</div>
+<div class="phone-navbar">
+<div class="pnav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="pnav-label">Ana Sayfa</span></div>
+<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="pnav-label">Harita</span></div>
+<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="pnav-label">Raporlar</span></div>
+<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg><span class="pnav-label">Profil</span></div>
+</div>
+<div class="phone-home"></div>
+</div>
+</div>
+<div class="app-feats reveal d1">
 <span class="eyebrow">Mobil Uygulama</span>
-<h2>Her şey<br>cebinizde.</h2>
+<h2>Her şey cebinizde.</h2>
 <div class="feat-item">
-<div class="fi-icon">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-</div>
-<div><div class="fi-h">Canlı Tarama Takibi</div><p class="fi-p">Drone uçarken her panel anlık olarak haritada güncellenir.</p></div>
+<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+<div><div class="fi-h">Anlık Denetim Durumu</div><p class="fi-p">Her denetim görevinin durumunu — bekliyor, analiz ediliyor, tamamlandı — anlık takip edin.</p></div>
 </div>
 <div class="feat-item">
-<div class="fi-icon">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-</div>
-<div><div class="fi-h">Gelir Etkisi Hesaplama</div><p class="fi-p">Her hasar için tahmini yıllık kayıp otomatik hesaplanır. Neye öncelik vereceğinizi sayılarla bilin.</p></div>
+<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+<div><div class="fi-h">İnteraktif Harita ve Panel Kimliği</div><p class="fi-p">Panel ID, satır/panel no ve GPS konumuyla her bulguyu haritada görün.</p></div>
 </div>
 <div class="feat-item">
-<div class="fi-icon">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
-</div>
-<div><div class="fi-h">Akıllı Bildirimler</div><p class="fi-p">Yeni hasar tespiti ve bakım hatırlatmaları doğrudan telefonunuza gelir.</p></div>
+<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg></div>
+<div><div class="fi-h">Akıllı Bildirimler</div><p class="fi-p">Yeni anomali tespit edildiğinde bildirim doğrudan telefonunuza gelir.</p></div>
 </div>
 <div class="feat-item">
-<div class="fi-icon">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,29,31,0.6)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-</div>
-<div><div class="fi-h">Performans Trendleri</div><p class="fi-p">Panellerinizin zaman içindeki sağlık durumunu takip edin. Bozulmayı başlamadan önce görün.</p></div>
+<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+<div><div class="fi-h">Geçmiş Denetim Kayıtları</div><p class="fi-p">Sahanızdaki tüm denetim görevlerini ve panel bazlı bulguları geriye dönük karşılaştırın.</p></div>
 </div>
 </div>
+</section>
+
+<!-- MARKET -->
+<section id="pazar">
+<div class="section-head reveal">
+<span class="eyebrow">Pazar</span>
+<h2>Türkiye'nin güneş kapasitesi hızla büyüyor.</h2>
+<p>Ölçek büyüdükçe düzenli, tutarlı ve panel bazlı denetim daha kritik hale geliyor.</p>
+</div>
+<div class="market-cards reveal d1">
+<div class="market-card"><span class="market-num">40.000+</span><p class="market-label">faaliyette güneş enerjisi santrali</p></div>
+<div class="market-card"><span class="market-num">27 GW</span><p class="market-label">toplam kurulu güneş kapasitesi</p></div>
+<div class="market-card"><span class="market-num">~%90</span><p class="market-label">lisanssız (küçük/orta ölçekli) GES payı</p></div>
+</div>
+<span class="market-source reveal d2">Kaynak: TEİAŞ – Yük Tevzi Bilgi Sistemi Başkanlığı (YTBS), 6 Temmuz 2026</span>
 </section>
 
 <!-- MISSION -->
-<section class="mission-section" id="misyon">
+<section class="mission-section">
 <div class="mission-inner">
-<span class="mission-kicker reveal">Misyonumuz</span>
-<p class="mission-q reveal">
-Güneş enerjisi Türkiye'nin geleceği.<br>
-<strong>Kaybettiğiniz her kilovat bizim sorunumuz.</strong>
-</p>
-<a href="#" onclick="showWaitlist(event)" class="btn-light reveal">Erken Erişime Katıl</a>
+<span class="eyebrow reveal">Misyonumuz</span>
+<p class="mission-q reveal">Güneş enerjisi Türkiye'nin geleceği.<br><strong>Sahadaki veriyi anlamlı bilgiye dönüştürerek bakım süreçlerini destekliyoruz.</strong></p>
+<a href="#" onclick="showWaitlist(event)" class="btn-primary reveal">Erken Erişime Katıl</a>
+</div>
+</section>
+
+<!-- TRANSPARENCY -->
+<section class="transparency">
+<p class="reveal">SolarPeak-AI, teknik ekiplerin karar süreçlerini desteklemek amacıyla geliştirilmiş bir analiz platformudur. Kesin arıza teşhisi, elektriksel test veya bakım kararı yerine geçmez; tespit edilen bulguların değerlendirilmesi yetkili teknik uzmanlar tarafından yapılmalıdır.</p>
+</section>
+
+<!-- SSS -->
+<section id="sss">
+<div class="section-head reveal">
+<span class="eyebrow">SSS</span>
+<h2>Sık sorulan sorular</h2>
+</div>
+<div class="faq-list reveal d1">
+<details class="faq-item"><summary>Drone uçuşunu siz mi gerçekleştiriyorsunuz?</summary><p>Hayır. SolarPeak-AI bir drone üreticisi ya da operatörü değildir. Drone operasyon ekibiniz görüntüleri toplar, biz analiz ederiz.</p></details>
+<details class="faq-item"><summary>SCADA veya ERP sisteminin yerine mi geçiyor?</summary><p>Hayır. Platform bu sistemlerin yerine geçmez; onları tamamlayan bir görsel denetim ve karar destek katmanıdır.</p></details>
+<details class="faq-item"><summary>Kesin arıza teşhisi yapıyor mu?</summary><p>Hayır. Platform tespit ettiği anomalileri güven skoruyla birlikte raporlar; nihai değerlendirme ve bakım kararı teknik uzmanlara aittir.</p></details>
+<details class="faq-item"><summary>Hangi anomalileri tespit ediyorsunuz?</summary><p>MVP sürümünde yüzey kirliliği (toz, çamur, kuş pisliği), hotspot ve sıcaklık anomalileri tespit edilir. Kablo arızası, PID ve mikro çatlak gibi bulgular yol haritasında.</p></details>
+<details class="faq-item"><summary>Verilerimiz güvende mi?</summary><p>Görüntü ve analiz verileri erişim kontrolü ve şifreleme ile korunan bulut altyapısında saklanır; üçüncü taraflarla paylaşılmaz.</p></details>
 </div>
 </section>
 
 <!-- CONTACT -->
-<section style="padding:80px 5vw;text-align:center;background:#f5f5f7" id="iletisim">
-<span class="eyebrow reveal" style="text-align:center;display:block">İletişim</span>
-<h2 class="reveal" style="font-size:1.8rem;font-weight:600;letter-spacing:-.025em;color:#1d1d1f;margin-bottom:.6rem">Sorularınız için</h2>
-<p class="reveal" style="font-size:.9rem;color:rgba(29,29,31,.45);margin-bottom:1.75rem">Demo talebi veya iş birliği için bize yazın.</p>
-<a href="mailto:info@solarpeakai.com" class="reveal" style="color:#1d1d1f;font-size:.9rem;text-decoration:none;border-bottom:1px solid rgba(29,29,31,.2);padding-bottom:.15rem">info@solarpeakai.com</a>
+<section class="contact-section" id="iletisim">
+<span class="eyebrow reveal">İletişim</span>
+<h2 class="reveal">Sorularınız için</h2>
+<p class="reveal">Demo talebi veya iş birliği için bize yazın.</p>
+<a href="mailto:info@solarpeakai.com" class="mail reveal">info@solarpeakai.com</a>
 </section>
 
 <!-- FOOTER -->
 <footer>
 <div class="footer-inner">
-<span class="footer-logo">SolarPeakAI</span>
+<span class="footer-logo">SOLARPEAK—AI</span>
 <ul class="footer-links">
 <li><a href="#" onclick="showAbout(event)">Hakkımızda</a></li>
 <li><a href="#" onclick="showPrivacy(event)">Gizlilik Politikası</a></li>
@@ -502,11 +745,11 @@ Güneş enerjisi Türkiye'nin geleceği.<br>
 <form id="wl-form" onsubmit="handleWaitlist(event)">
 <div class="form-row">
 <div><label>Ad <span class="req">*</span></label><input type="text" name="Ad" placeholder="Adınız" required/></div>
-<div><label>Soyad <span class="req">*</span></label><input type="text" name = "Soyad" placeholder="Soyadınız" required/></div>
+<div><label>Soyad <span class="req">*</span></label><input type="text" name="Soyad" placeholder="Soyadınız" required/></div>
 </div>
-<div class="form-group"><label>E-posta <span class="req">*</span></label><input type="email"  name="E-posta" placeholder="ornek@sirket.com" required/></div>
+<div class="form-group"><label>E-posta <span class="req">*</span></label><input type="email" name="E-posta" placeholder="ornek@sirket.com" required/></div>
 <div class="form-group"><label>Telefon <span class="req">*</span></label><input type="tel" name="Telefon" placeholder="+90 5XX XXX XX XX" required/></div>
-<div class="form-group"><label>Şirket / İşletme Adı</label><input type="text"  name="Sirket placeholder="Şirketinizin adı (opsiyonel)"/></div>
+<div class="form-group"><label>Şirket / İşletme Adı</label><input type="text" name="Sirket" placeholder="Şirketinizin adı (opsiyonel)"/></div>
 <div class="form-group">
 <label>Rolünüz</label>
 <select name="Rol">
@@ -533,54 +776,62 @@ Güneş enerjisi Türkiye'nin geleceği.<br>
 <!-- HAKKIMIZDA SAYFASI -->
 <div class="about-page" id="about-page">
 <div class="about-inner">
-<a href="#" onclick="showMain(event)" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none;margin-bottom:3rem">← Geri dön</a>
+<a href="#" onclick="showMain(event)" class="ab-back">← Geri dön</a>
 <div class="about-hero">
 <h1>Türkiye'nin güneş enerjisini<br>korumak için buradayız.</h1>
-<p>SolarPeakAI, güneş enerjisi yatırımcılarının panel hasarlarını zamanında tespit ederek gelir kayıplarını önleyen yapay zeka destekli bir platformdur.</p>
+<p>SolarPeakAI, güneş enerjisi santrallerindeki panel anomalilerini drone görüntüleri üzerinden erken tespit ederek bakım ekiplerine karar desteği sağlayan yapay zeka destekli bir platformdur.</p>
 </div>
 <div class="about-section">
 <h2>Hikayemiz</h2>
-<p>Türkiye'de 10.000'den fazla güneş enerjisi tesisi bulunuyor. Ancak bu tesislerin büyük çoğunluğu düzenli ve profesyonel denetime tabi tutulmuyor. Küçük bir çatlak, toz birikmesi veya kuş pisliği fark edilmeden aylarca üretim kaybına yol açabiliyor ve <strong>yıllık milyonlarca TL'lik kayıp</strong> sessizce büyüyor.</p>
-<p>Biz SolarPeakAI olarak bu sorunu kökten çözmek üzere yola çıktık. Drone teknolojisi ile yapay zekayı birleştirerek, panel başına milimetrik hassasiyetle hasar tespiti yapan, Türkiye koşullarına özel bir platform geliştirdik.</p>
+<p>TEİAŞ'ın Temmuz 2026 verilerine göre Türkiye'de 40.000'i aşkın güneş enerjisi santrali bulunuyor. Ancak bu tesislerin büyük çoğunluğu düzenli ve profesyonel denetime tabi tutulmuyor. Küçük bir toz birikmesi veya kuş pisliği fark edilmeden aylarca sessizce üretim kaybına yol açabiliyor.</p>
+<p>Biz SolarPeakAI olarak bu sorunu kökten çözmek üzere yola çıktık. Drone teknolojisi ile yapay zekayı birleştirerek, panel başına anomali tespiti yapan ve bulguları güven skoruyla sunan, Türkiye koşullarına özel bir platform geliştirdik.</p>
 </div>
 <div class="about-section">
 <h2>Amacımız</h2>
-<p>Güneş enerjisi yatırımlarını korumak ve sistem verimliliğini maksimum seviyeye çıkarmak. Çünkü her kilovat hem yatırımcı için hem de ülkemizin temiz enerji hedefleri için büyük önem taşıyor. Kaybettiğiniz her üretim, bizim için çözülmesi gereken bir sorundur.</p>
+<p>Güneş enerjisi yatırımlarını korumak ve sistem verimliliğini artırmak. Her kilovat hem yatırımcı için hem de ülkemizin temiz enerji hedefleri için önem taşıyor.</p>
 </div>
 <div class="about-section">
 <h2>Değerlerimiz</h2>
 <div class="about-values">
-<div class="about-val"><h3>Dürüstlük</h3><p>Müşterilerimize her zaman gerçek ve ölçülebilir veriler sunarız. Tahmin değil, kesin ölçüm.</p></div>
-<div class="about-val"><h3>Erişilebilirlik</h3><p>Büyük ölçekli şirketlere değil, küçük ve orta ölçekli GES yatırımcılarına da hitap eden çözümler geliştiriyoruz.</p></div>
-<div class="about-val"><h3>Yerellik</h3><p>Türkiye iklimini, panel tiplerini ve saha koşullarını çok iyi bilen, yerel bir ekip olarak çalışıyoruz.</p></div>
-<div class="about-val"><h3>Sürdürülebilirlik</h3><p>Güneş panellerinin maksimum verimle çalışması, hem yatırımcıya hem de çevreye katkı sağlar.</p></div>
+<div class="about-val"><h3>DÜRÜSTLÜK</h3><p>Bulgularımızı her zaman güven skoruyla paylaşırız ve kesin arıza teşhisi yaptığımızı iddia etmeyiz. Nihai karar her zaman teknik uzmanlarındır.</p></div>
+<div class="about-val"><h3>ERİŞİLEBİLİRLİK</h3><p>Büyük ölçekli şirketlere değil, küçük ve orta ölçekli GES yatırımcılarına da hitap eden çözümler geliştiriyoruz.</p></div>
+<div class="about-val"><h3>YERELLİK</h3><p>Türkiye iklimini, panel tiplerini ve saha koşullarını iyi bilen yerel bir ekip olarak çalışıyoruz.</p></div>
+<div class="about-val"><h3>SÜRDÜRÜLEBİLİRLİK</h3><p>Güneş panellerinin verimli çalışması hem yatırımcıya hem çevreye katkı sağlar.</p></div>
 </div>
 </div>
 <div class="about-section">
 <h2>Teknoloji</h2>
-<p>Sistemimiz, açık kaynak veri setleri üzerinde eğitilmiş özel YOLO tabanlı modeller kullanmaktadır. İki katmanlı yapay zeka mimarisi ile önce panelleri tespit ediyor, ardından kir, çatlak ve kuş pisliği gibi hasar türlerini yüksek doğrulukla sınıflandırıyor. Tüm görüntü işleme bulut altyapısı üzerinde çalışır ve sonuçlar anında mobil uygulamaya iletilir.</p>
+<p>Sistemimiz, açık veri setleri ve pilot saha verileriyle fine-tune edilmiş YOLO tabanlı modeller kullanmaktadır. İki bağımsız yapay zeka servisi ile önce paneller tespit ediliyor, ardından yüzey kirliliği (toz, çamur, kuş pisliği) ile termal sıcaklık anomalileri (hotspot, bağlantı noktası ısınması) ayrı ayrı analiz ediliyor. Tüm görüntü işleme bulut altyapısı üzerinde çalışır ve sonuçlar web paneli ile mobil uygulamaya iletilir.</p>
 <div class="tech-stack">
-<span class="tech-tag">YOLOv8</span>
+<span class="tech-tag">YOLOv11</span>
+<span class="tech-tag">PyTorch</span>
 <span class="tech-tag">Python</span>
 <span class="tech-tag">FastAPI</span>
+<span class="tech-tag">OpenCV</span>
 <span class="tech-tag">Flutter</span>
 <span class="tech-tag">PostgreSQL</span>
-<span class="tech-tag">Drone SDK</span>
-<span class="tech-tag">Computer Vision</span>
+<span class="tech-tag">S3 Object Storage</span>
 </div>
 </div>
-<div class="about-section" style="text-align:center;padding:3rem 0;border-top:1px solid rgba(0,0,0,.08)">
-<p style="font-size:.9rem;color:rgba(29,29,31,.45);margin-bottom:1.5rem">Erken erişim listesine katılın, lansmanı ilk siz öğrenin.</p>
-<a href="#" onclick="showWaitlist(event)" style="display:inline-block;background:#1d1d1f;color:#fff;padding:.82rem 2rem;border-radius:980px;font-size:.9rem;font-weight:500;text-decoration:none">Erken Erişime Katıl</a>
+<div class="about-section">
+<h2>Kurucu</h2>
+<div class="founder-card">
+<div class="founder-avatar mono">FA</div>
+<div><div class="founder-name">Ferhat Akar</div><div class="founder-role">Founder, SolarPeakAI</div></div>
+</div>
+</div>
+<div class="about-section" style="text-align:center;padding:3rem 0;border-top:1px solid var(--line)">
+<p style="font-size:.9rem;color:var(--ink-3);margin-bottom:1.5rem">Erken erişim listesine katılın, lansmanı ilk siz öğrenin.</p>
+<a href="#" onclick="showWaitlist(event)" class="btn-primary">Erken Erişime Katıl</a>
 </div>
 </div>
 </div>
 
 <!-- GİZLİLİK SAYFASI -->
 <div class="privacy-page" id="privacy-page">
-<a href="#" onclick="showMain(event)" style="display:inline-block;margin-bottom:2rem;font-size:.82rem;color:rgba(29,29,31,.45);text-decoration:none">← Geri dön</a>
+<a href="#" onclick="showMain(event)" class="pv-back">← Geri dön</a>
 <h1>Gizlilik Politikası</h1>
-<p style="font-size:.78rem;color:rgba(29,29,31,.3);margin-bottom:2rem">Son güncelleme: Temmuz 2026</p>
+<p class="mono" style="font-size:.72rem;color:var(--ink-3);margin-bottom:2rem">Son güncelleme: Temmuz 2026</p>
 <h2>Toplanan Veriler</h2>
 <p>SolarPeakAI, erken erişim kaydı sırasında ad, soyad, e-posta, telefon, şirket adı ve rol bilgilerinizi toplar. Ödeme bilgisi veya hassas kişisel veri talep edilmez.</p>
 <h2>Kullanım Amacı</h2>
@@ -594,27 +845,21 @@ Güneş enerjisi Türkiye'nin geleceği.<br>
 </div>
 
 <script>
-// COUNTDOWN (45 gün)
+// COUNTDOWN
 const launch = new Date('2026-08-15T09:00:00');
-
 function updateCountdown(){
 const now = new Date();
 const diff = launch - now;
-if(diff <= 0){
-document.querySelector('.countdown-bar').style.display='none';
-return;
-}
+if(diff <= 0){ document.querySelector('.countdown-bar').style.display='none'; return; }
 const d = Math.floor(diff/86400000);
 const h = Math.floor((diff%86400000)/3600000);
 const m = Math.floor((diff%3600000)/60000);
 const s = Math.floor((diff%60000)/1000);
-
 document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
 document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
 document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
 document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
 }
-
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
@@ -630,23 +875,30 @@ document.getElementById('main-page').style.display='none'
 document.getElementById('waitlist-page').style.display='none'
 document.getElementById('about-page').style.display='none'
 document.getElementById('privacy-page').style.display='none'
+document.getElementById('sticky-cta').classList.remove('show')
 }
-
 function showMain(e){if(e)e.preventDefault(); hideAll(); document.getElementById('main-page').style.display='block'; window.scrollTo(0,0);}
 function showWaitlist(e){if(e)e.preventDefault(); hideAll(); document.getElementById('waitlist-page').style.display='block'; window.scrollTo(0,0);}
 function showAbout(e){if(e)e.preventDefault(); hideAll(); document.getElementById('about-page').style.display='block'; window.scrollTo(0,0);}
 function showPrivacy(e){if(e)e.preventDefault(); hideAll(); document.getElementById('privacy-page').style.display='block'; window.scrollTo(0,0);}
 
+// Sticky CTA
+const stickyCta = document.getElementById('sticky-cta');
+function toggleSticky(){
+if(document.getElementById('main-page').style.display==='none'){stickyCta.classList.remove('show');return}
+if(window.scrollY > window.innerHeight*0.85){stickyCta.classList.add('show')}else{stickyCta.classList.remove('show')}
+}
+window.addEventListener('scroll', toggleSticky);
+toggleSticky();
+
 async function handleWaitlist(e){
   e.preventDefault()
   const form = document.getElementById('wl-form')
-  
   await fetch('https://formspree.io/f/mojopajz', {
     method:'POST',
     headers:{'Accept':'application/json'},
     body:new FormData(form)
   })
-  
   document.getElementById('wl-form-wrap').style.display='none'
   document.getElementById('success-msg').style.display='block'
 }
