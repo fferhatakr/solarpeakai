@@ -4,487 +4,573 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>SolarPeakAI — GES Anomali Tespiti ve Karar Destek Platformu</title>
+<meta name="description" content="Drone RGB + termal görüntülerini yapay zeka ile analiz eden, anomalileri haritada işaretleyen karar destek platformu."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
+/* ============ TOKENS ============ */
 :root{
---void:#FFFFFF;
---panel:#F5F5F7;
---panel-raised:#FBFBFD;
---line:rgba(0,0,0,.08);
---line-strong:rgba(0,0,0,.14);
---ink:#1D1D1F;
---ink-2:rgba(29,29,31,.62);
---ink-3:rgba(29,29,31,.42);
---hot:#FF3B30;
---hot-dim:rgba(255,59,48,.10);
---cool:#0071E3;
---cool-dim:rgba(0,113,227,.08);
---disp:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica Neue,Arial,sans-serif;
---body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica Neue,Arial,sans-serif;
+--void:#050505;
+--surface:#0D0E12;
+--surface-2:#111318;
+--glass:rgba(255,255,255,.035);
+--glass-2:rgba(255,255,255,.06);
+--line:rgba(255,255,255,.08);
+--line-2:rgba(255,255,255,.14);
+--ink:#F5F7FA;
+--ink-2:rgba(235,240,248,.64);
+--ink-3:rgba(235,240,248,.40);
+--blue:#0099FF;
+--cyan:#00D4FF;
+--sky:#4FC3F7;
+--hot:#FF453A;
+--hot-dim:rgba(255,69,58,.12);
+--blue-dim:rgba(0,153,255,.10);
+--cyan-dim:rgba(0,212,255,.08);
+--disp:'Space Grotesk',sans-serif;
+--body:'Inter',sans-serif;
 --mono:'IBM Plex Mono',ui-monospace,monospace;
+--r-lg:24px;--r-md:18px;--r-sm:12px;
+--ease:cubic-bezier(.22,1,.36,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--void);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-h1,h2,h3{font-family:var(--disp)}
+h1,h2,h3,h4{font-family:var(--disp)}
 a{color:inherit}
+::selection{background:rgba(0,153,255,.35)}
 .mono{font-family:var(--mono)}
-.eyebrow{
-font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-color:rgba(29,29,31,.5);display:inline-block;margin-bottom:1.1rem;
-}
-.eyebrow::before{content:'// ';color:var(--ink-3)}
-section{padding:100px 6vw}
-.section-head{max-width:640px;margin-bottom:3.5rem}
-.section-head h2{font-size:clamp(1.9rem,3.6vw,2.7rem);font-weight:600;letter-spacing:-.03em;line-height:1.15;color:var(--ink);margin-bottom:1rem}
-.section-head p{font-size:1rem;font-weight:300;color:var(--ink-2);line-height:1.7;max-width:520px}
 
-/* GRID BACKDROP */
-.grid-bg{
-position:absolute;inset:0;pointer-events:none;
-background-image:
-linear-gradient(var(--line) 1px,transparent 1px),
-linear-gradient(90deg,var(--line) 1px,transparent 1px);
-background-size:56px 56px;
-mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 40%,transparent 100%);
-opacity:.5;
-}
+/* ============ ATMOSPHERE LAYERS ============ */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.noise{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.aurora{position:fixed;inset:-20%;z-index:0;pointer-events:none;filter:blur(90px);opacity:.5}
+.aurora .blob{position:absolute;border-radius:50%;will-change:transform}
+.aurora .b1{width:52vw;height:52vw;left:-12vw;top:-14vw;background:radial-gradient(circle at 40% 40%,rgba(0,153,255,.22),transparent 65%);animation:drift1 26s ease-in-out infinite alternate}
+.aurora .b2{width:44vw;height:44vw;right:-10vw;top:8vw;background:radial-gradient(circle at 60% 40%,rgba(0,212,255,.14),transparent 65%);animation:drift2 32s ease-in-out infinite alternate}
+.aurora .b3{width:38vw;height:38vw;left:28vw;top:44vw;background:radial-gradient(circle at 50% 50%,rgba(79,195,247,.08),transparent 65%);animation:drift1 40s ease-in-out infinite alternate-reverse}
+@keyframes drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(9vw,7vw) scale(1.15)}}
+@keyframes drift2{from{transform:translate(0,0) scale(1.05)}to{transform:translate(-8vw,9vw) scale(.92)}}
+#cursor-glow{position:fixed;width:560px;height:560px;border-radius:50%;z-index:1;pointer-events:none;
+background:radial-gradient(circle,rgba(0,153,255,.075) 0%,rgba(0,212,255,.03) 40%,transparent 70%);
+transform:translate(-50%,-50%);transition:opacity .4s;will-change:left,top}
+@media(hover:none){#cursor-glow{display:none}}
 
-/* CORNER FRAME (bounding-box motif) */
-.frame{position:relative}
-.frame .corner{position:absolute;width:16px;height:16px;border-color:var(--ink-3);border-style:solid;opacity:.5}
-.frame .corner.tl{top:-1px;left:-1px;border-width:1.5px 0 0 1.5px}
-.frame .corner.tr{top:-1px;right:-1px;border-width:1.5px 1.5px 0 0}
-.frame .corner.bl{bottom:-1px;left:-1px;border-width:0 0 1.5px 1.5px}
-.frame .corner.br{bottom:-1px;right:-1px;border-width:0 1.5px 1.5px 0}
+/* ============ SHARED ============ */
+section{position:relative;z-index:5;padding:130px 6vw}
+.wrap{max-width:1220px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+color:var(--cyan);display:inline-flex;align-items:center;gap:.55rem;margin-bottom:1.3rem}
+.eyebrow::before{content:'';width:22px;height:1px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.section-head{max-width:680px;margin-bottom:4rem}
+.section-head h2{font-size:clamp(2rem,4.2vw,3.1rem);font-weight:600;letter-spacing:-.035em;line-height:1.08;margin-bottom:1.1rem;
+background:linear-gradient(180deg,#FFFFFF 30%,rgba(255,255,255,.62));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.section-head p{font-size:1.02rem;font-weight:300;color:var(--ink-2);line-height:1.75;max-width:560px}
 
-/* NAV */
-nav{
-position:fixed;top:0;left:0;right:0;z-index:500;
-height:52px;display:flex;align-items:center;justify-content:space-between;
-padding:0 5vw;
-background:rgba(255,255,255,.78);backdrop-filter:saturate(180%) blur(20px);
-border-bottom:1px solid var(--line);
-}
-.logo{display:flex;align-items:center;gap:.55rem;text-decoration:none}
-.logo-mark{width:8px;height:8px;background:var(--ink);border-radius:2px}
-.logo-word{font-family:var(--mono);font-size:.82rem;font-weight:500;letter-spacing:.02em;color:var(--ink)}
-.nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-family:var(--body);font-size:.82rem;font-weight:400;color:var(--ink-2);text-decoration:none;transition:color .2s}
+/* glass card base */
+.glass{position:relative;background:linear-gradient(160deg,var(--glass-2),var(--glass) 55%);
+border:1px solid var(--line);border-radius:var(--r-lg);backdrop-filter:blur(14px);
+box-shadow:0 24px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
+transition:transform .5s var(--ease),border-color .4s,box-shadow .5s}
+.glass::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+background:linear-gradient(120deg,rgba(255,255,255,.08),transparent 30%,transparent 70%,rgba(0,212,255,.05));opacity:.7}
+.glass:hover{border-color:rgba(0,153,255,.32);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 44px rgba(0,153,255,.10),inset 0 1px 0 rgba(255,255,255,.08)}
+.tilt{transform-style:preserve-3d;will-change:transform}
+.tilt > *{transform:translateZ(24px)}
+
+/* animated gradient border variant */
+.g-border{position:relative;border-radius:var(--r-lg)}
+.g-border::after{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;z-index:-1;
+background:conic-gradient(from var(--ang,0deg),transparent 0%,rgba(0,153,255,.7) 12%,rgba(0,212,255,.9) 22%,transparent 36%);
+-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+-webkit-mask-composite:xor;
+mask-composite:exclude;
+animation:spinBorder 5.5s linear infinite}
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes spinBorder{to{--ang:360deg}}
+
+/* buttons */
+.btn{position:relative;display:inline-flex;align-items:center;gap:.55rem;border:none;cursor:pointer;text-decoration:none;
+font-family:var(--body);font-size:.92rem;font-weight:500;padding:.95rem 1.9rem;border-radius:980px;overflow:hidden;
+transition:transform .35s var(--ease),box-shadow .4s;will-change:transform}
+.btn-fill{color:#fff;background:linear-gradient(135deg,var(--blue),var(--cyan) 130%);
+box-shadow:0 8px 30px rgba(0,153,255,.35),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-fill:hover{box-shadow:0 14px 46px rgba(0,153,255,.55),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn-fill::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;
+background:linear-gradient(105deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);transition:left .6s var(--ease)}
+.btn-fill:hover::after{left:130%}
+.btn-line{color:var(--ink);background:var(--glass);border:1px solid var(--line-2);backdrop-filter:blur(10px)}
+.btn-line:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 26px rgba(0,212,255,.16)}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:ripple .65s ease-out forwards;pointer-events:none}
+@keyframes ripple{to{transform:scale(3.4);opacity:0}}
+
+/* reveal system */
+.rv{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv-scale{opacity:0;transform:scale(.94) translateY(20px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.rv-scale.in{opacity:1;transform:none}
+.d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}
+/* split text */
+.split .w{display:inline-block;overflow:hidden;vertical-align:top}
+.split .w span{display:inline-block;transform:translateY(110%);transition:transform 1s var(--ease)}
+.split.in .w span{transform:none}
+
+/* ============ NAV ============ */
+nav{position:fixed;top:0;left:0;right:0;z-index:600;height:60px;display:flex;align-items:center;justify-content:space-between;
+padding:0 5vw;background:rgba(5,5,5,.55);backdrop-filter:saturate(160%) blur(22px);
+border-bottom:1px solid transparent;transition:border-color .4s,background .4s}
+nav.scrolled{border-bottom-color:var(--line);background:rgba(5,5,5,.78)}
+.logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.logo-mark{width:9px;height:9px;border-radius:2px;background:linear-gradient(135deg,var(--blue),var(--cyan));
+box-shadow:0 0 12px rgba(0,212,255,.8);animation:markPulse 3s ease-in-out infinite}
+@keyframes markPulse{0%,100%{box-shadow:0 0 8px rgba(0,212,255,.5)}50%{box-shadow:0 0 18px rgba(0,212,255,.95)}}
+.logo-word{font-family:var(--mono);font-size:.8rem;font-weight:500;letter-spacing:.05em}
+.nav-links{display:flex;gap:2.1rem;list-style:none}
+.nav-links a{font-size:.82rem;font-weight:400;color:var(--ink-2);text-decoration:none;transition:color .25s;position:relative}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-5px;width:0;height:1px;background:var(--cyan);transition:width .3s var(--ease)}
 .nav-links a:hover{color:var(--ink)}
-.nav-cta{
-background:var(--ink);color:#FFFFFF;
-padding:.5rem 1.15rem;border-radius:980px;
-font-family:var(--body);font-size:.8rem;font-weight:400;letter-spacing:0;text-decoration:none;transition:opacity .2s;
-}
-.nav-cta:hover{opacity:.78}
+.nav-links a:hover::after{width:100%}
+.nav-cta{font-size:.8rem;padding:.55rem 1.2rem}
 
-/* HERO */
-.hero{
-position:relative;min-height:100vh;display:flex;align-items:center;padding:120px 6vw 60px;overflow:hidden;
-background:linear-gradient(180deg,#FFFFFF 0%,#FBFBFD 60%,#F5F5F7 100%);
-}
-.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr .95fr;gap:4vw;align-items:center;max-width:1300px;margin:0 auto;width:100%}
-.hero-kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;color:rgba(29,29,31,.5);text-transform:uppercase;margin-bottom:1.4rem;display:block}
-.hero-kicker::before{content:'// ';color:var(--ink-3)}
-.hero h1{font-size:clamp(2.4rem,4.6vw,4.1rem);font-weight:600;letter-spacing:-.03em;line-height:1.05;color:var(--ink);margin-bottom:1.4rem}
-.hero-sub{font-size:1.05rem;font-weight:300;color:var(--ink-2);max-width:460px;margin-bottom:2.1rem;line-height:1.7}
-.hero-btns{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:2.2rem}
-.btn-primary{
-background:var(--ink);color:#FFFFFF;border:none;
-padding:.8rem 1.6rem;border-radius:980px;
-font-family:var(--body);font-size:.9rem;font-weight:400;cursor:pointer;
-text-decoration:none;transition:opacity .2s;display:inline-block;
-}
-.btn-primary:hover{opacity:.78}
-.btn-ghost{
-background:transparent;color:var(--ink);
-border:1px solid var(--line-strong);
-padding:.8rem 1.6rem;border-radius:980px;
-font-family:var(--body);font-size:.9rem;cursor:pointer;
-text-decoration:none;transition:all .2s;display:inline-block;
-}
-.btn-ghost:hover{border-color:var(--cool);color:var(--cool)}
-.hero-meta{display:flex;gap:.7rem;align-items:center;font-size:.75rem;color:var(--ink-3);flex-wrap:wrap}
-.hero-meta .dot{color:var(--line-strong)}
+/* ============ HERO ============ */
+.hero{min-height:100vh;display:flex;align-items:center;padding:130px 6vw 70px;overflow:hidden}
+.hero-inner{position:relative;z-index:4;display:grid;grid-template-columns:1.02fr .98fr;gap:4.5vw;align-items:center;max-width:1300px;margin:0 auto;width:100%}
+.hero-kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase;
+display:inline-flex;align-items:center;gap:.6rem;margin-bottom:1.6rem;
+border:1px solid var(--line);border-radius:980px;padding:.42rem 1rem;background:var(--glass)}
+.hero-kicker .live{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:markPulse 2s infinite}
+.hero h1{font-size:clamp(2.7rem,5.6vw,4.7rem);font-weight:700;letter-spacing:-.04em;line-height:1.02;margin-bottom:1.5rem}
+.hero h1 .grad{background:linear-gradient(100deg,var(--blue) 10%,var(--cyan) 55%,var(--sky));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+filter:drop-shadow(0 0 26px rgba(0,153,255,.35))}
+.hero-sub{font-size:1.08rem;font-weight:300;color:var(--ink-2);max-width:480px;margin-bottom:2.4rem;line-height:1.75}
+.hero-btns{display:flex;gap:.9rem;flex-wrap:wrap;margin-bottom:2.4rem}
+.hero-meta{display:flex;gap:.8rem;align-items:center;font-family:var(--mono);font-size:.72rem;color:var(--ink-3);flex-wrap:wrap}
+.hero-meta .dot{color:var(--line-2)}
 
-.hero-visual{padding:28px 22px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+/* hero visual — thermal scan */
+.hero-visual{padding:26px 22px 22px;border-radius:var(--r-lg);position:relative;
+background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015) 60%);
+border:1px solid var(--line);backdrop-filter:blur(12px);
+box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 70px rgba(0,153,255,.07),inset 0 1px 0 rgba(255,255,255,.07)}
+.hv-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:var(--mono);font-size:.66rem;color:var(--ink-3);letter-spacing:.06em}
+.hv-head .rec{display:flex;align-items:center;gap:.45rem;color:var(--hot)}
+.hv-head .rec i{width:7px;height:7px;border-radius:50%;background:var(--hot);box-shadow:0 0 10px var(--hot);animation:markPulse 1.6s infinite}
 .hero-visual svg{width:100%;height:auto;display:block}
-.pulse-ring{animation:pulse 2.4s ease-out infinite}
-@keyframes pulse{0%{opacity:.9;r:7}70%{opacity:0;r:22}100%{opacity:0;r:22}}
-.tag-box{opacity:0;animation:fadeup .7s ease-out .5s forwards}
-@keyframes fadeup{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.scan-beam{animation:scanX 5.5s var(--ease) infinite}
+@keyframes scanX{0%{transform:translateX(0)}55%{transform:translateX(388px)}100%{transform:translateX(388px)}}
+.panel-cell{transition:fill .4s,stroke .4s}
+.pulse-ring{animation:hotPulse 2.2s ease-out infinite}
+@keyframes hotPulse{0%{opacity:.95;r:6}70%{opacity:0;r:24}100%{opacity:0;r:24}}
+.tag-box{opacity:0;animation:tagIn .7s var(--ease) 2.6s forwards}
+@keyframes tagIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.float-soft{animation:floatY 7s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
-/* DRONE FLIGHT */
-.drone-fly{position:absolute;top:16%;left:-220px;width:220px;height:80px;z-index:1;pointer-events:none;animation:droneFly 19s linear infinite}
+/* drone */
+.drone-fly{position:absolute;top:15%;left:-240px;width:230px;height:84px;z-index:2;pointer-events:none;animation:droneFly 22s linear infinite}
 .drone-fly svg{width:100%;height:100%;overflow:visible}
-.propeller-spin{animation:propSpin .35s linear infinite;transform-origin:0 0}
+.prop{animation:propSpin .3s linear infinite;transform-origin:0 0}
 @keyframes propSpin{to{transform:rotate(360deg)}}
-@keyframes droneFly{
-0%{transform:translate(0,0)}
-20%{transform:translate(26vw,-34px)}
-40%{transform:translate(48vw,18px)}
-60%{transform:translate(66vw,-22px)}
-80%{transform:translate(88vw,12px)}
-100%{transform:translate(118vw,-6px)}
-}
-@media(prefers-reduced-motion:reduce){.drone-fly{display:none}}
+@keyframes droneFly{0%{transform:translate(0,10px)}22%{transform:translate(28vw,-26px)}45%{transform:translate(52vw,16px)}
+70%{transform:translate(78vw,-20px)}100%{transform:translate(120vw,4px)}}
 
-/* STAT BAR */
-.stat-bar{
-display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-background:var(--panel);
-}
-.stat-cell{flex:1;min-width:150px;padding:1.6rem 2vw;border-right:1px solid var(--line)}
+/* light rays */
+.rays{position:absolute;top:-10%;left:50%;width:130vw;height:70vh;transform:translateX(-50%);pointer-events:none;opacity:.5;z-index:1;
+background:conic-gradient(from 178deg at 50% -12%,transparent 42%,rgba(0,153,255,.06) 47%,transparent 50%,rgba(0,212,255,.05) 54%,transparent 58%);
+filter:blur(6px);animation:raySway 14s ease-in-out infinite alternate}
+@keyframes raySway{from{transform:translateX(-52%) rotate(-1.2deg)}to{transform:translateX(-48%) rotate(1.2deg)}}
+
+/* scroll hint */
+.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:5;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--ink-3);font-family:var(--mono);font-size:.62rem;letter-spacing:.16em}
+.scroll-hint .line{width:1px;height:38px;background:linear-gradient(180deg,var(--cyan),transparent);animation:hintDrop 1.8s var(--ease) infinite}
+@keyframes hintDrop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ============ COUNTDOWN + STATS ============ */
+.stat-bar{position:relative;z-index:5;display:flex;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+background:rgba(255,255,255,.018);backdrop-filter:blur(10px)}
+.stat-cell{flex:1;min-width:160px;padding:1.9rem 2vw;border-right:1px solid var(--line);text-align:center;position:relative;overflow:hidden}
+.stat-cell::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(0,153,255,.08),transparent 60%);opacity:0;transition:opacity .5s}
+.stat-cell:hover::after{opacity:1}
 .stat-cell:last-child{border-right:none}
-.stat-num{font-family:var(--disp);font-size:1.7rem;font-weight:700;color:var(--ink);letter-spacing:-.02em;display:block}
-.stat-num span{color:var(--hot)}
-.stat-label{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase;margin-top:.3rem;display:block}
+.stat-num{font-family:var(--disp);font-size:2rem;font-weight:700;letter-spacing:-.02em;display:block;
+background:linear-gradient(180deg,#fff,rgba(255,255,255,.7));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-family:var(--mono);font-size:.64rem;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;margin-top:.4rem;display:block}
 
-/* PROBLEM / COMPARISON */
-.compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);max-width:1000px}
-.compare-col{background:var(--void);padding:2.4rem 2rem;border-radius:18px}
-.compare-col.hi{background:var(--panel)}
-.compare-label{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.4rem;display:block}
-.compare-col:not(.hi) .compare-label{color:var(--ink-3)}
-.compare-col.hi .compare-label{color:var(--cool)}
-.compare-item{display:flex;gap:.7rem;margin-bottom:1.1rem;font-size:.9rem;line-height:1.6;color:var(--ink-2)}
-.compare-item .mark{flex-shrink:0;font-family:var(--mono);font-size:.8rem;margin-top:.15rem}
-.compare-col:not(.hi) .mark{color:rgba(255,59,48,.75)}
-.compare-col.hi .mark{color:var(--cool)}
+/* ============ COMPARISON ============ */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;max-width:1020px}
+.compare-col{padding:2.5rem 2.2rem}
+.compare-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.6rem;display:inline-block;
+padding:.3rem .8rem;border-radius:6px}
+.old .compare-label{background:var(--hot-dim);color:var(--hot)}
+.new .compare-label{background:var(--cyan-dim);color:var(--cyan)}
+.compare-item{display:flex;gap:.8rem;margin-bottom:1.15rem;font-size:.92rem;line-height:1.6;color:var(--ink-2);font-weight:300}
+.compare-item .mark{flex-shrink:0;font-family:var(--mono);font-size:.8rem;margin-top:.14rem}
+.old .mark{color:var(--hot)}
+.new .mark{color:var(--cyan);text-shadow:0 0 10px rgba(0,212,255,.6)}
 
-/* PIPELINE */
-.pipeline{padding:2.6rem 2vw 2rem;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow-x:auto}
-.pipeline-track{display:flex;align-items:stretch;gap:0;min-width:820px}
-.pipe-node{flex:1;position:relative;padding:0 1.4rem}
-.pipe-node:not(:last-child)::after{
-content:'';position:absolute;top:19px;right:-2px;width:calc(100% - 20px);height:1px;background:var(--line-strong);
-}
-.pipe-num{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);display:block;margin-bottom:1rem}
-.pipe-node h4{font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:.5rem;letter-spacing:-.01em}
-.pipe-node p{font-size:.78rem;color:var(--ink-3);line-height:1.55}
+/* ============ PIPELINE ============ */
+.pipeline{padding:3rem 2.4rem 2.6rem;overflow-x:auto}
+.pipeline-track{display:grid;grid-template-columns:repeat(6,1fr);gap:1.6rem;min-width:900px;position:relative}
+.pipe-line{position:absolute;top:21px;left:3%;width:94%;height:2px;overflow:visible}
+.pipe-line .base{stroke:rgba(255,255,255,.1);stroke-width:1.5}
+.pipe-line .flow{stroke:url(#pipeGrad);stroke-width:1.5;stroke-dasharray:1200;stroke-dashoffset:1200;transition:stroke-dashoffset 2.4s var(--ease)}
+.pipeline.in .pipe-line .flow{stroke-dashoffset:0}
+.pipe-node{position:relative;padding-top:3rem}
+.pipe-dot{position:absolute;top:14px;left:0;width:15px;height:15px;border-radius:50%;background:var(--surface);
+border:1.5px solid var(--line-2);transition:all .5s var(--ease)}
+.pipeline.in .pipe-node .pipe-dot{border-color:var(--cyan);box-shadow:0 0 16px rgba(0,212,255,.5);background:radial-gradient(circle,var(--cyan) 30%,transparent 70%)}
+.pipe-num{font-family:var(--mono);font-size:.66rem;color:var(--cyan);display:block;margin-bottom:.8rem;letter-spacing:.1em}
+.pipe-node h4{font-size:.95rem;font-weight:600;margin-bottom:.5rem;letter-spacing:-.01em}
+.pipe-node p{font-size:.78rem;color:var(--ink-3);line-height:1.6;font-weight:300}
 
-/* CAPABILITY */
-.cap-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);max-width:1100px}
-.cap-col{background:var(--void);padding:2.2rem 1.9rem;border-radius:18px}
-.cap-col.now{background:var(--panel)}
-.cap-tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;border-radius:4px;display:inline-block;margin-bottom:1.2rem}
-.cap-col.now .cap-tag{background:var(--cool-dim);color:var(--cool)}
-.cap-col:not(.now) .cap-tag{background:rgba(0,0,0,.045);color:var(--ink-3)}
-.cap-col h4{font-size:1rem;font-weight:600;margin-bottom:1rem;color:var(--ink)}
-.cap-list{list-style:none;font-size:.85rem;color:var(--ink-2);line-height:2}
-.cap-list li{padding-left:1.1rem;position:relative}
-.cap-col.now .cap-list li::before{content:'✓';position:absolute;left:0;color:var(--cool);font-family:var(--mono);font-size:.75rem}
+/* ============ DASHBOARD PREVIEW ============ */
+.dash{padding:1.6rem;max-width:1060px;margin:0 auto}
+.dash-top{display:flex;justify-content:space-between;align-items:center;padding:0 .5rem 1.2rem;border-bottom:1px solid var(--line);margin-bottom:1.4rem}
+.dash-title{font-family:var(--mono);font-size:.72rem;color:var(--ink-2);letter-spacing:.08em;display:flex;align-items:center;gap:.7rem}
+.dash-title .live-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:markPulse 2s infinite}
+.dash-chip{font-family:var(--mono);font-size:.62rem;color:var(--cyan);background:var(--cyan-dim);border:1px solid rgba(0,212,255,.25);padding:.28rem .7rem;border-radius:6px}
+.dash-grid{display:grid;grid-template-columns:1.35fr .8fr .8fr;gap:1.1rem}
+.dash-card{background:rgba(255,255,255,.028);border:1px solid var(--line);border-radius:var(--r-md);padding:1.2rem;position:relative;overflow:hidden;
+transition:transform .45s var(--ease),border-color .4s,box-shadow .45s}
+.dash-card:hover{transform:translateY(-4px);border-color:rgba(0,153,255,.3);box-shadow:0 16px 40px rgba(0,0,0,.45),0 0 26px rgba(0,153,255,.09)}
+.dash-card h5{font-family:var(--mono);font-size:.62rem;font-weight:500;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem}
+.heat-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.heat-cell{aspect-ratio:1.6;border-radius:3px;background:rgba(0,153,255,.10);border:1px solid rgba(0,153,255,.06);transition:background .6s}
+.heat-cell.warm{background:rgba(0,153,255,.30)}
+.heat-cell.hot{background:rgba(255,69,58,.55);border-color:rgba(255,69,58,.4);box-shadow:0 0 12px rgba(255,69,58,.35);animation:heatPulse 2.6s ease-in-out infinite}
+@keyframes heatPulse{0%,100%{box-shadow:0 0 8px rgba(255,69,58,.25)}50%{box-shadow:0 0 18px rgba(255,69,58,.55)}}
+.big-metric{font-family:var(--disp);font-size:2.3rem;font-weight:700;letter-spacing:-.02em;line-height:1;
+background:linear-gradient(180deg,#fff,rgba(255,255,255,.65));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.metric-sub{font-family:var(--mono);font-size:.64rem;color:var(--ink-3);margin-top:.5rem;display:block}
+.metric-sub b{color:var(--cyan);font-weight:500}
+.bars{display:flex;align-items:flex-end;gap:7px;height:76px;margin-top:.6rem}
+.bars i{flex:1;border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,var(--cyan),var(--blue));opacity:.85;
+transform:scaleY(0);transform-origin:bottom;transition:transform 1.1s var(--ease)}
+.dash.in .bars i{transform:scaleY(1)}
+.dash.in .bars i:nth-child(2){transition-delay:.08s}.dash.in .bars i:nth-child(3){transition-delay:.16s}
+.dash.in .bars i:nth-child(4){transition-delay:.24s}.dash.in .bars i:nth-child(5){transition-delay:.32s}
+.dash.in .bars i:nth-child(6){transition-delay:.4s}.dash.in .bars i:nth-child(7){transition-delay:.48s}
+.status-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--line);font-size:.78rem}
+.status-row:last-child{border:none}
+.status-row .sid{font-family:var(--mono);font-size:.72rem;color:var(--ink-2)}
+.pill{font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;padding:.22rem .6rem;border-radius:5px}
+.pill.ok{color:var(--cyan);background:var(--cyan-dim)}
+.pill.busy{color:var(--hot);background:var(--hot-dim)}
+.pill.q{color:var(--ink-3);background:rgba(255,255,255,.05)}
+
+/* report table */
+.report-preview{padding:2rem 2.2rem;max-width:860px}
+.report-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.report-title{font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;color:var(--ink-2)}
+.report-date{font-family:var(--mono);font-size:.68rem;color:var(--ink-3)}
+.report-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.report-table th{text-align:left;font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);padding-bottom:.7rem;border-bottom:1px solid var(--line);font-weight:500}
+.report-table td{padding:.85rem 0;border-bottom:1px solid var(--line);color:var(--ink-2);font-weight:300}
+.report-table tr{transition:background .3s}
+.report-table tbody tr:hover{background:rgba(0,153,255,.045)}
+.report-table tr:last-child td{border-bottom:none}
+.tag{font-family:var(--mono);font-size:.64rem;padding:.25rem .65rem;border-radius:5px;white-space:nowrap;letter-spacing:.03em}
+.tag.hot{background:var(--hot-dim);color:var(--hot);box-shadow:0 0 14px rgba(255,69,58,.12)}
+.tag.soil{background:rgba(255,255,255,.06);color:var(--ink-2)}
+.tag.warn{background:rgba(255,159,10,.1);color:#FFB340}
+
+/* ============ CAPABILITY ============ */
+.cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;max-width:1120px}
+.cap-col{padding:2.3rem 2rem}
+.cap-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;padding:.3rem .75rem;border-radius:6px;display:inline-block;margin-bottom:1.3rem}
+.cap-col.now .cap-tag{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.25)}
+.cap-col:not(.now) .cap-tag{background:rgba(255,255,255,.05);color:var(--ink-3)}
+.cap-col h4{font-size:1.05rem;font-weight:600;margin-bottom:1.1rem}
+.cap-list{list-style:none;font-size:.87rem;color:var(--ink-2);line-height:2.15;font-weight:300}
+.cap-list li{padding-left:1.3rem;position:relative}
+.cap-col.now .cap-list li::before{content:'✓';position:absolute;left:0;color:var(--cyan);font-family:var(--mono);font-size:.75rem;text-shadow:0 0 10px rgba(0,212,255,.7)}
 .cap-col:not(.now) .cap-list li::before{content:'—';position:absolute;left:0;color:var(--ink-3);font-family:var(--mono)}
-.cap-note{font-size:.78rem;color:var(--ink-3);margin-top:2.4rem;max-width:640px;line-height:1.7}
+.cap-note{font-size:.8rem;color:var(--ink-3);margin-top:2.6rem;max-width:680px;line-height:1.8;font-weight:300}
 
-/* REALISTIC PHONE MOCKUP */
-.app-section{display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;align-items:center}
-.phone-frame{
-position:relative;width:278px;margin:0 auto;padding:12px;border-radius:48px;
-background:linear-gradient(150deg,#2c333c,#14181d 55%,#1c222a);
-box-shadow:0 60px 110px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.07);
-}
-.btn-side{position:absolute;background:#0a0c0f;border:1px solid rgba(255,255,255,.06)}
-.btn-power{right:-2px;top:132px;width:3px;height:62px;border-radius:0 3px 3px 0}
-.btn-vol-up{left:-2px;top:108px;width:3px;height:34px;border-radius:3px 0 0 3px}
-.btn-vol-down{left:-2px;top:150px;width:3px;height:34px;border-radius:3px 0 0 3px}
-.phone-screen{position:relative;background:#FFFFFF;border-radius:38px;overflow:hidden;border:2px solid #000;min-height:540px;display:flex;flex-direction:column}
-.phone-notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:86px;height:23px;background:#000;border-radius:14px;z-index:5;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
-.phone-statusbar{display:flex;justify-content:space-between;align-items:center;padding:16px 22px 6px;font-family:var(--mono);font-size:.62rem;color:var(--ink-2);letter-spacing:.02em}
-.phone-statusbar .ico-row{display:flex;gap:4px;align-items:center}
+/* ============ PHONE ============ */
+.app-section{display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;align-items:center;max-width:1220px;margin:0 auto}
+.phone-wrap{perspective:1200px}
+.phone-frame{position:relative;width:280px;margin:0 auto;padding:12px;border-radius:50px;
+background:linear-gradient(150deg,#23272e,#0b0d10 55%,#161a20);
+box-shadow:0 70px 130px rgba(0,0,0,.75),0 0 80px rgba(0,153,255,.08),inset 0 0 0 1px rgba(255,255,255,.08);
+animation:floatY 8s ease-in-out infinite}
+.btn-side{position:absolute;background:#000;border:1px solid rgba(255,255,255,.07)}
+.btn-power{right:-2px;top:134px;width:3px;height:62px;border-radius:0 3px 3px 0}
+.btn-vol-up{left:-2px;top:110px;width:3px;height:34px;border-radius:3px 0 0 3px}
+.btn-vol-down{left:-2px;top:152px;width:3px;height:34px;border-radius:3px 0 0 3px}
+.phone-screen{position:relative;background:#0A0B0E;border-radius:40px;overflow:hidden;border:2px solid #000;min-height:548px;display:flex;flex-direction:column}
+.phone-notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:88px;height:24px;background:#000;border-radius:14px;z-index:5;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.phone-statusbar{display:flex;justify-content:space-between;align-items:center;padding:17px 22px 6px;font-family:var(--mono);font-size:.62rem;color:var(--ink-3)}
 .phone-appbar{display:flex;align-items:center;gap:.5rem;padding:12px 18px 13px;border-bottom:1px solid var(--line)}
-.phone-appbar .am{width:7px;height:7px;background:#1D1D1F;border-radius:2px}
-.phone-appbar .aw{font-family:var(--mono);font-size:.68rem;color:var(--ink);letter-spacing:.03em;flex:1}
-.phone-appbar .bell{opacity:.5}
-.phone-map{margin:12px 14px 10px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
+.phone-appbar .am{width:7px;height:7px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:2px;box-shadow:0 0 8px rgba(0,212,255,.7)}
+.phone-appbar .aw{font-family:var(--mono);font-size:.66rem;color:var(--ink);letter-spacing:.04em;flex:1}
+.phone-map{margin:12px 14px 10px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:rgba(255,255,255,.02)}
 .phone-map svg{width:100%;display:block}
-.phone-map-tag{position:absolute}
 .phone-body{flex:1;padding:0 14px 6px;overflow:hidden}
-.phone-list-label{font-family:var(--mono);font-size:.6rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin:2px 0 8px}
-.phone-navbar{display:flex;justify-content:space-around;padding:11px 0 8px;border-top:1px solid var(--line);background:var(--panel-raised)}
-.pnav-item{display:flex;flex-direction:column;align-items:center;gap:3px}
-.pnav-item svg{opacity:.4}
-.pnav-item.active svg{opacity:1}
-.pnav-label{font-family:var(--mono);font-size:.52rem;color:var(--ink-3)}
-.pnav-item.active .pnav-label{color:var(--cool)}
-.phone-home{width:92px;height:4px;background:rgba(0,0,0,.2);border-radius:3px;margin:8px auto 10px}
-.pm-row{background:var(--panel-raised);border:1px solid var(--line);border-radius:8px;padding:.65rem .8rem;margin-bottom:.55rem}
-.pm-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
+.phone-list-label{font-family:var(--mono);font-size:.58rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.12em;margin:4px 0 9px}
+.pm-row{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:10px;padding:.68rem .85rem;margin-bottom:.55rem}
+.pm-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.28rem}
 .pm-id{font-family:var(--mono);font-size:.72rem;color:var(--ink)}
 .pm-dot{width:7px;height:7px;border-radius:50%}
-.pm-dot.done{background:var(--cool)}
-.pm-dot.busy{background:var(--hot)}
-.pm-status{font-family:var(--mono);font-size:.62rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
-.app-feats h2{font-size:clamp(1.9rem,3.6vw,2.7rem);font-weight:600;letter-spacing:-.03em;line-height:1.1;color:var(--ink);margin-bottom:2.2rem}
-.feat-item{display:flex;gap:1rem;margin-bottom:1.6rem;align-items:flex-start}
-.fi-icon{width:32px;height:32px;flex-shrink:0;border:1px solid var(--line-strong);border-radius:6px;display:flex;align-items:center;justify-content:center;margin-top:.1rem}
-.fi-h{font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
-.fi-p{font-size:.83rem;color:var(--ink-3);line-height:1.6}
+.pm-dot.done{background:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.7)}
+.pm-dot.busy{background:var(--hot);box-shadow:0 0 8px rgba(255,69,58,.7);animation:markPulse 1.6s infinite}
+.pm-status{font-family:var(--mono);font-size:.6rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.phone-navbar{display:flex;justify-content:space-around;padding:11px 0 8px;border-top:1px solid var(--line);background:rgba(255,255,255,.02)}
+.pnav-item{display:flex;flex-direction:column;align-items:center;gap:3px}
+.pnav-item svg{opacity:.35}
+.pnav-item.active svg{opacity:1;filter:drop-shadow(0 0 6px rgba(0,212,255,.7))}
+.pnav-label{font-family:var(--mono);font-size:.52rem;color:var(--ink-3)}
+.pnav-item.active .pnav-label{color:var(--cyan)}
+.phone-home{width:94px;height:4px;background:rgba(255,255,255,.22);border-radius:3px;margin:8px auto 10px}
+.app-feats h2{font-size:clamp(1.9rem,3.8vw,2.8rem);font-weight:600;letter-spacing:-.03em;line-height:1.1;margin-bottom:2.3rem;
+background:linear-gradient(180deg,#fff 30%,rgba(255,255,255,.62));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.feat-item{display:flex;gap:1.05rem;margin-bottom:1.7rem;align-items:flex-start;padding:.4rem;border-radius:var(--r-sm);transition:background .35s}
+.feat-item:hover{background:rgba(0,153,255,.05)}
+.fi-icon{width:36px;height:36px;flex-shrink:0;border:1px solid var(--line-2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-top:.1rem;
+background:var(--glass);transition:border-color .35s,box-shadow .35s}
+.feat-item:hover .fi-icon{border-color:var(--cyan);box-shadow:0 0 18px rgba(0,212,255,.2)}
+.fi-h{font-size:.95rem;font-weight:600;margin-bottom:.3rem;font-family:var(--disp)}
+.fi-p{font-size:.84rem;color:var(--ink-3);line-height:1.65;font-weight:300}
 
-/* MARKET */
-.market-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);max-width:1000px;margin-bottom:1.2rem}
-.market-card{background:var(--void);padding:2rem 1.8rem;border-radius:18px}
-.market-num{font-family:var(--disp);font-size:2.4rem;font-weight:700;color:var(--ink);letter-spacing:-.02em}
-.market-label{font-size:.85rem;color:var(--ink-2);margin-top:.5rem;line-height:1.5}
-.market-source{font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
+/* ============ MARQUEE ============ */
+.marquee-band{position:relative;z-index:5;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+padding:1.5rem 0;overflow:hidden;background:rgba(255,255,255,.014)}
+.marquee{display:flex;width:max-content;animation:marq 30s linear infinite;gap:3.4rem}
+.marquee-band:hover .marquee{animation-play-state:paused}
+.mq-item{font-family:var(--mono);font-size:.76rem;color:var(--ink-3);letter-spacing:.1em;white-space:nowrap;display:flex;align-items:center;gap:.8rem}
+.mq-item::after{content:'·';color:rgba(0,212,255,.5);margin-left:2.4rem}
+@keyframes marq{to{transform:translateX(-50%)}}
 
-/* REPORT PREVIEW */
-.report-preview{background:var(--panel);padding:1.9rem 2.1rem;max-width:800px;border-radius:18px}
-.report-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
-.report-title{font-size:.76rem;color:var(--ink);letter-spacing:.03em}
-.report-date{font-size:.72rem;color:var(--ink-3)}
-.report-table{width:100%;border-collapse:collapse;font-size:.85rem}
-.report-table th{text-align:left;font-family:var(--mono);font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);padding-bottom:.6rem;border-bottom:1px solid var(--line);font-weight:500}
-.report-table td{padding:.75rem 0;border-bottom:1px solid var(--line);color:var(--ink-2);font-size:.85rem}
-.report-table tr:last-child td{border-bottom:none}
-.tag{font-family:var(--mono);font-size:.68rem;padding:.22rem .6rem;border-radius:4px;white-space:nowrap}
-.tag.hot{background:var(--hot-dim);color:var(--hot)}
-.tag.soil{background:rgba(0,0,0,.055);color:var(--ink-2)}
-.tag.warn{background:rgba(255,59,48,.08);color:#B23A28}
+/* ============ MARKET ============ */
+.market-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;max-width:1020px;margin-bottom:1.3rem}
+.market-card{padding:2.3rem 2rem;text-align:left}
+.market-num{font-family:var(--disp);font-size:2.7rem;font-weight:700;letter-spacing:-.02em;
+background:linear-gradient(135deg,#fff 30%,var(--sky));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.market-label{font-size:.87rem;color:var(--ink-2);margin-top:.6rem;line-height:1.55;font-weight:300}
+.market-source{font-family:var(--mono);font-size:.68rem;color:var(--ink-3)}
 
-/* FAQ */
-.faq-list{max-width:740px}
-.faq-item{border-bottom:1px solid var(--line);padding:1.35rem 0}
-.faq-item summary{cursor:pointer;font-family:var(--disp);font-size:1rem;font-weight:600;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+/* ============ MISSION ============ */
+.mission-section{text-align:center;overflow:hidden}
+.mission-inner{max-width:760px;margin:0 auto;position:relative;z-index:2}
+.mission-q{font-size:clamp(1.6rem,3.4vw,2.5rem);font-weight:300;letter-spacing:-.02em;line-height:1.4;color:var(--ink-2);margin-bottom:2.6rem}
+.mission-q strong{font-weight:600;font-family:var(--disp);
+background:linear-gradient(120deg,#fff 20%,var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ============ FAQ ============ */
+.faq-list{max-width:780px}
+.faq-item{border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:.85rem;background:var(--glass);
+transition:border-color .35s,box-shadow .35s;overflow:hidden}
+.faq-item[open]{border-color:rgba(0,153,255,.3);box-shadow:0 0 30px rgba(0,153,255,.07)}
+.faq-item summary{cursor:pointer;font-family:var(--disp);font-size:.98rem;font-weight:600;list-style:none;
+display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.25rem 1.5rem;transition:color .3s}
+.faq-item summary:hover{color:var(--cyan)}
 .faq-item summary::-webkit-details-marker{display:none}
-.faq-item summary::after{content:'+';font-family:var(--mono);color:rgba(29,29,31,.45);font-size:1.3rem;flex-shrink:0}
-.faq-item[open] summary::after{content:'−'}
-.faq-item p{font-size:.88rem;color:var(--ink-2);line-height:1.75;margin-top:.9rem;max-width:600px}
+.faq-item summary::after{content:'+';font-family:var(--mono);color:var(--ink-3);font-size:1.3rem;flex-shrink:0;transition:transform .35s var(--ease),color .3s}
+.faq-item[open] summary::after{transform:rotate(45deg);color:var(--cyan)}
+.faq-item p{font-size:.88rem;color:var(--ink-2);line-height:1.8;padding:0 1.5rem 1.4rem;max-width:640px;font-weight:300}
 
-/* FOUNDER */
-.founder-card{display:flex;gap:1.1rem;align-items:center;background:var(--panel);border:1px solid var(--line);padding:1.3rem 1.5rem;margin-top:1rem;border-radius:18px}
-.founder-avatar{width:52px;height:52px;border-radius:50%;background:var(--panel-raised);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--cool);flex-shrink:0}
-.founder-name{font-size:1rem;font-weight:600;color:var(--ink);font-family:var(--disp)}
-.founder-role{font-size:.75rem;color:var(--ink-3);margin-top:.15rem;font-family:var(--mono)}
+/* ============ TRANSPARENCY / CONTACT / FOOTER ============ */
+.transparency{text-align:center;padding:70px 6vw}
+.transparency p{font-size:.86rem;color:var(--ink-3);max-width:680px;margin:0 auto;line-height:1.85;font-weight:300}
+.contact-section{text-align:center}
+.contact-card{max-width:640px;margin:0 auto;padding:3.5rem 3rem;text-align:center}
+.contact-card h2{font-size:1.9rem;font-weight:600;letter-spacing:-.02em;margin-bottom:.7rem}
+.contact-card p{font-size:.92rem;color:var(--ink-3);margin-bottom:1.8rem;font-weight:300}
+.contact-card a.mail{color:var(--cyan);font-family:var(--mono);font-size:.92rem;text-decoration:none;border-bottom:1px solid rgba(0,212,255,.35);padding-bottom:.2rem;transition:border-color .3s,text-shadow .3s}
+.contact-card a.mail:hover{border-color:var(--cyan);text-shadow:0 0 16px rgba(0,212,255,.5)}
+footer{position:relative;z-index:5;border-top:1px solid var(--line);padding:2.4rem 5vw;background:rgba(255,255,255,.012)}
+.footer-inner{max-width:1220px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{font-family:var(--mono);font-size:.78rem;color:var(--ink-3)}
+.footer-links{display:flex;gap:1.7rem;list-style:none;flex-wrap:wrap}
+.footer-links a{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);text-decoration:none;transition:color .25s}
+.footer-links a:hover{color:var(--cyan)}
+.footer-copy{font-family:var(--mono);font-size:.66rem;color:rgba(235,240,248,.25);width:100%}
 
-/* STICKY CTA */
-.sticky-cta{
-position:fixed;bottom:24px;right:24px;z-index:400;
-background:var(--ink);color:#FFFFFF;
-padding:.8rem 1.4rem;border-radius:980px;
-font-family:var(--body);font-size:.88rem;font-weight:400;text-decoration:none;
-box-shadow:0 16px 34px rgba(0,0,0,.2);
-opacity:0;transform:translateY(16px);pointer-events:none;
-transition:opacity .3s,transform .3s;
-}
+/* ============ STICKY CTA ============ */
+.sticky-cta{position:fixed;bottom:26px;right:26px;z-index:500;opacity:0;transform:translateY(18px);pointer-events:none;transition:opacity .4s,transform .4s var(--ease)}
 .sticky-cta.show{opacity:1;transform:none;pointer-events:auto}
-@media(max-width:640px){.sticky-cta{left:16px;right:16px;bottom:16px;text-align:center}}
+@media(max-width:640px){.sticky-cta{left:16px;right:16px}.sticky-cta .btn{width:100%;justify-content:center}}
 
-/* MISSION */
-.mission-section{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
-.mission-inner{max-width:700px;margin:0 auto}
-.mission-q{font-size:clamp(1.5rem,3.2vw,2.3rem);font-weight:300;letter-spacing:-.02em;line-height:1.4;color:var(--ink-2);margin-bottom:2.4rem}
-.mission-q strong{font-weight:600;color:var(--ink);font-family:var(--disp)}
-
-/* TRANSPARENCY */
-.transparency{text-align:center;padding:64px 6vw}
-.transparency p{font-size:.85rem;color:var(--ink-3);max-width:660px;margin:0 auto;line-height:1.8}
-
-/* CONTACT */
-.contact-section{text-align:center;background:var(--panel);border-top:1px solid var(--line)}
-.contact-section h2{font-size:1.7rem;font-weight:600;letter-spacing:-.02em;color:var(--ink);margin-bottom:.6rem}
-.contact-section p{font-size:.9rem;color:var(--ink-3);margin-bottom:1.6rem}
-.contact-section a.mail{color:var(--ink);font-family:var(--mono);font-size:.88rem;text-decoration:none;border-bottom:1px solid rgba(29,29,31,.3);padding-bottom:.15rem}
-
-/* FOOTER */
-footer{background:var(--void);border-top:1px solid var(--line);padding:2.2rem 5vw}
-.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-.footer-logo{font-family:var(--mono);font-size:.8rem;color:var(--ink-3)}
-.footer-links{display:flex;gap:1.6rem;list-style:none;flex-wrap:wrap}
-.footer-links a{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);text-decoration:none;transition:color .2s}
-.footer-links a:hover{color:var(--cool)}
-.footer-copy{font-family:var(--mono);font-size:.68rem;color:rgba(29,29,31,.35);width:100%}
-
-/* SECONDARY PAGES */
-.waitlist-page,.about-page,.privacy-page{display:none}
-.waitlist-page{min-height:100vh;background:var(--void);padding:130px 5vw 80px}
+/* ============ SUB PAGES ============ */
+.waitlist-page,.about-page,.privacy-page{display:none;position:relative;z-index:5}
+.waitlist-page{min-height:100vh;padding:140px 5vw 90px}
 .wl-inner{max-width:560px;margin:0 auto}
-.wl-back,.ab-back,.pv-back{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.78rem;color:var(--ink-3);text-decoration:none;margin-bottom:3rem;transition:color .2s}
-.wl-back:hover,.ab-back:hover,.pv-back:hover{color:var(--cool)}
-.wl-inner h1{font-size:clamp(1.9rem,3.6vw,2.6rem);font-weight:600;letter-spacing:-.03em;color:var(--ink);margin-bottom:.75rem}
-.wl-sub{font-size:.95rem;font-weight:300;color:var(--ink-2);margin-bottom:2.6rem;line-height:1.6}
-.form-group{margin-bottom:1.25rem}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
-label{display:block;font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--ink-3);margin-bottom:.45rem;letter-spacing:.03em;text-transform:uppercase}
+.page-back{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.76rem;color:var(--ink-3);text-decoration:none;margin-bottom:3rem;transition:color .25s}
+.page-back:hover{color:var(--cyan)}
+.wl-inner h1{font-size:clamp(2rem,4vw,2.8rem);font-weight:600;letter-spacing:-.03em;margin-bottom:.8rem;
+background:linear-gradient(180deg,#fff,rgba(255,255,255,.65));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.wl-sub{font-size:.95rem;font-weight:300;color:var(--ink-2);margin-bottom:2.8rem;line-height:1.7}
+.form-group{margin-bottom:1.3rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.3rem}
+label{display:block;font-family:var(--mono);font-size:.68rem;font-weight:500;color:var(--ink-3);margin-bottom:.5rem;letter-spacing:.08em;text-transform:uppercase}
 label .req{color:var(--hot);margin-left:.2rem}
-input,select{
-width:100%;background:var(--panel);
-border:1px solid var(--line-strong);
-border-radius:12px;padding:.82rem 1rem;
-color:var(--ink);font-size:.9rem;font-family:var(--body);
-outline:none;transition:border-color .2s,box-shadow .2s;
--webkit-appearance:none;appearance:none;
-}
+input,select{width:100%;background:rgba(255,255,255,.035);border:1px solid var(--line-2);border-radius:var(--r-sm);
+padding:.85rem 1rem;color:var(--ink);font-size:.9rem;font-family:var(--body);outline:none;
+transition:border-color .25s,box-shadow .25s,background .25s;-webkit-appearance:none;appearance:none}
 input::placeholder{color:var(--ink-3)}
-input:focus,select:focus{border-color:var(--cool);box-shadow:0 0 0 4px var(--cool-dim)}
-select{
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E6E73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;
-}
-.btn-submit{
-width:100%;background:var(--ink);color:#FFFFFF;border:none;
-padding:.9rem;border-radius:980px;
-font-family:var(--body);font-size:.95rem;font-weight:400;cursor:pointer;
-transition:opacity .2s;margin-top:.5rem;
-}
-.btn-submit:hover{opacity:.8}
-.wl-note{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);text-align:center;margin-top:1rem}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,153,255,.14);background:rgba(255,255,255,.05)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300D4FF' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
+select option{background:#101216;color:var(--ink)}
+.btn-submit{width:100%;justify-content:center;margin-top:.5rem}
+.wl-note{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);text-align:center;margin-top:1.1rem}
 .success-msg{display:none;text-align:center;padding:3rem 0}
-.success-msg .check{
-width:56px;height:56px;border-radius:50%;
-background:var(--cool-dim);border:1px solid rgba(0,113,227,.3);
-display:flex;align-items:center;justify-content:center;
-margin:0 auto 1.5rem;font-size:1.4rem;color:var(--cool);
-}
-.success-msg h2{font-size:1.4rem;font-weight:600;color:var(--ink);margin-bottom:.6rem}
-.success-msg p{font-size:.9rem;color:var(--ink-3)}
+.success-msg .check{width:60px;height:60px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(0,212,255,.4);
+display:flex;align-items:center;justify-content:center;margin:0 auto 1.6rem;font-size:1.5rem;color:var(--cyan);
+box-shadow:0 0 34px rgba(0,212,255,.25)}
+.success-msg h2{font-size:1.5rem;font-weight:600;margin-bottom:.6rem}
+.success-msg p{font-size:.9rem;color:var(--ink-3);line-height:1.7}
+.about-page{padding:140px 5vw 90px}
+.about-inner{max-width:780px;margin:0 auto}
+.about-hero{padding:64px 5vw;margin-bottom:4rem;text-align:center}
+.about-hero h1{font-size:clamp(2rem,4.6vw,3.3rem);font-weight:600;letter-spacing:-.035em;margin-bottom:1.1rem;line-height:1.12;
+background:linear-gradient(180deg,#fff 30%,rgba(255,255,255,.6));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.about-hero p{font-size:1.03rem;font-weight:300;color:var(--ink-2);line-height:1.75;max-width:560px;margin:0 auto}
+.about-section{margin-bottom:3.6rem}
+.about-section h2{font-size:1.35rem;font-weight:600;letter-spacing:-.01em;margin-bottom:1rem}
+.about-section p{font-size:.93rem;color:var(--ink-2);line-height:1.85;margin-bottom:.8rem;font-weight:300}
+.about-values{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.6rem}
+.about-val{padding:1.6rem;border-radius:var(--r-md)}
+.about-val h3{font-size:.82rem;font-weight:600;margin-bottom:.5rem;font-family:var(--mono);color:var(--cyan);letter-spacing:.08em}
+.about-val p{font-size:.83rem;color:var(--ink-3);line-height:1.65;margin:0}
+.tech-stack{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.2rem}
+.tech-tag{font-family:var(--mono);font-size:.7rem;color:var(--sky);background:var(--blue-dim);border:1px solid rgba(0,153,255,.25);padding:.34rem .75rem;border-radius:7px;transition:box-shadow .3s,border-color .3s}
+.tech-tag:hover{border-color:var(--cyan);box-shadow:0 0 16px rgba(0,212,255,.2)}
+.founder-card{display:flex;gap:1.1rem;align-items:center;padding:1.4rem 1.6rem;margin-top:1rem}
+.founder-avatar{width:54px;height:54px;border-radius:50%;background:var(--blue-dim);border:1px solid rgba(0,153,255,.35);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--cyan);flex-shrink:0;box-shadow:0 0 22px rgba(0,153,255,.15)}
+.founder-name{font-size:1rem;font-weight:600;font-family:var(--disp)}
+.founder-role{font-size:.72rem;color:var(--ink-3);margin-top:.2rem;font-family:var(--mono)}
+.privacy-page{max-width:700px;margin:0 auto;padding:140px 5vw 90px}
+.privacy-page h1{font-size:1.9rem;font-weight:600;margin-bottom:2rem;letter-spacing:-.02em}
+.privacy-page h2{font-family:var(--mono);font-size:.68rem;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin:2.2rem 0 .7rem}
+.privacy-page p{font-size:.88rem;color:var(--ink-2);line-height:1.8;margin-bottom:.6rem;font-weight:300}
 
-.about-page{background:var(--void);padding:130px 5vw 80px}
-.about-inner{max-width:760px;margin:0 auto}
-.about-hero{background:var(--panel);border:1px solid var(--line);padding:60px 5vw;margin-bottom:4rem;text-align:center;border-radius:24px}
-.about-hero h1{font-size:clamp(1.9rem,4.4vw,3.2rem);font-weight:600;letter-spacing:-.03em;color:var(--ink);margin-bottom:1rem;line-height:1.15}
-.about-hero p{font-size:1.05rem;font-weight:300;color:var(--ink-2);line-height:1.7;max-width:540px;margin:0 auto}
-.about-section{margin-bottom:3.5rem}
-.about-section h2{font-size:1.3rem;font-weight:600;color:var(--ink);letter-spacing:-.01em;margin-bottom:1rem}
-.about-section p{font-size:.93rem;color:var(--ink-2);line-height:1.8;margin-bottom:.75rem}
-.about-values{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:1.5rem}
-.about-val{background:var(--panel);padding:1.5rem;border-radius:16px}
-.about-val h3{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.4rem;font-family:var(--mono)}
-.about-val p{font-size:.82rem;color:var(--ink-3);line-height:1.6}
-.tech-stack{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
-.tech-tag{font-family:var(--mono);font-size:.72rem;color:var(--cool);background:var(--cool-dim);border:1px solid rgba(0,113,227,.22);padding:.32rem .7rem;border-radius:6px}
-
-.privacy-page{max-width:680px;margin:130px auto 80px;padding:0 5vw;background:var(--void)}
-.privacy-page h1{font-size:1.8rem;font-weight:600;color:var(--ink);margin-bottom:2rem;letter-spacing:-.02em}
-.privacy-page h2{font-family:var(--mono);font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--cool);margin:2rem 0 .6rem}
-.privacy-page p{font-size:.87rem;color:var(--ink-2);line-height:1.75;margin-bottom:.6rem}
-
-/* REVEAL */
-.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
-.reveal.visible{opacity:1;transform:none}
-.d1{transition-delay:.1s}.d2{transition-delay:.2s}
-
-/* RESPONSIVE */
-@media(max-width:900px){
+/* ============ RESPONSIVE ============ */
+@media(max-width:960px){
 .hero-inner{grid-template-columns:1fr}
 .hero-visual{order:-1}
-.compare{grid-template-columns:1fr}
-.cap-grid{grid-template-columns:1fr}
-.app-section{grid-template-columns:1fr}
-.market-cards{grid-template-columns:1fr}
+.compare,.cap-grid,.market-cards{grid-template-columns:1fr}
+.app-section{grid-template-columns:1fr;gap:3.5rem}
+.dash-grid{grid-template-columns:1fr}
 .stat-cell{flex:1 1 50%;border-bottom:1px solid var(--line)}
 nav .nav-links{display:none}
-.form-row{grid-template-columns:1fr}
-.about-values{grid-template-columns:1fr}
-.phone-frame{width:250px}
+.form-row,.about-values{grid-template-columns:1fr}
+.phone-frame{width:252px}
 .report-preview{overflow-x:auto}
-.report-table{min-width:480px}
-section{padding:72px 6vw}
+.report-table{min-width:500px}
+section{padding:84px 6vw}
+.rays{display:none}
 }
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){
+*,*::before,*::after{animation:none!important;transition:none!important}
+.rv,.rv-scale,.split .w span{opacity:1!important;transform:none!important}
+.bars i{transform:scaleY(1)!important}
+#stars,#cursor-glow,.drone-fly{display:none}
+}
 </style>
 </head>
 <body>
 
-<a href="#" onclick="showWaitlist(event)" class="sticky-cta" id="sticky-cta">Erken Erişime Katıl →</a>
+<canvas id="stars"></canvas>
+<div class="aurora"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div id="cursor-glow"></div>
+<div class="noise"></div>
+
+<div class="sticky-cta" id="sticky-cta"><a href="#" onclick="showWaitlist(event)" class="btn btn-fill magnetic">Erken Erişime Katıl →</a></div>
 
 <!-- NAV -->
-<nav>
+<nav id="nav">
 <a href="#" class="logo" onclick="showMain(event)"><span class="logo-mark"></span><span class="logo-word">SOLARPEAK—AI</span></a>
 <ul class="nav-links">
-<li><a href="#pipeline">Nasıl Çalışır</a></li>
-<li><a href="#kapsam">Kapsam</a></li>
-<li><a href="#uygulama">Uygulama</a></li>
-<li><a href="#sss">SSS</a></li>
+<li><a href="#pipeline" onclick="showMain()">Nasıl Çalışır</a></li>
+<li><a href="#dashboard" onclick="showMain()">Platform</a></li>
+<li><a href="#kapsam" onclick="showMain()">Kapsam</a></li>
+<li><a href="#sss" onclick="showMain()">SSS</a></li>
 <li><a href="#" onclick="showAbout(event)">Hakkımızda</a></li>
-<li><a href="#iletisim">İletişim</a></li>
+<li><a href="#iletisim" onclick="showMain()">İletişim</a></li>
 </ul>
-<a href="#" onclick="showWaitlist(event)" class="nav-cta">Erken Erişim</a>
+<a href="#" onclick="showWaitlist(event)" class="btn btn-fill nav-cta magnetic">Erken Erişim</a>
 </nav>
 
-<!-- ANA SAYFA -->
+<!-- ================= ANA SAYFA ================= -->
 <div id="main-page">
 
 <!-- HERO -->
-<section class="hero">
-<div class="grid-bg"></div>
+<section class="hero" id="top">
+<div class="rays"></div>
 <div class="drone-fly">
-<svg viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<linearGradient id="trailGrad" x1="0" y1="0" x2="1" y2="0">
-<stop offset="0%" stop-color="#1D1D1F" stop-opacity="0"/>
-<stop offset="55%" stop-color="#1D1D1F" stop-opacity=".18"/>
-<stop offset="100%" stop-color="#0071E3" stop-opacity=".8"/>
-</linearGradient>
-</defs>
-<!-- tarama izi -->
-<rect x="0" y="37" width="150" height="2.4" rx="1.2" fill="url(#trailGrad)"/>
-<!-- kollar -->
-<g stroke="#1D1D1F" stroke-width="1.4" opacity=".35">
-<line x1="166" y1="32" x2="153" y2="15"/>
-<line x1="196" y1="32" x2="209" y2="15"/>
-<line x1="166" y1="40" x2="153" y2="57"/>
-<line x1="196" y1="40" x2="209" y2="57"/>
-</g>
-<!-- gövde -->
-<rect x="168" y="30" width="26" height="12" rx="4" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.4"/>
-<circle cx="181" cy="36" r="2" fill="#0071E3"/>
-<!-- pervaneler -->
-<g transform="translate(153,15)"><g class="propeller-spin"><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28"/><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28" transform="rotate(90)"/></g><circle r="1.6" fill="#1D1D1F"/></g>
-<g transform="translate(209,15)"><g class="propeller-spin"><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28"/><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28" transform="rotate(90)"/></g><circle r="1.6" fill="#1D1D1F"/></g>
-<g transform="translate(153,57)"><g class="propeller-spin"><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28"/><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28" transform="rotate(90)"/></g><circle r="1.6" fill="#1D1D1F"/></g>
-<g transform="translate(209,57)"><g class="propeller-spin"><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28"/><ellipse cx="0" cy="0" rx="9" ry="1.6" fill="#1D1D1F" opacity=".28" transform="rotate(90)"/></g><circle r="1.6" fill="#1D1D1F"/></g>
+<svg viewBox="0 0 230 84" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="trailGrad" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#00D4FF" stop-opacity="0"/><stop offset="60%" stop-color="#00D4FF" stop-opacity=".22"/><stop offset="100%" stop-color="#00D4FF" stop-opacity=".9"/>
+</linearGradient></defs>
+<rect x="0" y="39" width="152" height="2.4" rx="1.2" fill="url(#trailGrad)"/>
+<g stroke="rgba(255,255,255,.4)" stroke-width="1.3">
+<line x1="170" y1="34" x2="157" y2="17"/><line x1="200" y1="34" x2="213" y2="17"/>
+<line x1="170" y1="42" x2="157" y2="59"/><line x1="200" y1="42" x2="213" y2="59"/></g>
+<rect x="172" y="32" width="26" height="12" rx="4" fill="#14181F" stroke="rgba(255,255,255,.5)" stroke-width="1.3"/>
+<circle cx="185" cy="38" r="2" fill="#00D4FF"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></circle>
+<g transform="translate(157,17)"><g class="prop"><ellipse rx="9" ry="1.6" fill="rgba(255,255,255,.4)"/><ellipse rx="9" ry="1.6" fill="rgba(255,255,255,.4)" transform="rotate(90)"/></g><circle r="1.6" fill="#fff"/></g>
+<g transform="translate(213,17)"><g class="prop"><ellipse rx="9" ry="1.6" fill="rgba(255,255,255,.4)"/><ellipse rx="9" ry="1.6" fill="rgba(255,255,255,.4)" transform="rotate(90)"/></g><circle r="1.6" fill="#fff"/></g>
+<g transform="translate(157,59)"><g class="prop"><ellipse rx="9" ry="1.6" fill="rgba(255,255,255,.4)"/><ellipse rx="9" ry="1.6" fill="rgba(255,255,255,.4)" transform="rotate(90)"/></g><circle r="1.6" fill="#fff"/></g>
+<g transform="translate(213,59)"><g class="prop"><ellipse rx="9" ry="1.6" fill="rgba(255,255,255,.4)"/><ellipse rx="9" ry="1.6" fill="rgba(255,255,255,.4)" transform="rotate(90)"/></g><circle r="1.6" fill="#fff"/></g>
 </svg>
 </div>
+
 <div class="hero-inner">
 <div class="hero-copy">
-<span class="hero-kicker">GES Anomali Tespiti · Karar Destek Platformu</span>
-<h1 class="reveal">Sahaya çıkmadan,<br>sahayı bilin.</h1>
-<p class="hero-sub reveal d1">Drone ile toplanan RGB ve termal görüntüleri yapay zeka analiz eder; panel bazlı anomalileri haritada işaretler. Bakım ekibiniz doğru panele, daha hızlı ulaşır.</p>
-<div class="hero-btns reveal d1">
-<a href="#" onclick="showWaitlist(event)" class="btn-primary">Erken Erişime Katıl</a>
-<a href="#pipeline" class="btn-ghost">Nasıl Çalışır ↓</a>
+<span class="hero-kicker rv"><span class="live"></span>GES ANOMALİ TESPİTİ · KARAR DESTEK PLATFORMU</span>
+<h1 class="split" id="hero-h1">Sahaya çıkmadan,<br><span class="grad">sahayı bilin.</span></h1>
+<p class="hero-sub rv d1">Drone ile toplanan RGB ve termal görüntüleri yapay zeka analiz eder; panel bazlı anomalileri haritada işaretler. Bakım ekibiniz doğru panele, daha hızlı ulaşır.</p>
+<div class="hero-btns rv d2">
+<a href="#" onclick="showWaitlist(event)" class="btn btn-fill magnetic">Erken Erişime Katıl</a>
+<a href="#pipeline" class="btn btn-line magnetic">Nasıl Çalışır ↓</a>
 </div>
-<div class="hero-meta mono reveal d2">
+<div class="hero-meta rv d3">
 <span>40.000+ GES · Türkiye</span><span class="dot">·</span><span>Karar desteği, kesin teşhis değil</span>
 </div>
 </div>
 
-<div class="hero-visual frame reveal d1">
-<span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-<svg viewBox="0 0 472 260" xmlns="http://www.w3.org/2000/svg">
+<div class="hero-visual float-soft rv-scale d1" id="hero-visual">
+<div class="hv-head"><span>MISSION-014 · RGB+TERMAL</span><span class="rec"><i></i>CANLI ANALİZ</span></div>
+<svg viewBox="0 0 472 262" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="beamGrad" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#00D4FF" stop-opacity="0"/><stop offset="50%" stop-color="#00D4FF" stop-opacity=".35"/><stop offset="100%" stop-color="#00D4FF" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="pipeGrad" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#0099FF"/><stop offset="100%" stop-color="#00D4FF"/>
+</linearGradient>
+</defs>
 <!-- panel grid -->
-<g fill="none" stroke="rgba(0,0,0,.16)" stroke-width="1.2">
-<rect x="16" y="16" width="48" height="26" rx="2"/><rect x="72" y="16" width="48" height="26" rx="2"/><rect x="128" y="16" width="48" height="26" rx="2"/><rect x="184" y="16" width="48" height="26" rx="2"/><rect x="240" y="16" width="48" height="26" rx="2"/><rect x="296" y="16" width="48" height="26" rx="2"/><rect x="352" y="16" width="48" height="26" rx="2"/><rect x="408" y="16" width="48" height="26" rx="2"/>
-<rect x="16" y="50" width="48" height="26" rx="2"/><rect x="72" y="50" width="48" height="26" rx="2"/><rect x="128" y="50" width="48" height="26" rx="2"/><rect x="184" y="50" width="48" height="26" rx="2"/><rect x="240" y="50" width="48" height="26" rx="2"/><rect x="352" y="50" width="48" height="26" rx="2"/><rect x="408" y="50" width="48" height="26" rx="2"/>
-<rect x="16" y="84" width="48" height="26" rx="2"/><rect x="72" y="84" width="48" height="26" rx="2"/><rect x="128" y="84" width="48" height="26" rx="2"/><rect x="184" y="84" width="48" height="26" rx="2"/><rect x="240" y="84" width="48" height="26" rx="2"/><rect x="352" y="84" width="48" height="26" rx="2"/><rect x="408" y="84" width="48" height="26" rx="2"/>
-<rect x="16" y="118" width="48" height="26" rx="2"/><rect x="72" y="118" width="48" height="26" rx="2"/><rect x="128" y="118" width="48" height="26" rx="2"/><rect x="184" y="118" width="48" height="26" rx="2"/><rect x="240" y="118" width="48" height="26" rx="2"/><rect x="296" y="118" width="48" height="26" rx="2"/><rect x="352" y="118" width="48" height="26" rx="2"/><rect x="408" y="118" width="48" height="26" rx="2"/>
-<rect x="16" y="152" width="48" height="26" rx="2"/><rect x="72" y="152" width="48" height="26" rx="2"/><rect x="128" y="152" width="48" height="26" rx="2"/><rect x="184" y="152" width="48" height="26" rx="2"/><rect x="240" y="152" width="48" height="26" rx="2"/><rect x="296" y="152" width="48" height="26" rx="2"/><rect x="352" y="152" width="48" height="26" rx="2"/><rect x="408" y="152" width="48" height="26" rx="2"/>
-</g>
-<!-- anomaly panel P0310 -->
-<rect x="296" y="84" width="48" height="26" rx="2" fill="rgba(255,59,48,.10)" stroke="#FF3B30" stroke-width="1.6"/>
-<circle class="pulse-ring" cx="320" cy="97" r="7" fill="none" stroke="#FF3B30" stroke-width="1.4"/>
-<circle cx="320" cy="97" r="3" fill="#FF3B30"/>
-<!-- leader line -->
-<polyline points="344,97 372,97 372,190" fill="none" stroke="rgba(255,59,48,.45)" stroke-width="1"/>
-<!-- data tag -->
+<g fill="rgba(0,153,255,.05)" stroke="rgba(0,212,255,.22)" stroke-width="1" id="panelGrid"></g>
+<!-- scan beam -->
+<g class="scan-beam"><rect x="10" y="10" width="46" height="176" fill="url(#beamGrad)" rx="4"/>
+<line x1="33" y1="10" x2="33" y2="186" stroke="#00D4FF" stroke-width="1.4" opacity=".9"/></g>
+<!-- anomaly panel -->
+<rect x="296" y="84" width="48" height="26" rx="3" fill="rgba(255,69,58,.16)" stroke="#FF453A" stroke-width="1.6"
+style="filter:drop-shadow(0 0 10px rgba(255,69,58,.5))"/>
+<circle class="pulse-ring" cx="320" cy="97" r="6" fill="none" stroke="#FF453A" stroke-width="1.4"/>
+<circle cx="320" cy="97" r="3" fill="#FF453A"/>
+<polyline points="344,97 374,97 374,192" fill="none" stroke="rgba(255,69,58,.5)" stroke-width="1" stroke-dasharray="3 3"/>
+<!-- telemetry tag -->
 <g class="tag-box">
-<rect x="300" y="196" width="150" height="52" rx="8" fill="#FFFFFF" stroke="rgba(0,0,0,.1)" stroke-width="1"/>
-<text x="312" y="213" font-family="IBM Plex Mono" font-size="9.5" fill="#1D1D1F">PANEL · P0310</text>
-<text x="312" y="227" font-family="IBM Plex Mono" font-size="9.5" fill="#FF3B30">HOTSPOT · 97% GÜVEN</text>
-<text x="312" y="241" font-family="IBM Plex Mono" font-size="9.5" fill="rgba(29,29,31,.45)">MAKS. 84.6°C</text>
+<rect x="298" y="198" width="156" height="54" rx="10" fill="rgba(10,12,16,.92)" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+<text x="311" y="216" font-family="IBM Plex Mono" font-size="9.5" fill="#F5F7FA">PANEL · P0310</text>
+<text x="311" y="230" font-family="IBM Plex Mono" font-size="9.5" fill="#FF453A">HOTSPOT · %97 GÜVEN</text>
+<text x="311" y="244" font-family="IBM Plex Mono" font-size="9.5" fill="rgba(235,240,248,.5)">MAKS. 84.6°C</text>
 </g>
-<text x="16" y="9" font-family="IBM Plex Mono" font-size="8" fill="rgba(29,29,31,.35)">MISSION-014 · RGB+TERMAL · ANALİZ EDİLİYOR</text>
+<text x="14" y="256" font-family="IBM Plex Mono" font-size="8" fill="rgba(235,240,248,.35)">TERMAL TARAMA · SEKTÖR B · 12 SATIR</text>
 </svg>
 </div>
 </div>
+<div class="scroll-hint"><span>KEŞFET</span><span class="line"></span></div>
 </section>
 
 <!-- COUNTDOWN -->
-<div class="stat-bar countdown-bar">
+<div class="stat-bar">
 <div class="stat-cell"><span class="stat-num mono" id="cd-days">00</span><span class="stat-label">Gün</span></div>
 <div class="stat-cell"><span class="stat-num mono" id="cd-hours">00</span><span class="stat-label">Saat</span></div>
 <div class="stat-cell"><span class="stat-num mono" id="cd-mins">00</span><span class="stat-label">Dakika</span></div>
@@ -493,22 +579,21 @@ section{padding:72px 6vw}
 
 <!-- PROBLEM -->
 <section id="problem">
-<div class="section-head reveal">
+<div class="wrap">
+<div class="section-head rv">
 <span class="eyebrow">Sorun</span>
 <h2>Binlerce panel, tek tek elle mi denetlenecek?</h2>
 <p>Büyük ölçekli GES sahalarında denetim süreçleri hâlâ büyük ölçüde manuel yürütülüyor: teknik ekip sahaya gitmek zorunda kalıyor, sorunlu noktaların konumu geç belirleniyor ve raporlama süreçleri yavaş ilerliyor.</p>
 </div>
-<div class="compare reveal d1">
-<div class="compare-col">
-<span class="compare-label">Bugün</span>
+<div class="compare">
+<div class="compare-col old glass tilt rv"><span class="compare-label">Bugün</span>
 <div class="compare-item"><span class="mark">×</span>Teknik ekip sahaya fiziksel olarak gitmek zorunda</div>
 <div class="compare-item"><span class="mark">×</span>Binlerce panel tek tek incelenir</div>
 <div class="compare-item"><span class="mark">×</span>Termal anomalilerin tespiti zaman alır</div>
 <div class="compare-item"><span class="mark">×</span>Raporlama manuel ilerler</div>
 <div class="compare-item"><span class="mark">×</span>Sorunlu noktanın kesin konumu geç belirlenir</div>
 </div>
-<div class="compare-col hi">
-<span class="compare-label">SolarPeak-AI ile</span>
+<div class="compare-col new glass g-border tilt rv d1"><span class="compare-label">SolarPeak-AI ile</span>
 <div class="compare-item"><span class="mark">✓</span>Drone RGB + termal görüntüleri toplar</div>
 <div class="compare-item"><span class="mark">✓</span>Panel bazlı otomatik yapay zeka analizi</div>
 <div class="compare-item"><span class="mark">✓</span>Hotspot ve sıcaklık anomalileri işaretlenir</div>
@@ -516,40 +601,85 @@ section{padding:72px 6vw}
 <div class="compare-item"><span class="mark">✓</span>Dijital PDF teknik rapor</div>
 </div>
 </div>
+</div>
 </section>
 
 <!-- PIPELINE -->
 <section id="pipeline">
-<div class="section-head reveal">
+<div class="wrap">
+<div class="section-head rv">
 <span class="eyebrow">Süreç</span>
 <h2>Görüntüden rapora, altı adımlı bir hat.</h2>
 <p>Yapay zeka yalnızca anomaliyi tespit eder; platformun temelini görüntüyü konumlandıran, panelleri kimliklendiren ve sonucu haritaya işleyen veri akışı oluşturur.</p>
 </div>
-<div class="pipeline frame reveal d1">
-<span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+<div class="pipeline glass rv-scale" id="pipelineBox">
+<svg class="pipe-line" preserveAspectRatio="none" viewBox="0 0 1200 4">
+<line class="base" x1="0" y1="2" x2="1200" y2="2"/>
+<line class="flow" x1="0" y1="2" x2="1200" y2="2" stroke="url(#pipeGrad2)"/>
+<defs><linearGradient id="pipeGrad2" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#0099FF"/><stop offset="100%" stop-color="#00D4FF"/></linearGradient></defs>
+</svg>
 <div class="pipeline-track">
-<div class="pipe-node"><span class="pipe-num">01</span><h4>Veri Alma</h4><p>RGB ve termal görüntüler yüklenir; GPS, yükseklik ve zaman bilgisi okunur.</p></div>
-<div class="pipe-node"><span class="pipe-num">02</span><h4>Ön İşleme</h4><p>Görüntüler normalize edilir, RGB ve termal kareler eşleştirilir.</p></div>
-<div class="pipe-node"><span class="pipe-num">03</span><h4>Panel Tespiti &amp; Kimlik</h4><p>Paneller tespit edilir; satır, panel no ve GPS ile Panel ID atanır.</p></div>
-<div class="pipe-node"><span class="pipe-num">04</span><h4>RGB + Termal Analiz</h4><p>İki bağımsız model yüzey kirliliğini ve sıcaklık anomalisini işaretler.</p></div>
-<div class="pipe-node"><span class="pipe-num">05</span><h4>Sonuç Birleştirme</h4><p>Panel bazlı tüm bulgular tek kayıt altında birleştirilir.</p></div>
-<div class="pipe-node"><span class="pipe-num">06</span><h4>Harita &amp; Rapor</h4><p>İnteraktif harita, PDF teknik rapor ve mobil bildirim üretilir.</p></div>
+<div class="pipe-node"><span class="pipe-dot"></span><span class="pipe-num">01</span><h4>Veri Alma</h4><p>RGB ve termal görüntüler yüklenir; GPS, yükseklik ve zaman bilgisi okunur.</p></div>
+<div class="pipe-node"><span class="pipe-dot"></span><span class="pipe-num">02</span><h4>Ön İşleme</h4><p>Görüntüler normalize edilir, RGB ve termal kareler eşleştirilir.</p></div>
+<div class="pipe-node"><span class="pipe-dot"></span><span class="pipe-num">03</span><h4>Panel Tespiti &amp; Kimlik</h4><p>Paneller tespit edilir; satır, panel no ve GPS ile Panel ID atanır.</p></div>
+<div class="pipe-node"><span class="pipe-dot"></span><span class="pipe-num">04</span><h4>RGB + Termal Analiz</h4><p>İki bağımsız model yüzey kirliliğini ve sıcaklık anomalisini işaretler.</p></div>
+<div class="pipe-node"><span class="pipe-dot"></span><span class="pipe-num">05</span><h4>Sonuç Birleştirme</h4><p>Panel bazlı tüm bulgular tek kayıt altında birleştirilir.</p></div>
+<div class="pipe-node"><span class="pipe-dot"></span><span class="pipe-num">06</span><h4>Harita &amp; Rapor</h4><p>İnteraktif harita ve PDF teknik rapor üretilir.</p></div>
+</div>
 </div>
 </div>
 </section>
 
-<!-- REPORT PREVIEW -->
+<!-- DASHBOARD PREVIEW -->
+<section id="dashboard">
+<div class="wrap">
+<div class="section-head rv">
+<span class="eyebrow">Platform</span>
+<h2>Sahanız, tek ekranda canlı.</h2>
+<p>Denetim görevleri, panel bazlı termal harita ve analiz durumu — hepsi tek panelde. Aşağıdaki önizleme örnek verilerle çalışır.</p>
+</div>
+<div class="dash glass g-border tilt rv-scale" id="dashBox">
+<div class="dash-top">
+<span class="dash-title"><span class="live-dot"></span>OPERASYON PANELİ · KARAMAN GES</span>
+<span class="dash-chip">ÖRNEK VERİ</span>
+</div>
+<div class="dash-grid">
+<div class="dash-card">
+<h5>Termal Isı Haritası · Sektör B</h5>
+<div class="heat-grid" id="heatGrid"></div>
+<span class="metric-sub" style="margin-top:.9rem">■ normal &nbsp;<b>■ ısınma</b> &nbsp;<span style="color:var(--hot)">■ hotspot</span></span>
+</div>
+<div class="dash-card">
+<h5>Analiz Edilen Panel</h5>
+<span class="big-metric" data-count="12480">0</span>
+<span class="metric-sub">bu ay · <b>+3 görev</b></span>
+<div class="bars"><i style="height:34%"></i><i style="height:52%"></i><i style="height:41%"></i><i style="height:68%"></i><i style="height:57%"></i><i style="height:83%"></i><i style="height:96%"></i></div>
+</div>
+<div class="dash-card">
+<h5>Görev Durumu</h5>
+<div class="status-row"><span class="sid">GES-014</span><span class="pill ok">Tamamlandı</span></div>
+<div class="status-row"><span class="sid">GES-021</span><span class="pill busy">Analiz Ediliyor</span></div>
+<div class="status-row"><span class="sid">GES-009</span><span class="pill ok">Tamamlandı</span></div>
+<div class="status-row"><span class="sid">GES-022</span><span class="pill q">Kuyrukta</span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- REPORT -->
 <section id="rapor">
-<div class="section-head reveal">
+<div class="wrap">
+<div class="section-head rv">
 <span class="eyebrow">Çıktı</span>
 <h2>Panel bazlı, paylaşılabilir teknik rapor.</h2>
 <p>Her analiz sonucu Panel ID ile eşleşir, harita üzerinde işaretlenir ve PDF teknik rapor olarak indirilebilir.</p>
 </div>
-<div class="report-preview frame reveal d1">
-<span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+<div class="report-preview glass tilt rv-scale">
 <div class="report-head">
-<span class="report-title mono">TEKNİK RAPOR · MISSION-014</span>
-<span class="report-date mono">Örnek çıktı</span>
+<span class="report-title">TEKNİK RAPOR · MISSION-014</span>
+<span class="report-date">Örnek çıktı</span>
 </div>
 <table class="report-table">
 <thead><tr><th>Panel ID</th><th>Bulgu</th><th>Güven</th><th>Maks. Sıcaklık</th></tr></thead>
@@ -560,75 +690,62 @@ section{padding:72px 6vw}
 </tbody>
 </table>
 </div>
+</div>
 </section>
 
-<!-- CAPABILITY / SCOPE -->
+<!-- KAPSAM -->
 <section id="kapsam">
-<div class="section-head reveal">
+<div class="wrap">
+<div class="section-head rv">
 <span class="eyebrow">Kapsam</span>
 <h2>MVP'de gerçekten ne var, ne yok?</h2>
 <p>Güvenilir bir platform abartılı vaatlerden değil, net tanımlanmış kapsamdan doğar. Kesin arıza teşhisi, elektriksel test veya bakım kararı yerine geçmeyiz.</p>
 </div>
-<div class="cap-grid reveal d1">
-<div class="cap-col now">
-<span class="cap-tag">v1.0 — Şimdi</span>
-<h4>MVP'de Var</h4>
+<div class="cap-grid">
+<div class="cap-col now glass g-border rv"><span class="cap-tag">v1.0 — Şimdi</span><h4>MVP'de Var</h4>
 <ul class="cap-list">
-<li>Panel Detection &amp; Indexing</li>
-<li>Surface Soiling (toz, çamur, kuş pisliği)</li>
-<li>Hotspot tespiti</li>
-<li>Temperature Anomaly işaretleme</li>
-<li>İnteraktif harita</li>
-<li>PDF teknik rapor</li>
-<li>Web + mobil erişim</li>
-</ul>
-</div>
-<div class="cap-col">
-<span class="cap-tag">v2.0 — Yol Haritası</span>
-<h4>Planlanan</h4>
+<li>Panel Detection &amp; Indexing</li><li>Surface Soiling (toz, çamur, kuş pisliği)</li>
+<li>Hotspot tespiti</li><li>Temperature Anomaly işaretleme</li>
+<li>İnteraktif harita</li><li>PDF teknik rapor</li><li>Web + mobil erişim</li>
+</ul></div>
+<div class="cap-col glass rv d1"><span class="cap-tag">v2.0 — Yol Haritası</span><h4>Planlanan</h4>
 <ul class="cap-list">
-<li>Kablo güzergâhı ısı analizi</li>
-<li>Bağlantı noktası sıcaklık anomalileri</li>
-<li>SCADA veri entegrasyonu</li>
-<li>Gelişmiş raporlama</li>
-<li>Çoklu saha yönetimi</li>
-</ul>
-</div>
-<div class="cap-col">
-<span class="cap-tag">v3.0 — Vizyon</span>
-<h4>Uzun Vade</h4>
+<li>Kablo güzergâhı ısı analizi</li><li>Bağlantı noktası sıcaklık anomalileri</li>
+<li>SCADA veri entegrasyonu</li><li>Gelişmiş raporlama</li><li>Çoklu saha yönetimi</li>
+</ul></div>
+<div class="cap-col glass rv d2"><span class="cap-tag">v3.0 — Vizyon</span><h4>Uzun Vade</h4>
 <ul class="cap-list">
-<li>Predictive Maintenance</li>
-<li>Dijital ikiz entegrasyonu</li>
-<li>Enerji üretim verisiyle karar desteği</li>
-<li>Çoklu drone entegrasyonu</li>
-</ul>
+<li>Predictive Maintenance</li><li>Dijital ikiz entegrasyonu</li>
+<li>Enerji üretim verisiyle karar desteği</li><li>Çoklu drone entegrasyonu</li>
+</ul></div>
 </div>
+<p class="cap-note rv d3">MVP kapsamı dışında: PID, mikro çatlak, delamination, diyot arızası sınıflandırması, string arızası analizi, enerji üretim kaybı hesaplaması. Bu bulguların güvenilir tespiti için Elektrolüminesans (EL) görüntüleme veya elektriksel test gibi ek veri kaynakları gerekir.</p>
 </div>
-<p class="cap-note reveal d2">MVP kapsamı dışında: PID, mikro çatlak, delamination, diyot arızası sınıflandırması, string arızası analizi, enerji üretim kaybı hesaplaması. Bu bulguların güvenilir tespiti için Elektrolüminesans (EL) görüntüleme veya elektriksel test gibi ek veri kaynakları gerekir.</p>
 </section>
 
-<!-- APP -->
-<section id="uygulama" class="app-section">
-<div class="phone-frame reveal">
-<span class="btn-power"></span><span class="btn-vol-up"></span><span class="btn-vol-down"></span>
+<!-- MOBILE APP -->
+<section id="uygulama">
+<div class="app-section">
+<div class="phone-wrap rv-scale">
+<div class="phone-frame" id="phoneTilt">
+<span class="btn-side btn-power"></span><span class="btn-side btn-vol-up"></span><span class="btn-side btn-vol-down"></span>
 <div class="phone-screen">
 <div class="phone-notch"></div>
-<div class="phone-statusbar"><span>9:41</span><span class="ico-row"><span>●●●</span><span>Wi-Fi</span><span>78%</span></span></div>
+<div class="phone-statusbar"><span>9:41</span><span>●●● &nbsp;Wi-Fi&nbsp; 78%</span></div>
 <div class="phone-appbar"><span class="am"></span><span class="aw">SOLARPEAK—AI</span>
-<svg class="bell" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(245,247,250,.5)" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
 </div>
 <div class="phone-map">
 <svg viewBox="0 0 240 96" xmlns="http://www.w3.org/2000/svg">
-<g fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1">
+<g fill="rgba(0,153,255,.05)" stroke="rgba(0,212,255,.25)" stroke-width="1">
 <rect x="10" y="10" width="32" height="18" rx="2"/><rect x="46" y="10" width="32" height="18" rx="2"/><rect x="82" y="10" width="32" height="18" rx="2"/><rect x="118" y="10" width="32" height="18" rx="2"/><rect x="154" y="10" width="32" height="18" rx="2"/><rect x="190" y="10" width="32" height="18" rx="2"/>
 <rect x="10" y="32" width="32" height="18" rx="2"/><rect x="46" y="32" width="32" height="18" rx="2"/><rect x="118" y="32" width="32" height="18" rx="2"/><rect x="154" y="32" width="32" height="18" rx="2"/><rect x="190" y="32" width="32" height="18" rx="2"/>
 <rect x="10" y="54" width="32" height="18" rx="2"/><rect x="46" y="54" width="32" height="18" rx="2"/><rect x="82" y="54" width="32" height="18" rx="2"/><rect x="118" y="54" width="32" height="18" rx="2"/><rect x="154" y="54" width="32" height="18" rx="2"/><rect x="190" y="54" width="32" height="18" rx="2"/>
 </g>
-<rect x="82" y="32" width="32" height="18" rx="2" fill="rgba(255,59,48,.10)" stroke="#FF3B30" stroke-width="1.4"/>
-<circle cx="98" cy="41" r="4.5" fill="none" stroke="#FF3B30" stroke-width="1.2"><animate attributeName="r" values="4.5;10;4.5" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".8;0;.8" dur="2.2s" repeatCount="indefinite"/></circle>
-<circle cx="98" cy="41" r="2.2" fill="#FF3B30"/>
-<text x="10" y="88" font-family="IBM Plex Mono" font-size="7" fill="rgba(29,29,31,.4)">GES-021 · SEKTÖR B</text>
+<rect x="82" y="32" width="32" height="18" rx="2" fill="rgba(255,69,58,.16)" stroke="#FF453A" stroke-width="1.4"/>
+<circle cx="98" cy="41" r="4.5" fill="none" stroke="#FF453A" stroke-width="1.2"><animate attributeName="r" values="4.5;10;4.5" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".85;0;.85" dur="2.2s" repeatCount="indefinite"/></circle>
+<circle cx="98" cy="41" r="2.2" fill="#FF453A"/>
+<text x="10" y="88" font-family="IBM Plex Mono" font-size="7" fill="rgba(235,240,248,.4)">GES-021 · SEKTÖR B</text>
 </svg>
 </div>
 <div class="phone-body">
@@ -638,86 +755,103 @@ section{padding:72px 6vw}
 <div class="pm-row"><div class="pm-row-top"><span class="pm-id">GES-009</span><span class="pm-dot done"></span></div><span class="pm-status">Tamamlandı</span></div>
 </div>
 <div class="phone-navbar">
-<div class="pnav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="pnav-label">Ana Sayfa</span></div>
-<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="pnav-label">Harita</span></div>
-<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="pnav-label">Raporlar</span></div>
-<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg><span class="pnav-label">Profil</span></div>
+<div class="pnav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="pnav-label">Ana Sayfa</span></div>
+<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F7FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="pnav-label">Harita</span></div>
+<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F7FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="pnav-label">Raporlar</span></div>
+<div class="pnav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F7FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg><span class="pnav-label">Profil</span></div>
 </div>
 <div class="phone-home"></div>
 </div>
 </div>
-<div class="app-feats reveal d1">
-<span class="eyebrow">Mobil Uygulama</span>
-<h2>Her şey cebinizde.</h2>
-<div class="feat-item">
-<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+</div>
+<div class="app-feats">
+<span class="eyebrow rv">Mobil Uygulama</span>
+<h2 class="rv">Her şey cebinizde.</h2>
+<div class="feat-item rv">
+<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
 <div><div class="fi-h">Anlık Denetim Durumu</div><p class="fi-p">Her denetim görevinin durumunu — bekliyor, analiz ediliyor, tamamlandı — anlık takip edin.</p></div>
 </div>
-<div class="feat-item">
-<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+<div class="feat-item rv d1">
+<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
 <div><div class="fi-h">İnteraktif Harita ve Panel Kimliği</div><p class="fi-p">Panel ID, satır/panel no ve GPS konumuyla her bulguyu haritada görün.</p></div>
 </div>
-<div class="feat-item">
-<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg></div>
+<div class="feat-item rv d2">
+<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg></div>
 <div><div class="fi-h">Akıllı Bildirimler</div><p class="fi-p">Yeni anomali tespit edildiğinde bildirim doğrudan telefonunuza gelir.</p></div>
 </div>
-<div class="feat-item">
-<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+<div class="feat-item rv d3">
+<div class="fi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
 <div><div class="fi-h">Geçmiş Denetim Kayıtları</div><p class="fi-p">Sahanızdaki tüm denetim görevlerini ve panel bazlı bulguları geriye dönük karşılaştırın.</p></div>
+</div>
 </div>
 </div>
 </section>
 
+<!-- MARQUEE -->
+<div class="marquee-band">
+<div class="marquee" id="marquee">
+<span class="mq-item">YOLO TABANLI TESPİT</span><span class="mq-item">PYTORCH</span><span class="mq-item">RGB + TERMAL ANALİZ</span>
+<span class="mq-item">PANEL ID + GPS</span><span class="mq-item">FASTAPI</span><span class="mq-item">POSTGRESQL</span>
+<span class="mq-item">S3 OBJECT STORAGE</span><span class="mq-item">FLUTTER</span><span class="mq-item">PDF TEKNİK RAPOR</span>
+</div>
+</div>
+
 <!-- MARKET -->
 <section id="pazar">
-<div class="section-head reveal">
+<div class="wrap">
+<div class="section-head rv">
 <span class="eyebrow">Pazar</span>
 <h2>Türkiye'nin güneş kapasitesi hızla büyüyor.</h2>
 <p>Ölçek büyüdükçe düzenli, tutarlı ve panel bazlı denetim daha kritik hale geliyor.</p>
 </div>
-<div class="market-cards reveal d1">
-<div class="market-card"><span class="market-num">40.000+</span><p class="market-label">faaliyette güneş enerjisi santrali</p></div>
-<div class="market-card"><span class="market-num">27 GW</span><p class="market-label">toplam kurulu güneş kapasitesi</p></div>
-<div class="market-card"><span class="market-num">~%90</span><p class="market-label">lisanssız (küçük/orta ölçekli) GES payı</p></div>
+<div class="market-cards">
+<div class="market-card glass tilt rv"><span class="market-num counter" data-count="40000" data-suffix="+">0</span><p class="market-label">faaliyette güneş enerjisi santrali</p></div>
+<div class="market-card glass tilt rv d1"><span class="market-num counter" data-count="27" data-suffix=" GW">0</span><p class="market-label">toplam kurulu güneş kapasitesi</p></div>
+<div class="market-card glass tilt rv d2"><span class="market-num counter" data-count="90" data-prefix="~%">0</span><p class="market-label">lisanssız (küçük/orta ölçekli) GES payı</p></div>
 </div>
-<span class="market-source reveal d2">Kaynak: TEİAŞ – Yük Tevzi Bilgi Sistemi Başkanlığı (YTBS), 6 Temmuz 2026</span>
+<span class="market-source rv d3">Kaynak: TEİAŞ – Yük Tevzi Bilgi Sistemi Başkanlığı (YTBS), 6 Temmuz 2026</span>
+</div>
 </section>
 
 <!-- MISSION -->
 <section class="mission-section">
 <div class="mission-inner">
-<span class="eyebrow reveal">Misyonumuz</span>
-<p class="mission-q reveal">Güneş enerjisi Türkiye'nin geleceği.<br><strong>Sahadaki veriyi anlamlı bilgiye dönüştürerek bakım süreçlerini destekliyoruz.</strong></p>
-<a href="#" onclick="showWaitlist(event)" class="btn-primary reveal">Erken Erişime Katıl</a>
+<span class="eyebrow rv">Misyonumuz</span>
+<p class="mission-q rv">Güneş enerjisi Türkiye'nin geleceği.<br><strong>Sahadaki veriyi anlamlı bilgiye dönüştürerek bakım süreçlerini destekliyoruz.</strong></p>
+<a href="#" onclick="showWaitlist(event)" class="btn btn-fill magnetic rv d1">Erken Erişime Katıl</a>
 </div>
 </section>
 
 <!-- TRANSPARENCY -->
 <section class="transparency">
-<p class="reveal">SolarPeak-AI, teknik ekiplerin karar süreçlerini desteklemek amacıyla geliştirilmiş bir analiz platformudur. Kesin arıza teşhisi, elektriksel test veya bakım kararı yerine geçmez; tespit edilen bulguların değerlendirilmesi yetkili teknik uzmanlar tarafından yapılmalıdır.</p>
+<p class="rv">SolarPeak-AI, teknik ekiplerin karar süreçlerini desteklemek amacıyla geliştirilmiş bir analiz platformudur. Kesin arıza teşhisi, elektriksel test veya bakım kararı yerine geçmez; tespit edilen bulguların değerlendirilmesi yetkili teknik uzmanlar tarafından yapılmalıdır.</p>
 </section>
 
 <!-- SSS -->
 <section id="sss">
-<div class="section-head reveal">
+<div class="wrap">
+<div class="section-head rv">
 <span class="eyebrow">SSS</span>
 <h2>Sık sorulan sorular</h2>
 </div>
-<div class="faq-list reveal d1">
-<details class="faq-item"><summary>Drone uçuşunu siz mi gerçekleştiriyorsunuz?</summary><p>Hayır. SolarPeak-AI bir drone üreticisi ya da operatörü değildir. Drone operasyon ekibiniz görüntüleri toplar, biz analiz ederiz.</p></details>
-<details class="faq-item"><summary>SCADA veya ERP sisteminin yerine mi geçiyor?</summary><p>Hayır. Platform bu sistemlerin yerine geçmez; onları tamamlayan bir görsel denetim ve karar destek katmanıdır.</p></details>
-<details class="faq-item"><summary>Kesin arıza teşhisi yapıyor mu?</summary><p>Hayır. Platform tespit ettiği anomalileri güven skoruyla birlikte raporlar; nihai değerlendirme ve bakım kararı teknik uzmanlara aittir.</p></details>
-<details class="faq-item"><summary>Hangi anomalileri tespit ediyorsunuz?</summary><p>MVP sürümünde yüzey kirliliği (toz, çamur, kuş pisliği), hotspot ve sıcaklık anomalileri tespit edilir. Kablo arızası, PID ve mikro çatlak gibi bulgular yol haritasında.</p></details>
-<details class="faq-item"><summary>Verilerimiz güvende mi?</summary><p>Görüntü ve analiz verileri erişim kontrolü ve şifreleme ile korunan bulut altyapısında saklanır; üçüncü taraflarla paylaşılmaz.</p></details>
+<div class="faq-list">
+<details class="faq-item rv"><summary>Drone uçuşunu siz mi gerçekleştiriyorsunuz?</summary><p>Hayır. SolarPeak-AI bir drone üreticisi ya da operatörü değildir. Drone operasyon ekibiniz görüntüleri toplar, biz analiz ederiz.</p></details>
+<details class="faq-item rv"><summary>SCADA veya ERP sisteminin yerine mi geçiyor?</summary><p>Hayır. Platform bu sistemlerin yerine geçmez; onları tamamlayan bir görsel denetim ve karar destek katmanıdır.</p></details>
+<details class="faq-item rv"><summary>Kesin arıza teşhisi yapıyor mu?</summary><p>Hayır. Platform tespit ettiği anomalileri güven skoruyla birlikte raporlar; nihai değerlendirme ve bakım kararı teknik uzmanlara aittir.</p></details>
+<details class="faq-item rv"><summary>Hangi anomalileri tespit ediyorsunuz?</summary><p>MVP sürümünde yüzey kirliliği (toz, çamur, kuş pisliği), hotspot ve sıcaklık anomalileri tespit edilir. Kablo arızası, PID ve mikro çatlak gibi bulgular yol haritasında.</p></details>
+<details class="faq-item rv"><summary>Verilerimiz güvende mi?</summary><p>Görüntü ve analiz verileri erişim kontrolü ve şifreleme ile korunan bulut altyapısında saklanır; üçüncü taraflarla paylaşılmaz.</p></details>
+</div>
 </div>
 </section>
 
 <!-- CONTACT -->
 <section class="contact-section" id="iletisim">
-<span class="eyebrow reveal">İletişim</span>
-<h2 class="reveal">Sorularınız için</h2>
-<p class="reveal">Demo talebi veya iş birliği için bize yazın.</p>
-<a href="mailto:info@solarpeakai.com" class="mail reveal">info@solarpeakai.com</a>
+<div class="contact-card glass g-border rv-scale">
+<span class="eyebrow">İletişim</span>
+<h2>Sorularınız için</h2>
+<p>Demo talebi veya iş birliği için bize yazın.</p>
+<a href="mailto:info@solarpeakai.com" class="mail">info@solarpeakai.com</a>
+</div>
 </section>
 
 <!-- FOOTER -->
@@ -735,13 +869,13 @@ section{padding:72px 6vw}
 </footer>
 </div>
 
-<!-- ERKEN ERİŞİM SAYFASI -->
+<!-- ================= ERKEN ERİŞİM ================= -->
 <div class="waitlist-page" id="waitlist-page">
 <div class="wl-inner">
-<a href="#" onclick="showMain(event)" class="wl-back">← Geri dön</a>
+<a href="#" onclick="showMain(event)" class="page-back">← Geri dön</a>
 <h1>Erken Erişim</h1>
 <p class="wl-sub">Platform yayına girdiğinde ilk siz haberdar olun. Erken erişim listesindeki kullanıcılara özel fiyatlandırma uygulanacak.</p>
-<div id="wl-form-wrap">
+<div id="wl-form-wrap" class="glass" style="padding:2.2rem">
 <form id="wl-form" onsubmit="handleWaitlist(event)">
 <div class="form-row">
 <div><label>Ad <span class="req">*</span></label><input type="text" name="Ad" placeholder="Adınız" required/></div>
@@ -761,7 +895,7 @@ section{padding:72px 6vw}
 <option>Diğer</option>
 </select>
 </div>
-<button type="submit" class="btn-submit">Listeye Katıl</button>
+<button type="submit" class="btn btn-fill btn-submit magnetic">Listeye Katıl</button>
 <p class="wl-note">Spam yok. İstediğiniz zaman çıkabilirsiniz.</p>
 </form>
 </div>
@@ -773,11 +907,11 @@ section{padding:72px 6vw}
 </div>
 </div>
 
-<!-- HAKKIMIZDA SAYFASI -->
+<!-- ================= HAKKIMIZDA ================= -->
 <div class="about-page" id="about-page">
 <div class="about-inner">
-<a href="#" onclick="showMain(event)" class="ab-back">← Geri dön</a>
-<div class="about-hero">
+<a href="#" onclick="showMain(event)" class="page-back">← Geri dön</a>
+<div class="about-hero glass">
 <h1>Türkiye'nin güneş enerjisini<br>korumak için buradayız.</h1>
 <p>SolarPeakAI, güneş enerjisi santrallerindeki panel anomalilerini drone görüntüleri üzerinden erken tespit ederek bakım ekiplerine karar desteği sağlayan yapay zeka destekli bir platformdur.</p>
 </div>
@@ -793,45 +927,40 @@ section{padding:72px 6vw}
 <div class="about-section">
 <h2>Değerlerimiz</h2>
 <div class="about-values">
-<div class="about-val"><h3>DÜRÜSTLÜK</h3><p>Bulgularımızı her zaman güven skoruyla paylaşırız ve kesin arıza teşhisi yaptığımızı iddia etmeyiz. Nihai karar her zaman teknik uzmanlarındır.</p></div>
-<div class="about-val"><h3>ERİŞİLEBİLİRLİK</h3><p>Büyük ölçekli şirketlere değil, küçük ve orta ölçekli GES yatırımcılarına da hitap eden çözümler geliştiriyoruz.</p></div>
-<div class="about-val"><h3>YERELLİK</h3><p>Türkiye iklimini, panel tiplerini ve saha koşullarını iyi bilen yerel bir ekip olarak çalışıyoruz.</p></div>
-<div class="about-val"><h3>SÜRDÜRÜLEBİLİRLİK</h3><p>Güneş panellerinin verimli çalışması hem yatırımcıya hem çevreye katkı sağlar.</p></div>
+<div class="about-val glass"><h3>DÜRÜSTLÜK</h3><p>Bulgularımızı her zaman güven skoruyla paylaşırız ve kesin arıza teşhisi yaptığımızı iddia etmeyiz. Nihai karar her zaman teknik uzmanlarındır.</p></div>
+<div class="about-val glass"><h3>ERİŞİLEBİLİRLİK</h3><p>Büyük ölçekli şirketlere değil, küçük ve orta ölçekli GES yatırımcılarına da hitap eden çözümler geliştiriyoruz.</p></div>
+<div class="about-val glass"><h3>YERELLİK</h3><p>Türkiye iklimini, panel tiplerini ve saha koşullarını iyi bilen yerel bir ekip olarak çalışıyoruz.</p></div>
+<div class="about-val glass"><h3>SÜRDÜRÜLEBİLİRLİK</h3><p>Güneş panellerinin verimli çalışması hem yatırımcıya hem çevreye katkı sağlar.</p></div>
 </div>
 </div>
 <div class="about-section">
 <h2>Teknoloji</h2>
 <p>Sistemimiz, açık veri setleri ve pilot saha verileriyle fine-tune edilmiş YOLO tabanlı modeller kullanmaktadır. İki bağımsız yapay zeka servisi ile önce paneller tespit ediliyor, ardından yüzey kirliliği (toz, çamur, kuş pisliği) ile termal sıcaklık anomalileri (hotspot, bağlantı noktası ısınması) ayrı ayrı analiz ediliyor. Tüm görüntü işleme bulut altyapısı üzerinde çalışır ve sonuçlar web paneli ile mobil uygulamaya iletilir.</p>
 <div class="tech-stack">
-<span class="tech-tag">YOLOv11</span>
-<span class="tech-tag">PyTorch</span>
-<span class="tech-tag">Python</span>
-<span class="tech-tag">FastAPI</span>
-<span class="tech-tag">OpenCV</span>
-<span class="tech-tag">Flutter</span>
-<span class="tech-tag">PostgreSQL</span>
-<span class="tech-tag">S3 Object Storage</span>
+<span class="tech-tag">YOLOv11</span><span class="tech-tag">PyTorch</span><span class="tech-tag">Python</span>
+<span class="tech-tag">FastAPI</span><span class="tech-tag">OpenCV</span><span class="tech-tag">Flutter</span>
+<span class="tech-tag">PostgreSQL</span><span class="tech-tag">S3 Object Storage</span>
 </div>
 </div>
 <div class="about-section">
 <h2>Kurucu</h2>
-<div class="founder-card">
+<div class="founder-card glass">
 <div class="founder-avatar mono">FA</div>
 <div><div class="founder-name">Ferhat Akar</div><div class="founder-role">Founder, SolarPeakAI</div></div>
 </div>
 </div>
 <div class="about-section" style="text-align:center;padding:3rem 0;border-top:1px solid var(--line)">
-<p style="font-size:.9rem;color:var(--ink-3);margin-bottom:1.5rem">Erken erişim listesine katılın, lansmanı ilk siz öğrenin.</p>
-<a href="#" onclick="showWaitlist(event)" class="btn-primary">Erken Erişime Katıl</a>
+<p style="font-size:.9rem;color:var(--ink-3);margin-bottom:1.6rem">Erken erişim listesine katılın, lansmanı ilk siz öğrenin.</p>
+<a href="#" onclick="showWaitlist(event)" class="btn btn-fill magnetic">Erken Erişime Katıl</a>
 </div>
 </div>
 </div>
 
-<!-- GİZLİLİK SAYFASI -->
+<!-- ================= GİZLİLİK ================= -->
 <div class="privacy-page" id="privacy-page">
-<a href="#" onclick="showMain(event)" class="pv-back">← Geri dön</a>
+<a href="#" onclick="showMain(event)" class="page-back">← Geri dön</a>
 <h1>Gizlilik Politikası</h1>
-<p class="mono" style="font-size:.72rem;color:var(--ink-3);margin-bottom:2rem">Son güncelleme: Temmuz 2026</p>
+<p class="mono" style="font-size:.7rem;color:var(--ink-3);margin-bottom:2rem">Son güncelleme: Temmuz 2026</p>
 <h2>Toplanan Veriler</h2>
 <p>SolarPeakAI, erken erişim kaydı sırasında ad, soyad, e-posta, telefon, şirket adı ve rol bilgilerinizi toplar. Ödeme bilgisi veya hassas kişisel veri talep edilmez.</p>
 <h2>Kullanım Amacı</h2>
@@ -845,62 +974,257 @@ section{padding:72px 6vw}
 </div>
 
 <script>
-// COUNTDOWN
-const launch = new Date('2026-08-15T09:00:00');
-function updateCountdown(){
-const now = new Date();
-const diff = launch - now;
-if(diff <= 0){ document.querySelector('.countdown-bar').style.display='none'; return; }
-const d = Math.floor(diff/86400000);
-const h = Math.floor((diff%86400000)/3600000);
-const m = Math.floor((diff%3600000)/60000);
-const s = Math.floor((diff%60000)/1000);
-document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
-document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
-document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
-document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
-}
-updateCountdown();
-setInterval(updateCountdown, 1000);
+'use strict';
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Scroll Reveal
+/* ---------- HERO PANEL GRID (generated) ---------- */
+(function(){
+const g = document.getElementById('panelGrid');
+if(!g) return;
+let cells = '';
+const skip = new Set(['5-0','1-2','5-2']); // gaps for realism
+for(let r=0;r<5;r++){
+  for(let c=0;c<8;c++){
+    if(c===5 && r===2) continue; // anomaly panel drawn separately
+    if(skip.has(c+'-'+r)) continue;
+    const x=16+c*56, y=16+r*34;
+    cells += `<rect class="panel-cell" x="${x}" y="${y}" width="48" height="26" rx="3"/>`;
+  }
+}
+g.innerHTML = cells;
+// scan-detect flash: panels light up in columns as beam sweeps
+if(!reduceMotion){
+  const rects=[...g.querySelectorAll('rect')];
+  function sweep(){
+    rects.forEach(rc=>{
+      const col=Math.round((parseFloat(rc.getAttribute('x'))-16)/56);
+      setTimeout(()=>{
+        rc.style.fill='rgba(0,212,255,.22)';rc.style.stroke='rgba(0,212,255,.8)';
+        setTimeout(()=>{rc.style.fill='';rc.style.stroke='';},700);
+      }, 300+col*380);
+    });
+  }
+  sweep(); setInterval(sweep,5500);
+}
+})();
+
+/* ---------- STARS / PARTICLES ---------- */
+(function(){
+if(reduceMotion) return;
+const cv=document.getElementById('stars'),ctx=cv.getContext('2d');
+let W,H,pts=[];
+function resize(){
+  W=cv.width=innerWidth; H=cv.height=innerHeight;
+  const n=Math.min(110,Math.floor(W*H/16000));
+  pts=Array.from({length:n},()=>({
+    x:Math.random()*W,y:Math.random()*H,
+    r:Math.random()*1.3+.3,
+    vy:-(Math.random()*.14+.03), vx:(Math.random()-.5)*.06,
+    a:Math.random()*.5+.15, tw:Math.random()*Math.PI*2,
+    cyan:Math.random()<.22
+  }));
+}
+resize(); addEventListener('resize',resize,{passive:true});
+let visible=true;
+document.addEventListener('visibilitychange',()=>visible=!document.hidden);
+(function loop(t){
+  requestAnimationFrame(loop);
+  if(!visible) return;
+  ctx.clearRect(0,0,W,H);
+  for(const p of pts){
+    p.y+=p.vy; p.x+=p.vx;
+    if(p.y<-4){p.y=H+4;p.x=Math.random()*W}
+    const tw=(Math.sin(t*.0012+p.tw)+1)/2;
+    ctx.globalAlpha=p.a*(0.45+tw*.55);
+    ctx.fillStyle=p.cyan?'#00D4FF':'#9fc9ff';
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+})(0);
+})();
+
+/* ---------- CURSOR GLOW ---------- */
+(function(){
+if(reduceMotion) return;
+const glow=document.getElementById('cursor-glow');
+let tx=innerWidth/2,ty=innerHeight/3,x=tx,y=ty;
+addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
+(function loop(){
+  x+=(tx-x)*.08; y+=(ty-y)*.08;
+  glow.style.left=x+'px'; glow.style.top=y+'px';
+  requestAnimationFrame(loop);
+})();
+})();
+
+/* ---------- NAV SCROLL ---------- */
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>{nav.classList.toggle('scrolled',scrollY>30)},{passive:true});
+
+/* ---------- SPLIT TEXT ---------- */
+(function(){
+const el=document.getElementById('hero-h1');
+if(!el) return;
+el.querySelectorAll('br').forEach(()=>{});
+const parts=el.innerHTML.split('<br>');
+el.innerHTML=parts.map(seg=>{
+  const tmp=document.createElement('div');tmp.innerHTML=seg;
+  const isGrad=tmp.querySelector('.grad');
+  const text=tmp.textContent.trim();
+  const words=text.split(' ').map((w,i,arr)=>`<span class="w"><span style="transition-delay:${.15+i*.09}s">${w}${i<arr.length-1?'&nbsp;':''}</span></span>`).join('');
+  return isGrad?`<span class="grad" style="display:inline-block">${words}</span>`:words;
+}).join('<br>');
+requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('in')));
+})();
+
+/* ---------- REVEAL OBSERVER ---------- */
 const obs=new IntersectionObserver(entries=>{
-entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})
-},{threshold:.08})
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el))
+entries.forEach(e=>{
+  if(!e.isIntersecting) return;
+  e.target.classList.add('in');
+  if(e.target.id==='dashBox'||e.target.id==='pipelineBox') e.target.classList.add('in');
+  e.target.querySelectorAll('.counter,[data-count]').forEach(runCounter);
+  obs.unobserve(e.target);
+});
+},{threshold:.12});
+document.querySelectorAll('.rv,.rv-scale,#pipelineBox,#dashBox').forEach(el=>obs.observe(el));
 
-// Sayfa Fonksiyonları
-function hideAll(){
-document.getElementById('main-page').style.display='none'
-document.getElementById('waitlist-page').style.display='none'
-document.getElementById('about-page').style.display='none'
-document.getElementById('privacy-page').style.display='none'
-document.getElementById('sticky-cta').classList.remove('show')
+/* ---------- COUNTERS ---------- */
+const counted=new WeakSet();
+function runCounter(el){
+if(counted.has(el)||!el.dataset.count) return;
+counted.add(el);
+const target=+el.dataset.count, pre=el.dataset.prefix||'', suf=el.dataset.suffix||'';
+const dur=1600, t0=performance.now();
+function fmt(n){return n>=1000?n.toLocaleString('tr-TR'):n}
+(function tick(t){
+  const p=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-p,3);
+  el.textContent=pre+fmt(Math.round(target*e))+suf;
+  if(p<1) requestAnimationFrame(tick);
+})(t0);
 }
-function showMain(e){if(e)e.preventDefault(); hideAll(); document.getElementById('main-page').style.display='block'; window.scrollTo(0,0);}
-function showWaitlist(e){if(e)e.preventDefault(); hideAll(); document.getElementById('waitlist-page').style.display='block'; window.scrollTo(0,0);}
-function showAbout(e){if(e)e.preventDefault(); hideAll(); document.getElementById('about-page').style.display='block'; window.scrollTo(0,0);}
-function showPrivacy(e){if(e)e.preventDefault(); hideAll(); document.getElementById('privacy-page').style.display='block'; window.scrollTo(0,0);}
 
-// Sticky CTA
-const stickyCta = document.getElementById('sticky-cta');
+/* ---------- HEATMAP ---------- */
+(function(){
+const grid=document.getElementById('heatGrid');
+if(!grid) return;
+const N=48, cells=[];
+for(let i=0;i<N;i++){const d=document.createElement('i');d.className='heat-cell';grid.appendChild(d);cells.push(d)}
+function paint(){
+  cells.forEach(c=>c.className='heat-cell');
+  const warm=new Set(),hot=new Set();
+  while(warm.size<7) warm.add(Math.floor(Math.random()*N));
+  while(hot.size<2){const i=Math.floor(Math.random()*N);if(!warm.has(i))hot.add(i)}
+  warm.forEach(i=>cells[i].classList.add('warm'));
+  hot.forEach(i=>cells[i].classList.add('hot'));
+}
+paint();
+if(!reduceMotion) setInterval(paint,3600);
+})();
+
+/* ---------- COUNTDOWN ---------- */
+const launch=new Date('2026-08-15T09:00:00');
+function updateCountdown(){
+const diff=launch-new Date();
+const bar=document.querySelector('.stat-bar');
+if(diff<=0){if(bar)bar.style.display='none';return}
+const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=String(v).padStart(2,'0')};
+set('cd-days',Math.floor(diff/864e5));set('cd-hours',Math.floor(diff%864e5/36e5));
+set('cd-mins',Math.floor(diff%36e5/6e4));set('cd-secs',Math.floor(diff%6e4/1e3));
+}
+updateCountdown();setInterval(updateCountdown,1000);
+
+/* ---------- MAGNETIC BUTTONS + RIPPLE ---------- */
+if(!reduceMotion && matchMedia('(hover:hover)').matches){
+document.querySelectorAll('.magnetic').forEach(btn=>{
+  btn.addEventListener('pointermove',e=>{
+    const r=btn.getBoundingClientRect();
+    const dx=(e.clientX-r.left-r.width/2)*.22, dy=(e.clientY-r.top-r.height/2)*.3;
+    btn.style.transform=`translate(${dx}px,${dy}px)`;
+  });
+  btn.addEventListener('pointerleave',()=>{btn.style.transform=''});
+});
+}
+document.querySelectorAll('.btn').forEach(btn=>{
+btn.addEventListener('click',e=>{
+  const r=btn.getBoundingClientRect(),s=Math.max(r.width,r.height);
+  const rp=document.createElement('span');rp.className='ripple';
+  rp.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;
+  btn.appendChild(rp);setTimeout(()=>rp.remove(),700);
+});
+});
+
+/* ---------- CARD TILT ---------- */
+if(!reduceMotion && matchMedia('(hover:hover)').matches){
+document.querySelectorAll('.tilt').forEach(card=>{
+  card.addEventListener('pointermove',e=>{
+    const r=card.getBoundingClientRect();
+    const rx=((e.clientY-r.top)/r.height-.5)*-7, ry=((e.clientX-r.left)/r.width-.5)*9;
+    card.style.transform=`perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;
+  });
+  card.addEventListener('pointerleave',()=>{card.style.transform=''});
+});
+// phone tilt
+const ph=document.getElementById('phoneTilt');
+if(ph){
+  ph.parentElement.addEventListener('pointermove',e=>{
+    const r=ph.getBoundingClientRect();
+    const rx=((e.clientY-r.top)/r.height-.5)*-9, ry=((e.clientX-r.left)/r.width-.5)*11;
+    ph.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;ph.style.animation='none';
+  });
+  ph.parentElement.addEventListener('pointerleave',()=>{ph.style.transform='';ph.style.animation=''});
+}
+}
+
+/* ---------- HERO PARALLAX ---------- */
+if(!reduceMotion){
+const hv=document.getElementById('hero-visual');
+addEventListener('scroll',()=>{
+  const y=scrollY;
+  if(y<innerHeight && hv) hv.style.translate=`0 ${y*.06}px`;
+},{passive:true});
+}
+
+/* ---------- MARQUEE (duplicate for seamless loop) ---------- */
+(function(){
+const m=document.getElementById('marquee');
+if(m) m.innerHTML+=m.innerHTML;
+})();
+
+/* ---------- PAGE ROUTER ---------- */
+function hideAll(){
+['main-page','waitlist-page','about-page','privacy-page'].forEach(id=>{
+  document.getElementById(id).style.display='none';
+});
+document.getElementById('sticky-cta').classList.remove('show');
+}
+function showMain(e){if(e)e.preventDefault();hideAll();document.getElementById('main-page').style.display='block';scrollTo(0,0)}
+function showWaitlist(e){if(e)e.preventDefault();hideAll();document.getElementById('waitlist-page').style.display='block';scrollTo(0,0)}
+function showAbout(e){if(e)e.preventDefault();hideAll();document.getElementById('about-page').style.display='block';scrollTo(0,0)}
+function showPrivacy(e){if(e)e.preventDefault();hideAll();document.getElementById('privacy-page').style.display='block';scrollTo(0,0)}
+
+/* ---------- STICKY CTA ---------- */
+const stickyCta=document.getElementById('sticky-cta');
 function toggleSticky(){
 if(document.getElementById('main-page').style.display==='none'){stickyCta.classList.remove('show');return}
-if(window.scrollY > window.innerHeight*0.85){stickyCta.classList.add('show')}else{stickyCta.classList.remove('show')}
+stickyCta.classList.toggle('show',scrollY>innerHeight*.85);
 }
-window.addEventListener('scroll', toggleSticky);
-toggleSticky();
+addEventListener('scroll',toggleSticky,{passive:true});toggleSticky();
 
+/* ---------- WAITLIST FORM ---------- */
 async function handleWaitlist(e){
-  e.preventDefault()
-  const form = document.getElementById('wl-form')
-  await fetch('https://formspree.io/f/mojopajz', {
-    method:'POST',
-    headers:{'Accept':'application/json'},
-    body:new FormData(form)
-  })
-  document.getElementById('wl-form-wrap').style.display='none'
-  document.getElementById('success-msg').style.display='block'
+e.preventDefault();
+const form=document.getElementById('wl-form');
+const btn=form.querySelector('.btn-submit');
+btn.textContent='Gönderiliyor…';btn.style.opacity='.7';btn.disabled=true;
+try{
+  await fetch('https://formspree.io/f/mojopajz',{
+    method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)
+  });
+  document.getElementById('wl-form-wrap').style.display='none';
+  document.getElementById('success-msg').style.display='block';
+}catch(err){
+  btn.textContent='Tekrar deneyin';btn.style.opacity='1';btn.disabled=false;
+}
 }
 </script>
 </body>
